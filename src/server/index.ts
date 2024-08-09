@@ -12,6 +12,12 @@ app.get('/api/v1/getTasks', (_req, res) => {
   res.json(getTasks())
 })
 
+app.get('/api/v1/setTasks', ({ params }: { params: { tasks: string } }, res) => {
+  const tasks = JSON.parse(params.tasks) as ReturnType<typeof getTasks>
+  setTasks(tasks)
+  res.json(tasks) // TODO: Remove
+})
+
 app.get('/api/v1/completeTask', ({ query }, res) => {
   const taskId = query.taskId
   const tasks = getTasks()

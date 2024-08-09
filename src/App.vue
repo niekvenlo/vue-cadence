@@ -28,7 +28,7 @@ const markComplete = (taskId: string) => {
     >
       <strong>{{ item.title }}</strong>
       <span v-if="item.daysFromNow < 0"> {{ item.daysFromNow }} days overdue </span>
-      <span v-if="item.daysFromNow === 0">due today</span>
+      <span v-else-if="item.daysFromNow === 0">due today</span>
       <span v-else> due in {{ item.daysFromNow }} days </span>
       <span>every {{ item.cadenceInDays }} days</span>
     </li>
