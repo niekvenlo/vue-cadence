@@ -7,16 +7,16 @@ const port = process.env.PORT || 3333
 
 const app = express()
 app.use(cors())
+app.use(express.json())
 
 app.get('/api/v1/getTasks', (_req, res) => {
   res.json(getTasks())
 })
 
-app.post('/api/v1/setTasks', ({ params }: { params: { tasks: string } }, res) => {
-  const tasks = JSON.parse(params.tasks) as ReturnType<typeof getTasks>
-  console.log(tasks)
+app.post('/api/v1/setTasks', ({ body }, res) => {
+  const tasks = body
   setTasks(tasks)
-  res.json(tasks) // TODO: Remove
+  res.json(tasks)
 })
 
 app.get('/api/v1/completeTask', ({ query }, res) => {

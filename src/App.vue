@@ -2,16 +2,18 @@
 import { ref } from 'vue'
 import type { Task } from 'src/server/db-access.ts'
 
+const root = 'http://192.168.2.14:3333'
+
 const tasks = ref<undefined | Task[]>(undefined)
 
-fetch('http://192.168.2.14:3333/api/v1/getTasks', {})
+fetch(`{root}/api/v1/getTasks`, {})
   .then((response) => response.json())
   .then((json) => {
     tasks.value = json
   })
 
 const markComplete = (taskId: string) => {
-  fetch(`http://192.168.2.8:3333/api/v1/completeTask?taskId=${taskId}`, {})
+  fetch(`${root}/api/v1/completeTask?taskId=${taskId}`, {})
     .then((response) => response.json())
     .then((json) => {
       tasks.value = json
