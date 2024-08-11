@@ -1,6 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 import { getTasks, setTasks } from './db-access'
+import { getLaolun, setLaolun } from './file.-access'
 import { getCurrentEpochDay } from '../utils'
 
 const port = process.env.PORT || 3333
@@ -63,6 +64,16 @@ app.get('/api/v1/updateTask', ({ query }, res) => {
   }
   setTasks(tasks)
   res.json(tasks)
+})
+
+app.get('/api/v1/getLaolun', async (_req, res) => {
+  res.json(await getLaolun())
+})
+
+app.post('/api/v1/setLaolun', async ({ body }, res) => {
+  const { pinyin, phrases } = body
+  setLaolun({ pinyin, phrases })
+  res.json(await getLaolun())
 })
 
 app.listen(port, () => {
