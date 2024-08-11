@@ -6,7 +6,7 @@ const root = 'http://192.168.2.14:3333'
 
 const tasks = ref<undefined | Task[]>(undefined)
 
-fetch(`{root}/api/v1/getTasks`, {})
+fetch(`${root}/api/v1/getTasks`, {})
   .then((response) => response.json())
   .then((json) => {
     tasks.value = json
@@ -25,8 +25,12 @@ const markComplete = (taskId: string) => {
   <TransitionGroup name="list" tag="ul" className="list">
     <li
       :key="item.id"
-      v-for="item in tasks?.filter((t) => t.daysFromNow < 2)"
+      v-for="item in tasks"
       @dblclick="markComplete(item.id)"
+      :style="{
+        opacity: 1 / Math.max(0, item.daysFromNow + 1),
+        color: item.daysFromNow < 0 ? 'orange' : 'inherit'
+      }"
     >
       <strong>{{ item.title }}</strong>
       <span v-if="item.daysFromNow < 0"> {{ item.daysFromNow }} days overdue </span>
