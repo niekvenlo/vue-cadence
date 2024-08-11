@@ -72,7 +72,7 @@ app.get('/api/v1/getLaolun', async (_req, res) => {
 
 app.post('/api/v1/setLaolun', async ({ body }, res) => {
   const { pinyin, phrases } = body
-  setLaolun({ pinyin, phrases })
+  await setLaolun({ pinyin, phrases })
   res.json(await getLaolun())
 })
 

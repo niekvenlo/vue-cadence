@@ -63,17 +63,10 @@
     ],
     "tasks": [
         {
-            "title": "Wipe bathroom surfaces",
-            "cadenceInDays": 4,
-            "nextEpochDay": 19944,
-            "id": "420032ac-3a25-4800-a19b-841856bb4293",
-            "daysFromNow": -2
-        },
-        {
             "title": "Recycle paper ",
             "cadenceInDays": 10,
             "id": "926978d8-1248-4077-a8db-007271792fde",
-            "nextEpochDay": 19945,
+            "nextEpochDay": 19956,
             "daysFromNow": -1
         },
         {
@@ -81,7 +74,7 @@
             "title": "Take pills",
             "nextEpochDay": 19947,
             "cadenceInDays": 1,
-            "daysFromNow": 0
+            "daysFromNow": 1
         },
         {
             "title": "Clean out Eufy",
@@ -145,6 +138,13 @@
             "cadenceInDays": 9,
             "nextEpochDay": 19950,
             "id": "bccccd80-4466-4a6e-a05a-17e4e6f66ce5",
+            "daysFromNow": 4
+        },
+        {
+            "title": "Wipe bathroom surfaces",
+            "cadenceInDays": 4,
+            "nextEpochDay": 19950,
+            "id": "420032ac-3a25-4800-a19b-841856bb4293",
             "daysFromNow": 4
         },
         {
