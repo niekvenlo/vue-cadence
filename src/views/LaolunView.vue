@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { makePseudorandomGenerator } from '@/utils'
+import { breakPinyinIntoSylables, getTones, makePseudorandomGenerator } from '@/utils'
 
 const root = 'http://192.168.2.14:3333'
 
 type Phrase = {
   label: string
   parts: string[][]
-  picked: [string, string][]
+  pickOne: () => [string, string, string][][]
 }
 
 const millisecsInHour = 60 * 60 * 1000
@@ -28,10 +28,18 @@ const phrases = ref<undefined | Phrase[]>([])
 fetch(`${root}/api/v1/getLaolun`, {})
   .then((response) => response.json())
   .then((json) => {
-    const addPinyin = (hanzi: string) => [hanzi, json.pinyin[hanzi]] as [string, string]
+    const addPinyin = (segment: string) => {
+      const segmentPinyinArr = breakPinyinIntoSylables(json.pinyin[segment])
+      const segmentTonesArr = getTones(json.pinyin[segment])
+      return segment
+        .split('')
+        .map(
+          (hanzi, i) => [hanzi, segmentPinyinArr[i], segmentTonesArr[i]] as [string, string, string]
+        )
+    }
     phrases.value = (json.phrases as { label: string; parts: string[][] }[]).map((phrase) => ({
       ...phrase,
-      picked: phrase.parts.map((part) => addPinyin(getRandomElement(part)))
+      pickOne: () => phrase.parts.map((part) => addPinyin(getRandomElement(part)))
     }))
   })
 
@@ -43,12 +51,16 @@ const shuffledPhrases = computed(() => {
 <template>
   <div class="laolun">
     <div className="phrase" v-for="item in shuffledPhrases" :key="item?.label">
-      <span class="phrase-segment" :key="hanzi" v-for="[hanzi, pinyin] in item?.picked">
-        <span class="phrase-pinyin">{{ pinyin }}</span>
-        <span class="phrase-hanzi">{{ hanzi }}</span>
-      </span>
+      <template :key="character.join()" v-for="character in item?.pickOne()">
+        <span class="phrase-segment" :key="hanzi" v-for="[hanzi, pinyin, tone] in character">
+          <span class="phrase-pinyin">{{ pinyin }}</span>
+          <span class="phrase-tone">{{ tone || '&nbsp;' }}</span>
+          <span class="phrase-hanzi">{{ hanzi }}</span>
+        </span>
+      </template>
       <span class="phrase-segment">
         <span class="phrase-pinyin">.</span>
+        <span class="phrase-tone">.</span>
         <span class="phrase-hanzi">。</span>
       </span>
     </div>
@@ -60,25 +72,28 @@ const shuffledPhrases = computed(() => {
   padding: 1em 0.5em;
   min-height: 100vh;
   font-size: 1.2em;
+  line-height: 2em;
   .phrase {
     display: contents;
     .phrase-segment {
       display: inline-flex;
       flex-direction: column;
-      justify-items: center;
-      justify-content: center;
-      justify-self: center;
-      justify-items: center;
       .phrase-pinyin {
         font-size: 0.3em;
         opacity: 0.5;
-        &:hover {
-          transform: scale(2);
-          background: hsla(0, 0%, 100%, 0.3);
-        }
+        user-select: none;
       }
-
+      .phrase-tone {
+        font-size: 1.2em;
+        user-select: none;
+        overflow: hidden;
+        max-height: 0.6em;
+      }
       .phrase-hanzi {
+      }
+      &:hover .phrase-pinyin {
+        transform: scale(2);
+        background: hsla(0, 0%, 100%, 0.9);
       }
     }
   }
@@ -88,7 +103,6 @@ const shuffledPhrases = computed(() => {
     padding: 1em 2em;
     min-height: 100vh;
     font-size: 1.4em;
-    line-height: 3em;
   }
 }
 </style>
