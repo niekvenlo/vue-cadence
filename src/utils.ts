@@ -56,3 +56,25 @@ export const breakRawPinyin = (string = '') =>
     .replace(/(r)([fhlmpqsyz])/g, '$1-$2') //
     .replace(/(ng)([abcdfgjklmnpqstuwxyz])/g, '$1-$2')
     .replace(/([?,])/g, ' $1 ')
+
+export function toChunk<T>(array: T[], size: number): T[][] {
+  const chunks: any[] = []
+  for (let i = 0; i < array.length; i = i + size) {
+    chunks.push(array.slice(i, i + size))
+  }
+  return chunks
+}
+
+const millisecsInHour = 60 * 60 * 1000
+const seed = Math.floor(Date.now() / (millisecsInHour * 3))
+const gen = makePseudorandomGenerator(seed)
+
+export const getPseudoRandomElement = (arr: any[]) => arr[gen.next().value % arr.length]
+export const toShuffledPseudoRandom = <T>(arr: T[] = []): T[] => {
+  const copy = [...arr]
+  for (let i = arr.length; i > 0; i--) {
+    const random = gen.next().value % i
+    ;[copy[i], copy[random]] = [copy[random], copy[i]]
+  }
+  return copy
+}
