@@ -4,7 +4,6 @@ import {
   breakPinyinIntoSylables,
   getPseudoRandomElement,
   getTones,
-  makePseudorandomGenerator,
   toChunk,
   toShuffledPseudoRandom
 } from '@/utils'
@@ -50,12 +49,12 @@ const shuffledPhrases = computed(() => {
 
 <template>
   <div class="laolun">
-    <div class="page" :key="chunk[0].label" v-for="(chunk, index) of shuffledPhrases">
+    <div class="page" :key="chunk[0]?.label" v-for="(chunk, index) of shuffledPhrases">
       <p class="page-number">
         <span>第 {{ index + 1 }} 页</span>
       </p>
       <div class="phrase" v-for="item in chunk" :key="item?.label">
-        <template :key="characters.join()" v-for="characters in item?.pickOne()">
+        <template v-for="characters in item?.pickOne()">
           <span class="character" :key="hanzi" v-for="[hanzi, pinyin, tone] in characters">
             <span class="phrase-pinyin">{{ pinyin || '&nbsp;' }}</span>
             <span class="phrase-tone">{{ tone || '&nbsp;' }}</span>
@@ -81,13 +80,14 @@ const shuffledPhrases = computed(() => {
   .page-number {
     display: flex;
     justify-content: flex-end;
-    opacity: 0.9;
+    opacity: 0.7;
   }
   .phrase {
     display: contents;
     .character {
       display: inline-flex;
       flex-direction: column;
+      /* align-items: center; */
       .phrase-pinyin {
         font-size: 0.3em;
         opacity: 0.5;
@@ -97,7 +97,7 @@ const shuffledPhrases = computed(() => {
         font-size: 1.2em;
         user-select: none;
         overflow: hidden;
-        max-height: 0.6em;
+        max-height: 0.63em;
       }
       .phrase-hanzi {
       }
