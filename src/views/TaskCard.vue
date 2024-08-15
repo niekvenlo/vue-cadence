@@ -11,6 +11,7 @@ const transform = ref('')
 const willComplete = ref(false)
 const didComplete = ref(false)
 const { isSwiping, distanceX } = usePointerSwipe(el, {
+  disableTextSelect: false,
   onSwipe() {
     if (distanceX.value > 0) {
       return
@@ -22,7 +23,7 @@ const { isSwiping, distanceX } = usePointerSwipe(el, {
   onSwipeEnd() {
     transform.value = ''
     if (willComplete.value === true) {
-      didComplete.value = true;
+      didComplete.value = true
       setTimeout(() => {
         didComplete.value = false
         willComplete.value = false
@@ -47,11 +48,11 @@ const { isSwiping, distanceX } = usePointerSwipe(el, {
   >
     <div
       class="task-list-card-inner"
-      :style="{ transform, background: willComplete ? didComplete ? 'green' : 'red' : 'inherit' }"
+      :style="{ transform, background: willComplete ? (didComplete ? 'green' : 'red') : 'inherit' }"
     >
       <span>{{ props.task.title }}</span>
       <span>|</span>
-      <span v-if="props.task.daysFromNow < 0">{{ props.task.daysFromNow }} days overdue </span>
+      <span v-if="props.task.daysFromNow < 0">{{ -props.task.daysFromNow }} days overdue </span>
       <span v-else-if="props.task.daysFromNow === 0">due today</span>
       <span v-else>due in {{ props.task.daysFromNow }} days</span>
       <span>every {{ props.task.cadenceInDays }} days</span>
@@ -70,6 +71,7 @@ const { isSwiping, distanceX } = usePointerSwipe(el, {
   }
   position: relative;
   user-select: none;
+  max-width: calc(100vw - 10em);
 
   .task-list-card-inner {
     display: flex;
