@@ -35,6 +35,7 @@ const markComplete = (taskId: string) => {
 
 <style>
 .tasks-list {
+  background: #eee;
   overflow: hidden;
   font-family: monospace;
   padding: 0;

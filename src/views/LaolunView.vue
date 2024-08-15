@@ -83,7 +83,8 @@ const shuffledPhrases = computed(() => {
     opacity: 0.7;
   }
   .phrase {
-    display: contents;
+    display: flex;
+    justify-content: center;
     .character {
       display: inline-flex;
       flex-direction: column;

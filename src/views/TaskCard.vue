@@ -16,9 +16,10 @@ const { isSwiping, distanceX } = usePointerSwipe(el, {
     if (distanceX.value > 0) {
       return
     }
-    const distance = Math.abs(distanceX.value)
+    const max = 90
+    const distance = Math.min(max * 1.1, Math.abs(distanceX.value))
     transform.value = `translateX(${distance}px)`
-    willComplete.value = distance > 100
+    willComplete.value = distance > max
   },
   onSwipeEnd() {
     transform.value = ''
@@ -42,13 +43,19 @@ const { isSwiping, distanceX } = usePointerSwipe(el, {
     @dblclick="emit('completed')"
     :style="{
       opacity: isSwiping ? 1 : Math.max(0.1, 1 / Math.max(0, props.task.daysFromNow + 1)),
-      fontWeight: 700 - 100 * props.task.daysFromNow,
-      color: props.task.daysFromNow < 0 ? 'orange' : 'inherit'
+      fontWeight: 700 - 100 * props.task.daysFromNow
     }"
   >
     <div
       class="task-list-card-inner"
-      :style="{ transform, background: willComplete ? (didComplete ? 'green' : 'red') : 'inherit' }"
+      :class="{
+        isSwiping,
+        willComplete,
+        didComplete,
+        isOverdue: props.task.daysFromNow < 0,
+        isDueToday: props.task.daysFromNow === 0
+      }"
+      :style="{ transform }"
     >
       <span>{{ props.task.title }}</span>
       <span>|</span>
@@ -56,7 +63,6 @@ const { isSwiping, distanceX } = usePointerSwipe(el, {
       <span v-else-if="props.task.daysFromNow === 0">due today</span>
       <span v-else>due in {{ props.task.daysFromNow }} days</span>
       <span>every {{ props.task.cadenceInDays }} days</span>
-      <span>{{ willComplete ? 'complete' : '' }}</span>
     </div>
   </li>
 </template>
@@ -71,7 +77,8 @@ const { isSwiping, distanceX } = usePointerSwipe(el, {
   }
   position: relative;
   user-select: none;
-  max-width: calc(100vw - 10em);
+  max-width: calc(100vw - 5em);
+  background: #fff;
 
   .task-list-card-inner {
     display: flex;
@@ -79,14 +86,36 @@ const { isSwiping, distanceX } = usePointerSwipe(el, {
     gap: 0em 2em;
     position: absolute;
     padding: 1em 3em;
-    border-radius: 3em;
-    transition: all 0.2s ease-in-out;
+    border-radius: 0.3em;
+    transition: background-color 0.5s ease-in-out;
     span:nth-of-type(2) {
       display: none;
     }
     span:nth-of-type(3),
     span:nth-of-type(4) {
       padding-left: 2ch;
+    }
+    &.isDueToday {
+      color: rgb(50, 32, 0);
+    }
+    &.isOverdue {
+      color: rgb(144, 93, 0);
+    }
+    &.isSwiping {
+      background: #fff;
+      --shadow-color: 0deg 0% 63%;
+      box-shadow:
+        0.6px 0.1px 0.7px hsl(var(--shadow-color) / 0.36),
+        1.9px 0.4px 2.2px -0.8px hsl(var(--shadow-color) / 0.36),
+        4.8px 1.1px 5.5px -1.7px hsl(var(--shadow-color) / 0.36),
+        11.8px 2.7px 13.6px -2.5px hsl(var(--shadow-color) / 0.36);
+    }
+    &.willComplete {
+      background: black;
+      color: white;
+    }
+    &.didComplete {
+      background: green;
     }
 
     @media (min-width: 800px) {
