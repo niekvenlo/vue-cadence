@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import type { Task } from 'src/server/db-access.ts'
 
-const root = 'http://192.168.2.14:3333'
+const root = import.meta.env.VITE_SERVER_ROOT || 'http://192.168.2.14:3333'
 
 const tasks = ref<undefined | Task[]>(undefined)
 
@@ -22,21 +22,22 @@ const markComplete = (taskId: string) => {
 </script>
 
 <template>
-  <RouterView />
   <TransitionGroup name="list" tag="ul" className="list">
     <li
       :key="item.id"
       v-for="item in tasks"
       @dblclick="markComplete(item.id)"
       :style="{
-        opacity: 1 / Math.max(0, item.daysFromNow + 1),
+        opacity: Math.max(0.1, 1 / Math.max(0, item.daysFromNow + 1)),
+        fontWeight: 700 - 100 * item.daysFromNow,
         color: item.daysFromNow < 0 ? 'orange' : 'inherit'
       }"
     >
-      <strong>{{ item.title }}</strong>
-      <span v-if="item.daysFromNow < 0"> {{ item.daysFromNow }} days overdue </span>
+      <span>{{ item.title }}</span>
+      <span>|</span>
+      <span v-if="item.daysFromNow < 0">{{ item.daysFromNow }} days overdue </span>
       <span v-else-if="item.daysFromNow === 0">due today</span>
-      <span v-else> due in {{ item.daysFromNow }} days </span>
+      <span v-else>due in {{ item.daysFromNow }} days</span>
       <span>every {{ item.cadenceInDays }} days</span>
     </li>
   </TransitionGroup>
@@ -45,10 +46,11 @@ const markComplete = (taskId: string) => {
 <style scoped>
 .list {
   overflow: hidden;
+  font-family: monospace;
 
   li {
     display: flex;
-    gap: 1em;
+    gap: 2em;
     padding: 1em;
   }
 

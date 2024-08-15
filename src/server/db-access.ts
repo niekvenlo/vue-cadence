@@ -13,8 +13,8 @@ export type Task = {
 }
 
 export const getTasks = () => {
-  const tasks = db.get('tasks')
-  return tasks.sort(sortByNextDayAndCadence).map(addUtilityFields) as Task[]
+  const tasks = db.get('tasks').sort(sortByNextDayAndCadence).map(addUtilityFields) as Task[]
+  return tasks
 
   function sortByNextDayAndCadence(a: Task, b: Task) {
     if (a.nextEpochDay === b.nextEpochDay) {

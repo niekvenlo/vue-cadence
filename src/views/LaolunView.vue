@@ -8,7 +8,7 @@ import {
   toShuffledPseudoRandom
 } from '@/utils'
 
-const root = import.meta.env.VITE_SERVER_ROOT || 'http://192.168.2.14:3333';
+const root = import.meta.env.VITE_SERVER_ROOT || 'http://192.168.2.14:3333'
 
 type Phrase = {
   label: string
@@ -108,6 +108,15 @@ const shuffledPhrases = computed(() => {
       &.full-stop {
         padding-inline-end: 1em;
       }
+    }
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .laolun {
+    color: white;
+    background: black;
+    .phrase .character:hover .phrase-pinyin {
+      background: hsla(0, 0%, 0%, 0.9);
     }
   }
 }
