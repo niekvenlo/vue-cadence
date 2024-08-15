@@ -73,7 +73,7 @@ const { isSwiping, distanceX } = usePointerSwipe(el, {
   flex-direction: column;
   height: 7em;
   @media (min-width: 800px) {
-    height: 3em;
+    height: 4.5em;
   }
   position: relative;
   user-select: none;
@@ -85,7 +85,7 @@ const { isSwiping, distanceX } = usePointerSwipe(el, {
     flex-direction: column;
     gap: 0em 2em;
     position: absolute;
-    padding: 1em 3em;
+    padding: 1em;
     border-radius: 0.3em;
     transition: background-color 0.5s ease-in-out;
     span:nth-of-type(2) {
