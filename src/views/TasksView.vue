@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import type { Task } from 'src/server/db-access.ts'
+import type { Task } from '@/server/db-access'
+import TaskCard from './TaskCard.vue'
 
 const root = import.meta.env.VITE_SERVER_ROOT || 'http://192.168.2.14:3333'
 
@@ -22,37 +23,21 @@ const markComplete = (taskId: string) => {
 </script>
 
 <template>
-  <TransitionGroup name="list" tag="ul" className="list">
-    <li
+  <TransitionGroup name="list" tag="ul" className="tasks-list">
+    <TaskCard
+      :task="item"
       :key="item.id"
       v-for="item in tasks"
-      @dblclick="markComplete(item.id)"
-      :style="{
-        opacity: Math.max(0.1, 1 / Math.max(0, item.daysFromNow + 1)),
-        fontWeight: 700 - 100 * item.daysFromNow,
-        color: item.daysFromNow < 0 ? 'orange' : 'inherit'
-      }"
-    >
-      <span>{{ item.title }}</span>
-      <span>|</span>
-      <span v-if="item.daysFromNow < 0">{{ item.daysFromNow }} days overdue </span>
-      <span v-else-if="item.daysFromNow === 0">due today</span>
-      <span v-else>due in {{ item.daysFromNow }} days</span>
-      <span>every {{ item.cadenceInDays }} days</span>
-    </li>
+      @completed="markComplete(item.id)"
+    />
   </TransitionGroup>
 </template>
 
-<style scoped>
-.list {
+<style>
+.tasks-list {
   overflow: hidden;
   font-family: monospace;
-
-  li {
-    display: flex;
-    gap: 2em;
-    padding: 1em;
-  }
+  padding: 0;
 
   .list-move, /* apply transition to moving elements */
   .list-enter-active,
