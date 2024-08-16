@@ -60,7 +60,7 @@ export const breakRawPinyin = (string = '') =>
 export function toChunk<T>(array: T[], size: number): T[][] {
   const chunks: any[] = []
   for (let i = 0; i < array.length; i = i + size) {
-    chunks.push(array.slice(i, i + size))
+    chunks.push(array.slice(i, i + size).filter((o) => o))
   }
   return chunks
 }
@@ -76,5 +76,7 @@ export const toShuffledPseudoRandom = <T>(arr: T[] = []): T[] => {
     const random = gen.next().value % i
     ;[copy[i], copy[random]] = [copy[random], copy[i]]
   }
-  return copy
+  return copy.filter((o) => o)
 }
+
+export const getPseudoRandomNumber = (limit: number) => gen.next().value % limit

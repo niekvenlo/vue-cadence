@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import {
   breakPinyinIntoSylables,
   getPseudoRandomElement,
+  getPseudoRandomNumber,
   getTones,
   toChunk,
   toShuffledPseudoRandom
@@ -29,26 +30,27 @@ fetch(`${root}/api/v1/getLaolun`, {})
           (hanzi, i) => [hanzi, segmentPinyinArr[i], segmentTonesArr[i]] as [string, string, string]
         )
     }
-    phrases.value = (json.phrases as { label: string; parts: string[][] }[]).map((phrase) => ({
+    const intermediateValue = json.phrases as { label: string; parts: string[][] }[]
+    const selectedPhrases = [
+      ...toShuffledPseudoRandom(
+        intermediateValue.filter((_, idx, arr) => getPseudoRandomNumber(arr.length - idx) < 10)
+      ),
+      ...toShuffledPseudoRandom(
+        intermediateValue.filter((_, idx, arr) => getPseudoRandomNumber(arr.length - idx) < 10)
+      )
+    ]
+    phrases.value = selectedPhrases.map((phrase) => ({
       ...phrase,
       pickOne: () => phrase.parts.map((part) => addPinyin(getPseudoRandomElement(part)))
     }))
   })
 
-const shuffledPhrases = computed(() => {
-  return toChunk(
-    [
-      ...toShuffledPseudoRandom(phrases.value),
-      ...toShuffledPseudoRandom(phrases.value),
-      ...toShuffledPseudoRandom(phrases.value)
-    ],
-    20
-  )
-})
+const shuffledPhrases = computed(() => toChunk(phrases.value || [], 20))
 </script>
 
 <template>
   <div class="laolun">
+    {{ phrases?.length }}
     <div class="page" :key="chunk[0]?.label" v-for="(chunk, index) of shuffledPhrases">
       <p class="page-number">
         <span>第 {{ index + 1 }} 页</span>
