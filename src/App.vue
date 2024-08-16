@@ -6,7 +6,11 @@ const onChromebook = import.meta.env.VITE_SERVER_ROOT !== undefined
   <nav class="app-navigation">
     <RouterLink to="/">Cadence</RouterLink>
     <p v-if="onChromebook">on chromebook</p>
-    <RouterLink to="/laolun">Laolun</RouterLink>
+    <div>
+
+      <RouterLink to="/laolun">Laolun</RouterLink>
+      <RouterLink to="/laolun/tones">/tones</RouterLink>
+    </div>
   </nav>
   <RouterView />
 </template>
