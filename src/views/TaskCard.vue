@@ -42,7 +42,7 @@ const { isSwiping, distanceX } = usePointerSwipe(el, {
     @dblclick="emit('completed')"
     :style="{
       opacity: isSwiping ? 1 : Math.max(0.1, 1 / Math.max(0, props.task.daysFromNow + 1)),
-      fontWeight: 700 - 100 * props.task.daysFromNow
+      fontWeight: 700 - (100 * Math.max(0, props.task.daysFromNow))
     }"
   >
     <div
