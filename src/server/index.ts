@@ -1,7 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 import { getTasks, setTasks } from './db-access'
-import { getLaolun, setLaolun } from './file.-access'
+import { getLaolun, setLaolun, uploadSingleRecording } from './file.-access'
 import { getCurrentEpochDay } from '../utils'
 
 const port = process.env.PORT || 3333
@@ -74,6 +74,10 @@ app.post('/api/v1/setLaolun', async ({ body }, res) => {
   const { pinyin, phrases } = body
   await setLaolun({ pinyin, phrases })
   res.json(await getLaolun())
+})
+
+app.post('/api/v1/uploadLaolunRecording', uploadSingleRecording, async ({ file }, res) => {
+  res.json({ message: 'File uploaded successfully', filename: file?.filename })
 })
 
 app.listen(port, () => {
