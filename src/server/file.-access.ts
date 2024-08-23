@@ -21,7 +21,11 @@ export const uploadSingleRecording = multer({
       cb(null, audioFolderPath)
     },
     filename: (req, file, cb) => {
-      cb(null, Date.now() + '-' + file.originalname + '.ogg')
+      // cb(null, Date.now() + '-' + file.originalname + '.ogg')
+      cb(
+        null,
+        `${Math.floor((Date.now() - 1724262698177) / 1000)}.${new Date().toLocaleDateString('en-CA')}.${new Date().toLocaleTimeString('nl')}.ogg`
+      )
     }
   })
 }).single('file') // 'file' must match Formdata.append('file', ...
