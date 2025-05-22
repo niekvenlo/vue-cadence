@@ -39,14 +39,14 @@ const { isSwiping, distanceX } = usePointerSwipe(el, {
 <template>
   <li
     className="task-list-card"
-    ref="el"
     @dblclick="emit('completed')"
     :style="{
       opacity: isSwiping ? 1 : Math.max(0.1, 1 / Math.max(0, props.task.daysFromNow + 1)),
-      fontWeight: 700 - 100 * props.task.daysFromNow
+      fontWeight: 700 - (100 * Math.max(0, props.task.daysFromNow))
     }"
   >
     <div
+      ref="el"
       class="task-list-card-inner"
       :class="{
         isSwiping,
