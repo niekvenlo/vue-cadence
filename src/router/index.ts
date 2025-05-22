@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Tasks from '@/views/TasksView.vue'
+import TasksNew from '@/views/TasksViewNew.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -8,6 +9,11 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: Tasks
+    },
+    {
+      path: '/tasks',
+      name: 'tasks',
+      component: TasksNew
     },
     {
       path: '/laolun',
