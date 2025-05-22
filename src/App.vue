@@ -21,11 +21,6 @@
   min-height: 100vh;
   height: 100vh;
 }
-
-.app-page {
-  flex-grow: 1;
-  overflow: scroll;
-}
 .app-navigation {
   min-height: 4em;
   display: flex;
@@ -53,8 +48,9 @@
     }
   }
 }
+
 .app-page {
-  height: max-content;
   flex-grow: 1;
+  overflow: scroll;
 }
 </style>

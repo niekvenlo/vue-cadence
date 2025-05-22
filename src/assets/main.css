@@ -2,5 +2,27 @@
 
 :root {
   font-size: 16px;
-  --background: red;
+  --light-color: 204deg 22% 85%;
+  --shadow-color: 204deg 22% 55%;
+  --shadow-elevation-low: 0.3px 0.5px 0.7px hsl(var(--shadow-color) / 0.3),
+    0.4px 0.8px 1px -1.1px hsl(var(--shadow-color) / 0.33),
+    1px 2px 2.6px -2.2px hsl(var(--shadow-color) / 0.36);
+  --shadow-elevation-medium: 0.3px 0.5px 0.7px hsl(var(--shadow-color) / 0.32),
+    0.9px 1.7px 2.3px -0.7px hsl(var(--shadow-color) / 0.34),
+    2.1px 4.2px 5.5px -1.5px hsl(var(--shadow-color) / 0.36),
+    5px 10px 13.1px -2.2px hsl(var(--shadow-color) / 0.38);
+  --shadow-elevation-high: 0.3px 0.5px 0.7px hsl(var(--shadow-color) / 0.29),
+    1.6px 3.2px 4.2px -0.3px hsl(var(--shadow-color) / 0.3),
+    2.9px 5.9px 7.7px -0.6px hsl(var(--shadow-color) / 0.32),
+    4.7px 9.5px 12.4px -0.9px hsl(var(--shadow-color) / 0.33),
+    7.4px 14.8px 19.4px -1.3px hsl(var(--shadow-color) / 0.34),
+    11.4px 22.8px 29.8px -1.6px hsl(var(--shadow-color) / 0.35),
+    17.1px 34.2px 44.7px -1.9px hsl(var(--shadow-color) / 0.36),
+    25px 50px 65.4px -2.2px hsl(var(--shadow-color) / 0.37);
+}
+
+@media screen and (max-width: 600px) {
+  .hide-on-small-screens {
+    display: none;
+  }
 }
