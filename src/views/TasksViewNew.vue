@@ -26,16 +26,18 @@ const markComplete = (taskId: string) => {
 .list {
   padding: 0;
   padding-top: 2px;
+  height: calc(100vh - 70px);
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
   .list-move,
   .list-enter-active,
   .list-leave-active {
-    transition: all 1s ease;
+    transition: all 20s ease-out;
   }
 
   .list-enter-from,
   .list-leave-to {
     opacity: 0;
-    transform: translateX(50px);
   }
 
   .list-leave-active {

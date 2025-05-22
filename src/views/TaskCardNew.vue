@@ -12,10 +12,12 @@ const isEditing = ref(false)
 
 <style>
 .task-list-card {
+  scroll-snap-align: start;
   display: grid;
   grid-template-columns: 2fr 1fr 1fr;
   gap: 1vw;
   padding-block: 0.5em;
+  padding-inline: 1em;
   font-family: sans-serif;
   background: hsl(var(--light-color));
   &:nth-child(2n) {
@@ -28,38 +30,109 @@ const isEditing = ref(false)
   &.isOverdue {
     color: rgb(144, 93, 0);
   }
+  &.isSelected {
+    background: hsl(var(--light-accent-color));
+    &:nth-child(2n) {
+      background: hsl(var(--lighter-accent-color));
+    }
+  }
   .title {
     font-size: 1.1em;
-    padding-inline: 1em;
   }
   .due,
   .every,
-  button {
+  .edit,
+  .complete {
     font-size: 0.9em;
   }
-  button {
+  .due,
+  .every {
+    text-align: right;
+  }
+  .edit,
+  .complete {
+    background-color: rgba(0, 0, 0, 0.1);
     text-transform: capitalize;
     padding: 0;
+    border-radius: 8px;
+    border-width: 0;
+    color: #333333;
+    cursor: pointer;
+    display: inline-block;
+    font-family: 'Haas Grot Text R Web', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 0.9em;
+    font-weight: 500;
+    margin: 0;
+    padding: 0 12px;
+    text-align: center;
+    transition: all 200ms;
+    vertical-align: baseline;
+    white-space: nowrap;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.2);
+    }
+  }
+  .edit-modal {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    gap: 1em;
+    justify-content: space-evenly;
+    label {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+  label {
+    font-size: 0.9em;
+    color: #222;
+    input {
+      font-size: 1.1em;
+      font-weight: 500;
+      padding: 0.2em 1em;
+      outline: none;
+      &:focus {
+        box-shadow: var(--shadow-elevation-outline);
+      }
+    }
   }
 }
 </style>
 
 <template>
   <li
-    className="task-list-card"
-    @dblclick="emit('completed')"
+    class="task-list-card"
+    :class="{ isSelected }"
     :style="{
-      opacity: Math.max(0.1, 1 / Math.max(0, props.task.daysFromNow + 1)),
+      opacity: Math.max(0.3, 1 / Math.max(0, props.task.daysFromNow + 1)),
       fontWeight: 700 - 100 * Math.max(0, props.task.daysFromNow)
     }"
   >
-    <ModalDialog :isOpen="isEditing" @didClose="isEditing = false"
-      ><div>This is the content</div>
+    <ModalDialog :isOpen="isEditing" @didClose="isEditing = false">
+      <template #title>Editing: {{ props.task.title }}</template>
+      <div class="edit-modal" v-if="isEditing">
+        <label>
+          Title
+          <input type="text" :value="props.task.title" />
+        </label>
+        <label>
+          Days from now
+          <input type="number" :value="props.task.daysFromNow" />
+        </label>
+        <label>
+          Cadence in days
+          <input type="number" :value="props.task.cadenceInDays" />
+        </label>
+      </div>
+      <template #buttons><button>Save</button> <button>Delete</button></template>
     </ModalDialog>
     <div class="title" @click="isSelected = !isSelected">{{ props.task.title }}</div>
     <template v-if="isSelected">
-      <button>complete</button>
-      <button @click="isEditing = true">edit</button>
+      <button class="complete" @click="emit('completed')">complete</button>
+      <button class="edit" @click="isEditing = true">edit</button>
     </template>
     <template v-else>
       <span class="due" v-if="props.task.daysFromNow < 0"

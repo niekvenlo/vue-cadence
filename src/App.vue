@@ -27,8 +27,8 @@
   flex-direction: row;
   justify-content: space-around;
   align-items: center;
-  border-bottom: 0.5px hsl(220deg 60% 50% / 0.7) solid;
-  box-shadow: 0.5px 1px 1px hsl(220deg 60% 50% / 0.7);
+  border-bottom: 0.5px hsl(var(--shadow-color)) solid;
+  box-shadow: 0.5px 1px 1px hsl(var(--shadow-color));
   a {
     color: rgb(59, 59, 55);
     font-family: 'Wotfard', sans-serif;
