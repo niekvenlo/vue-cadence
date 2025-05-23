@@ -12,9 +12,10 @@ const isEditing = ref(false)
 
 <style>
 .task-list-card {
+  height: 4em;
   scroll-snap-align: start;
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
+  grid-template-columns: 2fr 1fr;
   gap: 1vw;
   padding-block: 0.5em;
   padding-inline: 1em;
@@ -25,7 +26,7 @@ const isEditing = ref(false)
   }
 
   &.isDueToday {
-    color: rgb(50, 32, 0);
+    color: rgb(17, 87, 7);
   }
   &.isOverdue {
     color: rgb(144, 93, 0);
@@ -37,7 +38,24 @@ const isEditing = ref(false)
     }
   }
   .title {
+    display: flex;
+    align-items: center;
     font-size: 1.1em;
+  }
+  .complete-edit {
+    display: flex;
+    flex-direction: row;
+    gap: 1em;
+  }
+  .due-every {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    @media only screen and (min-width: 600px) {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2em;
+    }
   }
   .due,
   .every,
@@ -63,7 +81,7 @@ const isEditing = ref(false)
     font-size: 0.9em;
     font-weight: 500;
     margin: 0;
-    padding: 0 12px;
+    padding: 10px 12px;
     text-align: center;
     transition: all 200ms;
     vertical-align: baseline;
@@ -105,7 +123,11 @@ const isEditing = ref(false)
 <template>
   <li
     class="task-list-card"
-    :class="{ isSelected }"
+    :class="{
+      isSelected,
+      isOverdue: props.task.daysFromNow < 0,
+      isDueToday: props.task.daysFromNow === 0
+    }"
     :style="{
       opacity: Math.max(0.3, 1 / Math.max(0, props.task.daysFromNow + 1)),
       fontWeight: 700 - 100 * Math.max(0, props.task.daysFromNow)
@@ -131,20 +153,25 @@ const isEditing = ref(false)
     </ModalDialog>
     <div class="title" @click="isSelected = !isSelected">{{ props.task.title }}</div>
     <template v-if="isSelected">
-      <button class="complete" @click="emit('completed')">complete</button>
-      <button class="edit" @click="isEditing = true">edit</button>
+      <div class="complete-edit">
+        <button class="complete" @click="emit('completed')">complete</button>
+        <button class="edit" @click="isEditing = true">edit</button>
+      </div>
     </template>
     <template v-else>
-      <span class="due" v-if="props.task.daysFromNow < 0"
-        >{{ -props.task.daysFromNow }} days <span class="hide-on-small-screens">overdue</span>
-      </span>
-      <span class="due" v-else-if="props.task.daysFromNow === 0">due today</span>
-      <span class="due" v-else
-        >due in {{ props.task.daysFromNow }} <span class="hide-on-small-screens">days</span></span
-      >
-      <span class="every"
-        >every {{ props.task.cadenceInDays }} <span class="hide-on-small-screens">days</span></span
-      >
+      <div class="due-every" @click="isSelected = true">
+        <span class="due" v-if="props.task.daysFromNow < 0"
+          >{{ -props.task.daysFromNow }} days <span class="hide-on-small-screens">overdue</span>
+        </span>
+        <span class="due" v-else-if="props.task.daysFromNow === 0">due today</span>
+        <span class="due" v-else
+          >due in {{ props.task.daysFromNow }} <span class="hide-on-small-screens">days</span></span
+        >
+        <span class="every"
+          >every {{ props.task.cadenceInDays }}
+          <span class="hide-on-small-screens">days</span></span
+        >
+      </div>
     </template>
   </li>
 </template>
