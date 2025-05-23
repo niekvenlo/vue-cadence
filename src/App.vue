@@ -3,7 +3,6 @@
 <template>
   <div class="app-wrapper">
     <nav class="app-navigation">
-      <RouterLink to="/">Cadence</RouterLink>
       <RouterLink to="/tasks">Tasks</RouterLink>
       <RouterLink to="/laolun">Laolun</RouterLink>
       <RouterLink to="/laolun/tones">Tones</RouterLink>
