@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { onMounted, useTemplateRef, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 const props = defineProps<{
   isOpen: boolean
 }>()
-const dialog = useTemplateRef('dialog')
+const emit = defineEmits(['did-close'])
+const dialog = ref<HTMLDialogElement>()
 
 const handleModalOpenness = () => {
   if (props.isOpen) {
@@ -13,7 +14,6 @@ const handleModalOpenness = () => {
 
 onMounted(handleModalOpenness)
 watch(props, handleModalOpenness)
-const emit = defineEmits(['did-close'])
 </script>
 
 <style>
