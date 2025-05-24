@@ -12,7 +12,7 @@ const isEditing = ref(false)
 
 <style>
 .task-list-card {
-  height: 4em;
+  height: 4.5em;
   scroll-snap-align: start;
   display: grid;
   grid-template-columns: 2fr 1fr;

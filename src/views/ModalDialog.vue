@@ -1,48 +1,22 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
+import BasicDialog from '@/components/BasicDialog.vue'
 const props = defineProps<{
   isOpen: boolean
   title: string
 }>()
-const emit = defineEmits(['did-close'])
-const dialog = ref<HTMLDialogElement>()
-
-const handleModalOpenness = () => {
-  if (props.isOpen) {
-    dialog.value?.showModal()
-  }
-}
-
-onMounted(handleModalOpenness)
-watch(props, handleModalOpenness)
 </script>
 
 <style>
-dialog {
-  top: 50%;
-  left: 50%;
-  transform: translateX(-50%) translateY(-50%);
+.edit-dialog {
+  box-shadow: var(--shadow-elevation-high);
+
   min-width: min(100vw, 45ch);
   min-height: 15ch;
-  border: none;
-  box-shadow: var(--shadow-elevation-high);
-  font-family: sans-serif;
-  padding: 0;
-  position: relative;
-  transition: border-radius 2s;
-  @media only screen and (min-width: 600px) {
-    border-radius: 1em 0 1em 1em;
-  }
 }
 ::backdrop {
-  background: hsl(var(--light-color));
-  transition: all 5s;
-  opacity: 0.45;
-  @media only screen and (max-width: 600px) {
-    opacity: 0.85;
-  }
+  background-image: linear-gradient(100deg, black, white, black);
+  opacity: 0.3;
 }
-
 .modal-close-x {
   position: absolute;
   top: 0;
@@ -70,7 +44,7 @@ dialog {
   padding-inline: 1em;
   padding-top: 0.5em;
   font-size: 1.1em;
-  font-weight: 10%;
+  font-weight: 100;
   color: hsl(var(--dark-shadow-color));
 }
 .modal-contents {
@@ -113,7 +87,7 @@ dialog {
 </style>
 
 <template>
-  <dialog ref="dialog" @close="emit('did-close')" closedby="any">
+  <BasicDialog :title="props.title" :isOpen="isOpen" class="edit-dialog">
     <form method="dialog">
       <button class="modal-close-x">
         <svg
@@ -133,5 +107,5 @@ dialog {
     <div class="modal-title">{{ props.title }}</div>
     <div class="modal-contents"><slot name="default"></slot></div>
     <div class="modal-buttons"><slot name="buttons"></slot></div>
-  </dialog>
+  </BasicDialog>
 </template>
