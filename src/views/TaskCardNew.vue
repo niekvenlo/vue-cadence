@@ -133,8 +133,11 @@ const isEditing = ref(false)
       fontWeight: 700 - 100 * Math.max(0, props.task.daysFromNow)
     }"
   >
-    <ModalDialog :isOpen="isEditing" @didClose="isEditing = false">
-      <template #title>Editing: {{ props.task.title }}</template>
+    <ModalDialog
+      :title="`Editing: ${props.task.title}`"
+      :isOpen="isEditing"
+      @didClose="isEditing = false"
+    >
       <div class="edit-modal" v-if="isEditing">
         <label>
           Title

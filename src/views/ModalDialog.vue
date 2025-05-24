@@ -2,6 +2,7 @@
 import { onMounted, ref, watch } from 'vue'
 const props = defineProps<{
   isOpen: boolean
+  title: string
 }>()
 const emit = defineEmits(['did-close'])
 const dialog = ref<HTMLDialogElement>()
@@ -18,7 +19,7 @@ watch(props, handleModalOpenness)
 
 <style>
 dialog {
-  top: 40%;
+  top: 50%;
   left: 50%;
   transform: translateX(-50%) translateY(-50%);
   min-width: min(100vw, 45ch);
@@ -112,7 +113,7 @@ dialog {
 </style>
 
 <template>
-  <dialog ref="dialog" @close="emit('did-close')" closedby="any" @keypress.prevent="">
+  <dialog ref="dialog" @close="emit('did-close')" closedby="any">
     <form method="dialog">
       <button class="modal-close-x">
         <svg
@@ -129,7 +130,7 @@ dialog {
         </svg>
       </button>
     </form>
-    <div class="modal-title"><slot name="title">Modal</slot></div>
+    <div class="modal-title">{{ props.title }}</div>
     <div class="modal-contents"><slot name="default"></slot></div>
     <div class="modal-buttons"><slot name="buttons"></slot></div>
   </dialog>
