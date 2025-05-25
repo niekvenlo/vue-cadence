@@ -1,6 +1,12 @@
 import express from 'express'
 import cors from 'cors'
-import { checkConnectionsCache, getTasks, setTasks } from './db-access'
+import {
+  checkConnectionsCache,
+  getGetConnectionsSaveData,
+  getTasks,
+  setTasks,
+  updateGetConnectionsSaveData
+} from './db-access'
 import { getLaolun, setLaolun, uploadSingleRecording } from './file.-access'
 import { getNYConn } from './external-api-access'
 import { getCurrentEpochDay } from '../utils'
@@ -80,6 +86,14 @@ app.get('/api/v1/getNYConn', async ({ query }, res) => {
     getNYConn({ year, month, date })
   )
   res.json(entry)
+})
+
+app.get('/api/v1/getNYConnSave', async (_req, res) => {
+  res.json(await getGetConnectionsSaveData())
+})
+
+app.get('/api/v1/updateNYConnSave', async ({ query }, res) => {
+  res.json(await updateGetConnectionsSaveData(query))
 })
 
 app.post('/api/v1/setLaolun', async ({ body }, res) => {

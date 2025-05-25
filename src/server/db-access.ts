@@ -59,3 +59,12 @@ export const checkConnectionsCache = async (
     return entry
   }
 }
+
+export const getGetConnectionsSaveData = () => {
+  return db.get('connections-save-data')
+}
+
+export const updateGetConnectionsSaveData = (data: any) => {
+  const original = getGetConnectionsSaveData()
+  return db.set('connections-save-data', { ...original, ...data })
+}

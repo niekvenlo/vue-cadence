@@ -121,6 +121,9 @@ watch([year, month, date], getTiles, { immediate: true })
 .date-pick {
   display: flex;
   flex-direction: row;
+  select {
+    font-size: 2em;
+  }
 }
 </style>
 
@@ -162,8 +165,8 @@ watch([year, month, date], getTiles, { immediate: true })
         </option>
       </select>
       <select v-model="date">
-        <option v-for="month in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]" :key="month">
-          {{ month }}
+        <option v-for="date in Array.from({ length: 30 }).map((_, i) => i + 1)" :key="date">
+          {{ date }}
         </option>
       </select>
     </div>
