@@ -18,6 +18,7 @@ export type ConnectionsEntry = {
   createdAt: string
   board: { [key: string]: { level: number; members: string[] } }
   startingBoard: string[][]
+  lastUpdated: string
   error: string // bull
 }
 

@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import type { ConnectionsEntry } from '@/server/db-access'
 const root = import.meta.env.VITE_SERVER_ROOT || 'http://192.168.2.14:3333'
 
+const error = ref('')
 const data = ref<ConnectionsEntry | null>(null)
 const answers = computed(() => {
   const output: { name: string; members: string[]; m: string }[] = []
@@ -31,7 +32,6 @@ const toggleSelection = (tile: string) => {
 
 const trySelectedGroup = () => {
   const selected = selection.value.sort().join(', ')
-  console.log(answers.value)
   for (let i = 0; i < 4; i++) {
     if (answers.value[i].m === selected) {
       correct.value.push({ name: answers.value[i].name, tiles: [...selection.value] })
@@ -39,18 +39,10 @@ const trySelectedGroup = () => {
     }
   }
 }
-//   const f = Object.entries(data.value?.board ?? [])
-//   const answers = Object.values(data.value?.board ?? [])
-//     .map((answer) => answer.members)
-//     .sort()
-//     .join(',')
-// }
-// fetch(`${root}/api/v1/getNYConn?year=2023&month=10&date=3`, {})
-//   .then((response) => response.text())
-//   .then((json) => (entry.value = json))
-data.value = JSON.parse(
-  `{"id":"714","name":"Connections #714","createdAt":"2025-05-25T00:00:00+00:00","board":{"PLAYING CARDS":{"level":0,"members":["ACE","JACK","KING","QUEEN"]},"DOPPELGÄNGER":{"level":1,"members":["CLONE","DOUBLE","RINGER","TWIN"]},"EAR PIERCING SITES":{"level":2,"members":["CONCH","HELIX","LOBE","ROOK"]},"___ MAIL":{"level":3,"members":["CHAIN","ELECTRONIC","JUNK","SNAIL"]}},"startingBoard":[["DOUBLE","HELIX","SNAIL","KING"],["CONCH","QUEEN","TWIN","ROOK"],["ELECTRONIC","JUNK","ACE","RINGER"],["JACK","LOBE","CLONE","CHAIN"]],"lastUpdated":"2025-05-03T00:00:22+00:00"}`
-)
+fetch(`${root}/api/v1/getNYConn?year=2025&month=3&date=1`, {})
+  .then((response) => response.json())
+  .then((json) => (data.value = json))
+  .catch((err) => (error.value = err.message))
 </script>
 
 <style>
@@ -142,4 +134,10 @@ data.value = JSON.parse(
       Try selected group
     </button>
   </div>
+  <p>
+    {{ data?.name }}
+  </p>
+  <p>
+    {{ data?.lastUpdated }}
+  </p>
 </template>

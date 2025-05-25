@@ -75,9 +75,10 @@ app.get('/api/v1/getNYConn', async ({ query }, res) => {
   const year = query.year?.toString()
   const month = query.month?.toString()
   const date = query.date?.toString()
-  const entry = checkConnectionsCache(`${year}-${month}-${date}`, () =>
-    getNYConn({ year, month, date })
-  )
+  const entry = getNYConn({ year, month, date })
+  // checkConnectionsCache(`${year}-${month}-${date}`, () =>
+  //   getNYConn({ year, month, date })
+  // )
   res.json(entry)
 })
 
