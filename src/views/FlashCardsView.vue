@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue'
+import { ref } from 'vue'
 import { useKeys } from '@/composables/use-keys'
+import BasicDialog from '@/components/BasicDialog.vue'
+import { shuffleArray } from '../utils'
 
 const cards = ref<string[][] | null>(null)
 const error = ref<string>('')
@@ -30,8 +32,7 @@ const handlePaste = (event: ClipboardEvent) => {
     return
   }
   error.value = ''
-  cards.value = arrays
-  console.log(cards.value)
+  cards.value = shuffleArray(arrays)
   if (arrays[0].length < 2) {
     isOnlyOneColumn.value = true
     promptIdx.value = 0
@@ -60,17 +61,40 @@ const showNextCard = () => {
   background: black;
   color: white;
 }
-.input {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  flex-grow: 1;
-  textarea {
-    --nav-height: 64px;
+dialog.paste-modal {
+  box-shadow: var(--shadow-elevation-high);
+  .input-modal {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 3em;
+    label {
+      font-size: 1.5em;
+      text-align: center;
+      font-weight: 100;
+      font-family: sans-serif;
+      transition: font-size 0.3s;
+
+      textarea {
+        border-radius: 3em;
+        display: flex;
+        height: 6em;
+        width: 10em;
+        align-items: center;
+        justify-content: center;
+        color: transparent;
+      }
+    }
+    &:focus-within {
+      label {
+        font-size: 2em;
+      }
+    }
   }
 }
+
 table {
   width: 100%;
   border-collapse: collapse;
@@ -143,10 +167,10 @@ table td:nth-of-type(2n) {
 <template>
   <div class="flashcard" :class="{ fullHeight: isOnlyOneColumn || responseIdx !== null }">
     <div class="front">
-      {{ promptIdx === null ? null : cards?.[showCardIdx][promptIdx] }}
+      {{ promptIdx === null ? null : cards?.[showCardIdx][promptIdx || 0] }}
     </div>
     <div class="back" :class="{ isBackRevealed }" @click="isBackRevealed = true">
-      {{ responseIdx === null ? null : cards?.[showCardIdx][responseIdx] }}
+      {{ responseIdx === null ? null : cards?.[showCardIdx][responseIdx || 0] }}
     </div>
     <div class="buttons" @click="showNextCard">
       <button>Don't know</button>
@@ -157,11 +181,22 @@ table td:nth-of-type(2n) {
   </div>
 
   <div v-if="error" class="error">{{ error }}</div>
-  <div v-if="cards === null" class="input">
-    <p>Please paste your data into the field</p>
-    <textarea @paste="handlePaste" autofocus />
-  </div>
-  <div v-else>
+  <BasicDialog :isOpen="cards === null" class="paste-modal">
+    <div class="input-modal">
+      <label
+        >Please paste your data into the field (Ctrl + P / Cmd + P)
+
+        <textarea
+          @paste="handlePaste"
+          autofocus
+          autocorrect="off"
+          autocapitalize="off"
+          spellcheck="false"
+        />
+      </label>
+    </div>
+  </BasicDialog>
+  <div v-if="cards !== null">
     <p v-if="promptIdx === null">
       You need to choose a column to use as your flashcard 'front' side.
     </p>

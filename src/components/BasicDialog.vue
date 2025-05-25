@@ -2,7 +2,6 @@
 import { onMounted, onBeforeUpdate, ref } from 'vue'
 const props = defineProps<{
   isOpen: boolean
-  title: string
   class?: string
 }>()
 const emit = defineEmits<{
