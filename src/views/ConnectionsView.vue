@@ -1,9 +1,12 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import type { ConnectionsEntry } from '@/server/db-access'
 const root = import.meta.env.VITE_SERVER_ROOT || 'http://192.168.2.14:3333'
 
 const error = ref('')
+const year = ref(2024)
+const month = ref(10)
+const date = ref(2)
 const data = ref<ConnectionsEntry | null>(null)
 const answers = computed(() => {
   const output: { name: string; members: string[]; m: string }[] = []
@@ -39,13 +42,23 @@ const trySelectedGroup = () => {
     }
   }
 }
-fetch(`${root}/api/v1/getNYConn?year=2025&month=3&date=1`, {})
-  .then((response) => response.json())
-  .then((json) => (data.value = json))
-  .catch((err) => (error.value = err.message))
+
+const getTiles = () => {
+  fetch(`${root}/api/v1/getNYConn?year=${year.value}&month=${month.value}&date=${date.value}`, {})
+    .then((response) => response.json())
+    .then((json) => (data.value = json))
+    .catch((err) => (error.value = err.message))
+}
+watch([year, month, date], getTiles, { immediate: true })
 </script>
 
 <style>
+.conn-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 800px;
+}
 .correct-group {
   padding: 2em;
   p {
@@ -79,7 +92,7 @@ fetch(`${root}/api/v1/getNYConn?year=2025&month=3&date=1`, {})
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 20vw;
+  min-width: min(20vw, 9em);
   aspect-ratio: 1/1;
   border-radius: 15px;
   background-color: hsl(0, 0%, 93%);
@@ -105,39 +118,60 @@ fetch(`${root}/api/v1/getNYConn?year=2025&month=3&date=1`, {})
     opacity: 0.3;
   }
 }
+.date-pick {
+  display: flex;
+  flex-direction: row;
+}
 </style>
 
 <template>
-  <div class="correct-group" v-for="group in correct" :key="group.name">
-    <p>{{ group.name }}</p>
-    <div>
-      <span v-for="tile in group.tiles" :key="tile">{{ tile }}</span>
-    </div>
-  </div>
-  <div v-if="correct.length < 4">
-    <div class="board">
-      <div
-        class="tile"
-        :class="{
-          isLong: tile.length > 9,
-          isSelected: selection.includes(tile),
-          isCorrect: correct.some((c) => c.tiles.includes(tile))
-        }"
-        v-for="tile in data?.startingBoard.flat() ?? []"
-        :key="tile"
-        @click="toggleSelection(tile)"
-      >
-        <span>{{ tile }}</span>
+  <div class="conn-wrapper">
+    <div class="correct-group" v-for="group in correct" :key="group.name">
+      <p>{{ group.name }}</p>
+      <div>
+        <span v-for="tile in group.tiles" :key="tile">{{ tile }}</span>
       </div>
     </div>
-    <button class="try-button" @click="trySelectedGroup" :disabled="selection.length !== 4">
-      Try selected group
-    </button>
+    <div v-if="correct.length < 4">
+      <div class="board">
+        <div
+          class="tile"
+          :class="{
+            isLong: tile.length > 9,
+            isSelected: selection.includes(tile),
+            isCorrect: correct.some((c) => c.tiles.includes(tile))
+          }"
+          v-for="tile in data?.startingBoard?.flat() ?? []"
+          :key="tile"
+          @click="toggleSelection(tile)"
+        >
+          <span>{{ tile }}</span>
+        </div>
+      </div>
+      <button class="try-button" @click="trySelectedGroup" :disabled="selection.length !== 4">
+        Try selected group
+      </button>
+    </div>
+    <div class="date-pick">
+      <select v-model="year">
+        <option v-for="month in [2025, 2024]" :key="month">{{ month }}</option>
+      </select>
+      <select v-model="month">
+        <option v-for="month in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]" :key="month">
+          {{ month }}
+        </option>
+      </select>
+      <select v-model="date">
+        <option v-for="month in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]" :key="month">
+          {{ month }}
+        </option>
+      </select>
+    </div>
+    <p>
+      {{ data?.name }}
+    </p>
+    <p>
+      {{ data?.lastUpdated }}
+    </p>
   </div>
-  <p>
-    {{ data?.name }}
-  </p>
-  <p>
-    {{ data?.lastUpdated }}
-  </p>
 </template>
