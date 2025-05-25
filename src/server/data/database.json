@@ -1,66 +1,4 @@
 {
-    "shopping": [
-        {
-            "label": "🍞 Bread",
-            "timestamp": 1721723554945,
-            "isSelected": false
-        },
-        {
-            "label": "🥛 Milk",
-            "timestamp": 1719991373653,
-            "isSelected": false
-        },
-        {
-            "label": "🥚 Eggs",
-            "timestamp": 1719769426288,
-            "isSelected": false
-        },
-        {
-            "label": "🧻 Paper",
-            "timestamp": 1721114373552,
-            "isSelected": false
-        },
-        {
-            "label": "🍋 Fruits",
-            "timestamp": 1719995380205,
-            "isSelected": false
-        },
-        {
-            "label": "🥤 Coke",
-            "timestamp": 1721421012828,
-            "isSelected": true
-        },
-        {
-            "label": "🥞 Pancake stuff",
-            "timestamp": 1720166474698,
-            "isSelected": false
-        },
-        {
-            "label": "🍪 Snacks",
-            "timestamp": 1720795737052,
-            "isSelected": false
-        },
-        {
-            "label": "🏝️ Cat litter",
-            "timestamp": 1720694706867,
-            "isSelected": false
-        },
-        {
-            "label": "🍚 Amazing Oriental",
-            "timestamp": 1720078765520,
-            "isSelected": false
-        },
-        {
-            "label": "🧼 Misc. Cleaning",
-            "timestamp": 1719820009013,
-            "isSelected": false
-        },
-        {
-            "label": "🚪 Misc. Pantry",
-            "timestamp": 1721114375560,
-            "isSelected": false
-        }
-    ],
     "tasks": [
         {
             "title": "Clean kitchen cabinet doors",
@@ -426,5 +364,6 @@
             "cadenceInDays": 400,
             "daysFromNow": 308
         }
-    ]
+    ],
+    "connections-cache": []
 }

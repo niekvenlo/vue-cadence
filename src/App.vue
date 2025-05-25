@@ -4,9 +4,9 @@
   <div class="app-wrapper">
     <nav class="app-navigation">
       <RouterLink to="/tasks">tasks</RouterLink>
-      <RouterLink to="/flash">flash cards</RouterLink>
+      <RouterLink to="/flash">flash</RouterLink>
       <RouterLink to="/laolun">laolun</RouterLink>
-      <RouterLink to="/laolun/tones">tones</RouterLink>
+      <RouterLink to="/connections">conn</RouterLink>
     </nav>
     <div class="app-page">
       <RouterView />

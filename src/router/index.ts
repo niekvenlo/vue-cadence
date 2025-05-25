@@ -28,6 +28,11 @@ const router = createRouter({
       name: 'laolun/tones',
       component: () => import('@/views/LaolunTonesView.vue')
     },
+    {
+      path: '/connections',
+      name: 'connections',
+      component: () => import('@/views/ConnectionsView.vue')
+    },
     { path: '/:pathMatch(.*)*', name: 'NotFound', component: TasksNew }
   ]
 })

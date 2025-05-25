@@ -1,3 +1,5 @@
+import type { ConnectionsEntry } from './db-access'
+
 export const getNYConn = async ({
   year,
   month,
@@ -32,7 +34,7 @@ export const getNYConn = async ({
       }
     )
     const json = await response.json()
-    return json
+    return json as ConnectionsEntry
   } catch {
     return { error: 'Whoopsy: Could not fetch data' }
   }

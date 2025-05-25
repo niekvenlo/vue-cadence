@@ -87,11 +87,11 @@ dialog.paste-modal {
         color: transparent;
       }
     }
-    &:focus-within {
+    /* &:focus-within {
       label {
         font-size: 2em;
       }
-    }
+    } */
   }
 }
 
@@ -195,8 +195,9 @@ table td:nth-of-type(2n) {
         />
       </label>
     </div>
+    <button @click="cards = []">Dismiss</button>
   </BasicDialog>
-  <div v-if="cards !== null">
+  <div v-if="cards !== null && cards.length">
     <p v-if="promptIdx === null">
       You need to choose a column to use as your flashcard 'front' side.
     </p>

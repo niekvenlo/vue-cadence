@@ -12,6 +12,17 @@ export type Task = {
   type?: 'NUDGE' | 'STANDARD'
 }
 
+export type ConnectionsEntry = {
+  id: string
+  name: string
+  createdAt: string
+  board: { [key: string]: { level: number; members: string[] } }
+  startingBoard: string[][]
+  error: string // bull
+}
+
+export type ConnectionsCache = { [key: string]: {} }
+
 export const getTasks = () => {
   const tasks = db.get('tasks').sort(sortByNextDayAndCadence).map(addUtilityFields) as Task[]
   return tasks
@@ -27,3 +38,23 @@ export const getTasks = () => {
   }
 }
 export const setTasks = (tasks: Task[]) => db.set('tasks', tasks)
+
+export const getConnectionsCache = (): ConnectionsCache => {
+  return db.get('connections-cache')
+}
+export const checkConnectionsCache = async (
+  key: string,
+  adder: () => Promise<ConnectionsEntry | { error: string }>
+): Promise<ConnectionsEntry | { error: string }> => {
+  const cache = db.get('connections-cache')
+  if (cache[key]) {
+    return cache[key]
+  } else {
+    const entry = await adder()
+    if (entry.error === undefined) {
+      cache[key] = entry
+      db.set('connections-cache', cache)
+    }
+    return entry
+  }
+}
