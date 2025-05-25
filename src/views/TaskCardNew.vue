@@ -45,7 +45,8 @@ const isEditing = ref(false)
   .complete-edit {
     display: flex;
     flex-direction: row;
-    gap: 1em;
+    justify-content: end;
+    gap: 0.5em;
   }
   .due-every {
     display: flex;
@@ -71,7 +72,6 @@ const isEditing = ref(false)
   .complete {
     background-color: rgba(0, 0, 0, 0.1);
     text-transform: capitalize;
-    padding: 0;
     border-radius: 8px;
     border-width: 0;
     color: #333333;
@@ -81,7 +81,7 @@ const isEditing = ref(false)
     font-size: 0.9em;
     font-weight: 500;
     margin: 0;
-    padding: 10px 12px;
+    padding: 10px 20px;
     text-align: center;
     transition: all 200ms;
     vertical-align: baseline;
@@ -96,9 +96,11 @@ const isEditing = ref(false)
   .edit-modal {
     display: flex;
     flex-direction: column;
+    flex: 1 0 auto;
     height: 100%;
     gap: 1em;
     justify-content: space-evenly;
+    max-width: 400px;
     label {
       display: flex;
       flex-direction: column;
@@ -157,8 +159,8 @@ const isEditing = ref(false)
     <div class="title" @click="isSelected = !isSelected">{{ props.task.title }}</div>
     <template v-if="isSelected">
       <div class="complete-edit">
-        <button class="complete" @click="emit('completed')">complete</button>
         <button class="edit" @click="isEditing = true">edit</button>
+        <button class="complete" @click="emit('completed')">complete</button>
       </div>
     </template>
     <template v-else>

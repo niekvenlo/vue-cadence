@@ -10,7 +10,11 @@ const props = defineProps<{
 .edit-dialog {
   box-shadow: var(--shadow-elevation-high);
 
-  min-width: min(100vw, 45ch);
+  transition: min-width 0.2s;
+  min-width: 400px;
+  @media screen and (max-width: 500px) {
+    min-width: 100%;
+  }
   min-height: 15ch;
 }
 ::backdrop {
@@ -41,7 +45,8 @@ const props = defineProps<{
   }
 }
 .modal-title {
-  padding-inline: 1em;
+  padding-left: 1em;
+  padding-right: 2em;
   padding-top: 0.5em;
   font-size: 1.1em;
   font-weight: 100;
@@ -49,6 +54,9 @@ const props = defineProps<{
 }
 .modal-contents {
   padding: 2em 2em 2em 2em;
+  width: 100%;
+  justify-content: center;
+  display: flex;
 }
 .modal-buttons {
   display: flex;
