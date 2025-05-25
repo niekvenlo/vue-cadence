@@ -28,7 +28,7 @@ export const getNYConn = async ({
           'Sec-Fetch-Mode': 'cors',
           'Sec-Fetch-Site': 'same-origin'
         },
-        referrer: 'https://connectionsgame.org/?game=25-05-2025',
+        referrer: 'https://connectionsgame.org/?game=22-05-2025',
         method: 'GET',
         mode: 'cors'
       }

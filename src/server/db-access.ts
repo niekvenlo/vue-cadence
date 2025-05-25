@@ -54,7 +54,7 @@ export const checkConnectionsCache = async (
     const entry = await adder()
     if (entry.error === undefined) {
       cache[key] = entry
-      db.set('connections-cache', cache)
+      db.set('connections-cache', { ...cache })
     }
     return entry
   }

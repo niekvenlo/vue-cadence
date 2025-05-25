@@ -365,5 +365,149 @@
             "daysFromNow": 308
         }
     ],
-    "connections-cache": []
+    "connections-cache": {
+        "2024-10-1": {
+            "t": 333
+        },
+        "2024-10-2": {
+            "id": "479",
+            "name": "Connections #479",
+            "createdAt": "2024-10-02T00:00:00+00:00",
+            "board": {
+                "PUT ON THE LINE": {
+                    "level": 0,
+                    "members": [
+                        "BET",
+                        "CHANCE",
+                        "GAMBLE",
+                        "RISK"
+                    ]
+                },
+                "USE A KITCHEN KNIFE": {
+                    "level": 1,
+                    "members": [
+                        "CUBE",
+                        "DICE",
+                        "JULIENNE",
+                        "SLICE"
+                    ]
+                },
+                "ROBERT DE NIRO FILMS": {
+                    "level": 2,
+                    "members": [
+                        "CASINO",
+                        "HEAT",
+                        "JOKER",
+                        "TAXI DRIVER"
+                    ]
+                },
+                "FAMOUS FOR THEIR ARMS (OR LACK THEREOF)": {
+                    "level": 3,
+                    "members": [
+                        "OCTOPUS",
+                        "SHIVA",
+                        "SLOT MACHINE",
+                        "VENUS DE MILO"
+                    ]
+                }
+            },
+            "startingBoard": [
+                [
+                    "JOKER",
+                    "DICE",
+                    "CHANCE",
+                    "CASINO"
+                ],
+                [
+                    "OCTOPUS",
+                    "SLOT MACHINE",
+                    "CUBE",
+                    "GAMBLE"
+                ],
+                [
+                    "SLICE",
+                    "BET",
+                    "SHIVA",
+                    "JULIENNE"
+                ],
+                [
+                    "HEAT",
+                    "VENUS DE MILO",
+                    "RISK",
+                    "TAXI DRIVER"
+                ]
+            ],
+            "lastUpdated": "2024-09-11T08:33:55+00:00"
+        },
+        "2025-3-1": {
+            "id": "629",
+            "name": "Connections #629",
+            "createdAt": "2025-03-01T00:00:00+00:00",
+            "board": {
+                "ASSOCIATED WITH GOOD LUCK": {
+                    "level": 0,
+                    "members": [
+                        "HORSESHOE",
+                        "LADYBUG",
+                        "PENNY",
+                        "SHAMROCK"
+                    ]
+                },
+                "TO-BO- COMPOUND WORDS": {
+                    "level": 1,
+                    "members": [
+                        "TOLLBOOTH",
+                        "TOMBOY",
+                        "TOOLBOX",
+                        "TOWBOAT"
+                    ]
+                },
+                "BROADWAY MUSICALS, FAMILIARLY": {
+                    "level": 2,
+                    "members": [
+                        "FIDDLER",
+                        "MERRILY",
+                        "PHANTOM",
+                        "SUNSET"
+                    ]
+                },
+                "WORDS BEFORE “COWBOY” IN FILM AND MUSIC": {
+                    "level": 3,
+                    "members": [
+                        "DRUGSTORE",
+                        "MIDNIGHT",
+                        "RHINESTONE",
+                        "SPACE"
+                    ]
+                }
+            },
+            "startingBoard": [
+                [
+                    "PHANTOM",
+                    "TOLLBOOTH",
+                    "LADYBUG",
+                    "MIDNIGHT"
+                ],
+                [
+                    "SHAMROCK",
+                    "RHINESTONE",
+                    "SUNSET",
+                    "TOOLBOX"
+                ],
+                [
+                    "TOMBOY",
+                    "HORSESHOE",
+                    "FIDDLER",
+                    "DRUGSTORE"
+                ],
+                [
+                    "MERRILY",
+                    "TOWBOAT",
+                    "SPACE",
+                    "PENNY"
+                ]
+            ],
+            "lastUpdated": "2025-02-08T00:00:04+00:00"
+        }
+    }
 }
