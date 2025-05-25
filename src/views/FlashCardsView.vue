@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
+import { useKeys } from '@/composables/use-keys'
 
 const cards = ref<string[][] | null>(null)
 const error = ref<string>('')
@@ -7,6 +8,15 @@ const promptIdx = ref<number | null>(null)
 const responseIdx = ref<number | null>(null)
 const showCardIdx = ref(0)
 const isBackRevealed = ref(false)
+const isOnlyOneColumn = ref(false)
+
+useKeys((e: KeyboardEvent) => {
+  if (e.code !== 'Space') {
+    return
+  }
+  e.preventDefault()
+  isBackRevealed.value = e.type === 'keydown'
+})
 
 const handlePaste = (event: ClipboardEvent) => {
   const pastedText = event.clipboardData?.getData('text') // || window.clipboardData.getData("text");
@@ -21,7 +31,9 @@ const handlePaste = (event: ClipboardEvent) => {
   }
   error.value = ''
   cards.value = arrays
+  console.log(cards.value)
   if (arrays[0].length < 2) {
+    isOnlyOneColumn.value = true
     promptIdx.value = 0
   }
 }
@@ -105,6 +117,10 @@ table td:nth-of-type(2n) {
     align-items: center;
     justify-content: center;
     background: hsl(var(--color-angle), 100%, 41%);
+    color: transparent;
+    &.isBackRevealed {
+      color: currentColor;
+    }
   }
   .buttons {
     background: hsl(var(--color-angle), 100%, 16%);
@@ -125,14 +141,11 @@ table td:nth-of-type(2n) {
 </style>
 
 <template>
-  <div
-    class="flashcard"
-    :class="{ fullHeight: (cards?.[0].length ?? 0) < 2 || responseIdx !== null }"
-  >
+  <div class="flashcard" :class="{ fullHeight: isOnlyOneColumn || responseIdx !== null }">
     <div class="front">
       {{ promptIdx === null ? null : cards?.[showCardIdx][promptIdx] }}
     </div>
-    <div class="back" @click="isBackRevealed = true">
+    <div class="back" :class="{ isBackRevealed }" @click="isBackRevealed = true">
       {{ responseIdx === null ? null : cards?.[showCardIdx][responseIdx] }}
     </div>
     <div class="buttons" @click="showNextCard">
@@ -152,11 +165,11 @@ table td:nth-of-type(2n) {
     <p v-if="promptIdx === null">
       You need to choose a column to use as your flashcard 'front' side.
     </p>
-    <p v-else-if="responseIdx === null">
+    <p v-else-if="responseIdx === null && !isOnlyOneColumn">
       You may also choose a column to use as your flashcard 'back' side. (Optional)
     </p>
-    <table v-if="responseIdx === null">
-      <thead>
+    <table>
+      <thead v-if="responseIdx === null && !isOnlyOneColumn">
         <th v-for="(column, idx) in cards[0]" :key="column">
           <button
             v-if="promptIdx === null || responseIdx === null"
