@@ -3,9 +3,10 @@
 <template>
   <div class="app-wrapper">
     <nav class="app-navigation">
-      <RouterLink to="/tasks">Tasks</RouterLink>
-      <RouterLink to="/laolun">Laolun</RouterLink>
-      <RouterLink to="/laolun/tones">Tones</RouterLink>
+      <RouterLink to="/tasks">tasks</RouterLink>
+      <RouterLink to="/flash">flash cards</RouterLink>
+      <RouterLink to="/laolun">laolun</RouterLink>
+      <RouterLink to="/laolun/tones">tones</RouterLink>
     </nav>
     <div class="app-page">
       <RouterView />
@@ -34,6 +35,7 @@
     font-weight: 100;
     text-decoration: none;
     padding: 0.8em;
+    text-transform: capitalize;
     &.router-link-active {
       transition: transform 0.1s;
       font-family: Georgia, sans-serif;

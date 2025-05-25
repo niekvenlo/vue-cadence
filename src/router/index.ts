@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import TasksNew from '@/views/TasksViewNew.vue'
+import FlashCardsView from '@/views/FlashCardsView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -8,6 +9,11 @@ const router = createRouter({
       path: '/tasks',
       name: 'tasks',
       component: TasksNew
+    },
+    {
+      path: '/flash',
+      name: 'flash',
+      component: FlashCardsView
     },
     {
       path: '/laolun',
