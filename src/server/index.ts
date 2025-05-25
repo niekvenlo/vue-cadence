@@ -70,6 +70,28 @@ app.get('/api/v1/getLaolun', async (_req, res) => {
   res.json(await getLaolun())
 })
 
+app.get('/api/v1/getNYConn', async (_req, res) => {
+  fetch('https://connectionsgame.org/get/getdaily.php?game=25-05-2025', {
+    credentials: 'include',
+    headers: {
+      'User-Agent':
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:138.0) Gecko/20100101 Firefox/138.0',
+      Accept: '*/*',
+      'Accept-Language': 'en-US,en;q=0.5',
+      'Alt-Used': 'connectionsgame.org',
+      'Sec-Fetch-Dest': 'empty',
+      'Sec-Fetch-Mode': 'cors',
+      'Sec-Fetch-Site': 'same-origin'
+    },
+    referrer: 'https://connectionsgame.org/?game=25-05-2025',
+    method: 'GET',
+    mode: 'cors'
+  })
+    .then((response) => response.json())
+    .then((json) => res.json(json))
+    .catch((err) => console.log(err))
+})
+
 app.post('/api/v1/setLaolun', async ({ body }, res) => {
   const { pinyin, phrases } = body
   await setLaolun({ pinyin, phrases })
