@@ -32,7 +32,7 @@ const markComplete = (taskId: string) => {
   .list-move,
   .list-enter-active,
   .list-leave-active {
-    transition: all 2s ease-out;
+    transition: all 0.5s ease-out;
   }
 
   .list-enter-from,
