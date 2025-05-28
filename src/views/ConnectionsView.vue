@@ -62,17 +62,8 @@ const handleTileClick = (tile: string) => {
   if (foundIdx > getImmutableIdx()) {
     selectedTiles.value = selectedTiles.value.filter((t) => t !== tile)
   } else {
-    if (foundIdx < 4) {
-      return deselectGroup(0)
-    }
-    if (foundIdx < 8) {
-      return deselectGroup(1)
-    }
-    if (foundIdx < 12) {
-      return deselectGroup(2)
-    }
-
-    return deselectGroup(3)
+    const groupIdx = Math.floor(foundIdx / 4)
+    deselectGroup(groupIdx)
   }
 
   if (selectedTiles.value.slice(immutableIdx).includes(tile)) {
