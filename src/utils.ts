@@ -90,3 +90,7 @@ export const shuffleArray = (array: any[]) => {
   }
   return array
 }
+
+export const numIsBetween = (num: number, low: number, high: number) => {
+  return num >= low && num < high
+}

@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import type { ConnectionsEntry } from '@/server/db-access'
-import { toChunk } from '@/utils'
+import { numIsBetween, toChunk } from '@/utils'
+
+type Color = 'yellow' | 'green' | 'blue' | 'purple'
+
 const root = import.meta.env.VITE_SERVER_ROOT || 'http://192.168.2.14:3333'
 
 const error = ref('')
@@ -11,7 +14,8 @@ const date = ref(2)
 
 const data = ref<ConnectionsEntry | null>(null)
 
-const checkTiles = (fourTiles: string[]) => {
+// Given found tiles in random order, get the name of the category, if any?
+const getGroupName = (fourTiles: string[]) => {
   if (!data.value) {
     return
   }
@@ -24,67 +28,82 @@ const checkTiles = (fourTiles: string[]) => {
   return category
 }
 
-type Color = 'yellow' | 'green' | 'blue' | 'purple'
-
 const selectedTiles = ref<string[]>([])
 const lastDeselectedTiles = ref<string[]>([])
+const correctTiles = ref<string[]>([])
 
-const isGroup = (color: Color | 'any', tile: string) => {
-  if (color === 'any') {
-    return selectedTiles.value.slice(0, 16).includes(tile)
-  }
-  if (color === 'yellow') {
-    return selectedTiles.value.slice(0, 4).includes(tile)
-  }
-  if (color === 'green') {
-    return selectedTiles.value.slice(4, 8).includes(tile)
-  }
-  if (color === 'blue') {
-    return selectedTiles.value.slice(8, 12).includes(tile)
-  }
-  if (color === 'purple') {
-    return selectedTiles.value.slice(12, 16).includes(tile)
+const handleGroupCheckClick = (groupTiles: string[]) => {
+  const groupName = getGroupName(groupTiles)
+  if (!groupName) {
+    deselectTiles(groupTiles)
+  } else {
+    correctTiles.value.push(...groupTiles)
   }
 }
 
-const getImmutableIdx = () => Math.floor(selectedTiles.value.length / 4) * 4
+const isCorrectGroup = (tiles: string[]) => {
+  return correctTiles.value.includes(tiles[0])
+}
 
+const isGroup = (color: Color | 'any', tile: string) => {
+  const foundIdx = selectedTiles.value.findIndex((t) => t === tile)
+  if (color === 'any') {
+    return foundIdx !== -1
+  } else if (color === 'yellow') {
+    return numIsBetween(foundIdx, 0, 4)
+  } else if (color === 'green') {
+    return numIsBetween(foundIdx, 4, 8)
+  } else if (color === 'blue') {
+    return numIsBetween(foundIdx, 8, 12)
+  } else if (color === 'purple') {
+    return numIsBetween(foundIdx, 12, 16)
+  }
+}
+
+// If there are 6 tiles selected, the first four should be considered locked.
+const getLockedIdx = () => Math.floor(selectedTiles.value.length / 4) * 4
+
+// Deselect an intire group at once.
+const deselectTile = (tile: string) => {
+  selectedTiles.value = selectedTiles.value.filter((t) => t !== tile)
+  lastDeselectedTiles.value = [tile]
+}
+// Deselect an intire group at once.
+const deselectTiles = (tiles: string[]) => {
+  selectedTiles.value = selectedTiles.value.filter((t) => !tiles.includes(t))
+  lastDeselectedTiles.value = tiles
+}
+// Deselect an intire group at once.
 const deselectGroup = (n: number) => {
   lastDeselectedTiles.value = selectedTiles.value.splice(n * 4, 4)
 }
+
+// On tile click, we want to cleverly select or deselect tiles.
+// 1: If the tile is unselected, we want to select it
+// 2: If the tile is selected and `locked`, we want to deselect the group
+// it belongs to.
+// 3: If the tile is selected and unlocked, we want to deselect it.
 const handleTileClick = (tile: string) => {
   if (selectedTiles.value.includes(tile) === false) {
     selectedTiles.value.push(tile)
     return
   }
   const foundIdx = selectedTiles.value.findIndex((t) => t === tile)
-  const immutableIdx = Math.floor(selectedTiles.value.length / 4) * 4
-  if (foundIdx > getImmutableIdx()) {
-    selectedTiles.value = selectedTiles.value.filter((t) => t !== tile)
+  if (foundIdx > getLockedIdx()) {
+    deselectTile(tile)
   } else {
-    const groupIdx = Math.floor(foundIdx / 4)
-    deselectGroup(groupIdx)
-  }
-
-  if (selectedTiles.value.slice(immutableIdx).includes(tile)) {
-    selectedTiles.value = selectedTiles.value.filter((t) => t !== tile)
-  }
-}
-
-const showAnswers = ref<string[]>([])
-
-const checkGroupIdx = (idx: number) => {
-  const inThisGroup = selectedTiles.value.slice(idx * 4, idx * 4 + 4)
-  const groupName = checkTiles(inThisGroup)
-  if (groupName) {
-    if (showAnswers.value.includes(groupName) === false) {
-      showAnswers.value?.push(groupName)
+    if (!correctTiles.value.includes(selectedTiles.value[foundIdx])) {
+      const groupIdx = Math.floor(foundIdx / 4)
+      deselectGroup(groupIdx)
     }
-  } else {
-    deselectGroup(idx)
+  }
+
+  if (selectedTiles.value.slice(getLockedIdx()).includes(tile)) {
+    deselectTile(tile)
   }
 }
 
+// Fetch new data from the API.
 const getTiles = () => {
   fetch(`${root}/api/v1/getNYConn?year=${year.value}&month=${month.value}&date=${date.value}`, {})
     .then((response) => response.json())
@@ -95,13 +114,13 @@ watch([year, month, date], getTiles, { immediate: true })
 </script>
 
 <style>
-.conn-wrapper {
+.connections-wrapper {
   padding-top: 1em;
   display: flex;
   flex-direction: column;
   align-items: center;
   & > div {
-    max-width: 800px;
+    max-width: 600px;
     display: flex;
     flex-direction: column;
     gap: 1em;
@@ -123,10 +142,11 @@ watch([year, month, date], getTiles, { immediate: true })
   flex-direction: column;
   .selected-group {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: space-between;
-    padding: 0.3em;
-    div {
+    flex-wrap: wrap;
+    padding: 1.5em;
+    .tiles {
       display: flex;
       flex-direction: row;
       flex-wrap: wrap;
@@ -137,8 +157,15 @@ watch([year, month, date], getTiles, { immediate: true })
         text-wrap: none;
       }
     }
+    .groupName {
+      text-align: center;
+      font-weight: bold;
+      text-transform: lowercase;
+    }
     button {
-      padding: 1em 0.5em;
+      padding: 0.5em;
+      background: hsla(120deg 100% 100% / 40%);
+      border: none;
     }
   }
 }
@@ -176,44 +203,44 @@ watch([year, month, date], getTiles, { immediate: true })
   perspective-origin: 50% 0%;
   .tile {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: space-around;
     min-width: min(20vw, 9em);
     aspect-ratio: 1/1;
     border: 0.5px solid hsl(0, 0%, 83%);
     border-radius: 15px;
-    /* background-color: hsl(0, 0%, 93%); */
     transform: rotateX(25deg);
     transition: translate 0.1s;
     &:hover {
       translate: 0 2px;
     }
+    .label {
+      max-width: 10ch;
+    }
     &.isLong {
-      font-size: 70%;
-      span {
+      .label {
+        font-size: 70%;
         transform: rotate(-20deg);
       }
     }
     &.isSelected {
       translate: 0 -5px;
-      box-shadow: 0 0 5px 1px hsl(303, 100%, 76%);
+      box-shadow: 0 0 5px 1px hsl(333, 100%, 76%);
       z-index: 1;
     }
     &.isRecentlyDeselected {
       border-color: black;
     }
+    .highlight {
+      line-height: 0.5;
+      width: 1em;
+      aspect-ratio: 1/1;
+      border-radius: 50%;
+    }
   }
 }
 
-.try-button {
-  width: 100%;
-  padding: 2em;
-  background:
-  &:disabled {
-    background-color: hsl(0, 0%, 50%);
-    opacity: 0.3;
-  }
-}
 .date-pick {
   display: flex;
   flex-direction: row;
@@ -234,51 +261,59 @@ watch([year, month, date], getTiles, { immediate: true })
 .isPurpleGroup {
   background-color: hsl(276, 100%, 78%);
 }
+
+.isYellow {
+  background-color: hsl(60, 100%, 50%);
+}
+.isGreen {
+  background-color: hsl(125, 100%, 50%);
+}
+.isBlue {
+  background-color: hsl(204, 100%, 50%);
+}
+.isPurple {
+  background-color: hsl(276, 100%, 50%);
+}
 </style>
 
 <template>
-  <div class="conn-wrapper">
+  <div class="connections-wrapper">
     <div>
-      <div
-        class="show-answers"
-        :class="{
-          isYellowGroup: idx === 0,
-          isGreenGroup: idx === 1,
-          isBlueGroup: idx === 2,
-          isPurpleGroup: idx === 3
-        }"
-        v-for="(answer, idx) in showAnswers"
-        :key="answer"
-      >
-        <strong>{{ answer }}</strong>
-        <div>
-          <span v-for="tile in data?.board[answer].members" :key="tile">{{ tile }}</span>
-        </div>
-      </div>
       <div class="board">
         <button
           class="tile"
           :class="{
-            isLong: tile.length > 9,
+            isLong: tile.split(' ').every((w) => w.length > 9),
             isSelected: isGroup('any', tile),
-            isYellowGroup: isGroup('yellow', tile),
-            isGreenGroup: isGroup('green', tile),
-            isBlueGroup: isGroup('blue', tile),
-            isPurpleGroup: isGroup('purple', tile),
+            isYellowGroup: correctTiles.includes(tile) && isGroup('yellow', tile),
+            isGreenGroup: correctTiles.includes(tile) && isGroup('green', tile),
+            isBlueGroup: correctTiles.includes(tile) && isGroup('blue', tile),
+            isPurpleGroup: correctTiles.includes(tile) && isGroup('purple', tile),
             isRecentlyDeselected: lastDeselectedTiles.includes(tile)
           }"
           v-for="tile in data?.startingBoard?.flat() ?? []"
           :key="tile"
           @click="handleTileClick(tile)"
         >
-          <span>{{ tile }}</span>
+          <span> </span>
+          <span class="label">{{ tile }}</span>
+          <span
+            class="highlight"
+            :class="{
+              isYellow: isGroup('yellow', tile),
+              isGreen: isGroup('green', tile),
+              isBlue: isGroup('blue', tile),
+              isPurple: isGroup('purple', tile)
+            }"
+            >{{ isGroup('any', tile) ? ' ' : '' }}</span
+          >
         </button>
       </div>
 
       <div class="selected">
         <div
           class="selected-group"
-          v-for="(group, groupIdx) in toChunk(selectedTiles.slice(0, getImmutableIdx()), 4)"
+          v-for="(group, groupIdx) in toChunk(selectedTiles.slice(0, getLockedIdx()), 4)"
           :key="group.toString()"
           :class="{
             isYellowGroup: groupIdx === 0,
@@ -287,10 +322,11 @@ watch([year, month, date], getTiles, { immediate: true })
             isPurpleGroup: groupIdx === 3
           }"
         >
-          <div>
+          <div class="tiles">
             <span v-for="tile in group" :key="tile">{{ tile }}</span>
           </div>
-          <button @click="checkGroupIdx(groupIdx)">Check Group</button>
+          <span class="groupName" v-if="isCorrectGroup(group)">{{ getGroupName(group) }}</span>
+          <button v-else @click="handleGroupCheckClick(group)">Check Group</button>
         </div>
       </div>
 
