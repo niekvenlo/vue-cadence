@@ -9,8 +9,8 @@ const root = import.meta.env.VITE_SERVER_ROOT || 'http://192.168.2.14:3333'
 
 const error = ref('')
 const year = ref(2024)
-const month = ref(10)
-const date = ref(2)
+const month = ref(6)
+const date = ref(10)
 
 const data = ref<ConnectionsEntry | null>(null)
 
@@ -238,6 +238,11 @@ watch([year, month, date], getTiles, { immediate: true })
       aspect-ratio: 1/1;
       border-radius: 50%;
     }
+    &.isCorrect {
+      .highlight {
+        visibility: hidden;
+      }
+    }
   }
 }
 
@@ -285,6 +290,7 @@ watch([year, month, date], getTiles, { immediate: true })
           :class="{
             isLong: tile.split(' ').every((w) => w.length > 9),
             isSelected: isGroup('any', tile),
+            isCorrect: correctTiles.includes(tile),
             isYellowGroup: correctTiles.includes(tile) && isGroup('yellow', tile),
             isGreenGroup: correctTiles.includes(tile) && isGroup('green', tile),
             isBlueGroup: correctTiles.includes(tile) && isGroup('blue', tile),
