@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import TaskCardNew from './TaskCardNew.vue'
 import type { Task } from '@/server/db-access'
 
@@ -7,11 +7,18 @@ const root = import.meta.env.VITE_SERVER_ROOT || 'http://192.168.2.14:3333'
 
 const tasks = ref<undefined | Task[]>(undefined)
 
-fetch(`${root}/api/v1/getTasks`, {})
-  .then((response) => response.json())
-  .then((json) => {
-    tasks.value = json
-  })
+const getTasks = () => {
+  fetch(`${root}/api/v1/getTasks`, {})
+    .then((response) => response.json())
+    .then((json) => {
+      tasks.value = json
+    })
+}
+
+onMounted(() => {
+  getTasks()
+  setInterval(getTasks, 60 * 1000)
+})
 
 const markComplete = (taskId: string) => {
   fetch(`${root}/api/v1/completeTask?taskId=${taskId}`, {})

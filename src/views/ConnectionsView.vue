@@ -1,18 +1,20 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 import type { ConnectionsEntry } from '@/server/db-access'
 import { numIsBetween, toChunk } from '@/utils'
 
 type Color = 'yellow' | 'green' | 'blue' | 'purple'
 
 const root = import.meta.env.VITE_SERVER_ROOT || 'http://192.168.2.14:3333'
-const SEPARATOR = ', '
 const HYPHEN = '-'
 
 const error = ref('')
 const year = ref<number>()
 const month = ref<number>()
 const date = ref<number>()
+
+const interval = ref<NodeJS.Timeout>()
+const abort = ref()
 
 const data = ref<ConnectionsEntry | null>(null)
 
@@ -124,61 +126,62 @@ const getTiles = () => {
     .catch((err) => (error.value = err.message))
 }
 
-const patch = ({
-  sharedDate,
-  sharedTiles,
-  sharedCorrectTiles
-}: {
-  sharedDate: string
-  sharedTiles: string
-  sharedCorrectTiles: string
-}) => {
-  const [yyyy, mm, dd] = sharedDate.split(HYPHEN)
-  year.value = Number(yyyy)
-  month.value = Number(mm)
-  date.value = Number(dd)
-  console.log({ sharedTiles, sharedCorrectTiles })
-  selectedTiles.value = sharedTiles.split(SEPARATOR).filter((f) => f)
-  correctTiles.value = sharedCorrectTiles.split(SEPARATOR).filter((f) => f)
+const updateWithServerData = (data: { [key: string]: string } | null) => {
+  abort.value?.abort()
+  abort.value = new AbortController()
+  resetTimer()
+  const params = new URLSearchParams()
+  let url = `${root}/api/v1/getNYConnSave`
+  if (data) {
+    Object.keys(data).forEach((key) => {
+      params.append(key, data[key])
+    })
+    url = `${root}/api/v1/updateNYConnSave?${params}`
+  }
+  fetch(url, { signal: abort.value.signal })
+    .then((response) => response.json())
+    .then((json) => {
+      const { sharedDate, sharedTiles, sharedCorrectTiles } = json
+      const [yyyy, mm, dd] = sharedDate.split(HYPHEN)
+      year.value = Number(yyyy)
+      month.value = Number(mm)
+      date.value = Number(dd)
+      selectedTiles.value = sharedTiles.split(',').filter((f: string) => f)
+      correctTiles.value = sharedCorrectTiles.split(',').filter((f: string) => f)
+    })
+    .catch((err) => (error.value = err.message))
 }
 
-// Fetch shared game data from server.
-const getSharedData = () => {
-  fetch(`${root}/api/v1/getNYConnSave`, {})
-    .then((response) => response.json())
-    .then(patch)
+const resetTimer = () => {
+  clearTimeout(interval.value)
+  interval.value = setTimeout(() => updateWithServerData(null), 1800)
 }
-const sendSharedData = () => {
-  const params = new URLSearchParams()
-  if (year.value && selectedTiles.value) {
-    params.append('sharedDate', [year.value, month.value, date.value].join(HYPHEN))
-    params.append('sharedTiles', selectedTiles.value.join(SEPARATOR))
-    params.append('sharedCorrectTiles', correctTiles.value.join(SEPARATOR))
-  }
-  fetch(`${root}/api/v1/updateNYConnSave?${params}`, {})
-    .then((response) => response.json())
-    .then(patch)
-    .catch((err) => console.error(err))
-}
-onMounted(() => {
-  setInterval(() => {
-    getSharedData()
-  }, 500)
-})
+
 watch(
   [year, month, date],
-  () => {
-    selectedTiles.value = []
+  async () => {
+    if (!year.value || !month.value || !date.value) {
+      await updateWithServerData(null)
+      return
+    }
+    const leadingZero = (n: number) => n.toString().padStart(2, '0')
+    const dateString = [year.value, month.value, date.value].map((n) => leadingZero(n)).join(HYPHEN)
+    await updateWithServerData({ sharedDate: dateString, sharedTiles: '', sharedCorrectTiles: '' })
     lastDeselectedTiles.value = []
-    correctTiles.value = []
-    getSharedData()
     getTiles()
   },
   { immediate: true }
 )
 watch(
-  () => selectedTiles.value.join(SEPARATOR) + HYPHEN + correctTiles.value.join(SEPARATOR),
-  sendSharedData
+  () => selectedTiles.value.toString() + HYPHEN + correctTiles.value.toString(),
+  () => {
+    if (year.value && month.value && date.value) {
+      updateWithServerData({
+        sharedTiles: selectedTiles.value.toString(),
+        sharedCorrectTiles: correctTiles.value.toString()
+      })
+    }
+  }
 )
 </script>
 
@@ -277,17 +280,19 @@ watch(
     aspect-ratio: 1/1;
     border: 0.5px solid hsl(0, 0%, 83%);
     border-radius: 15px;
+    color: currentColor;
     transition: translate 0.1s;
     &:hover {
       translate: 0 2px;
     }
     .label {
-      max-width: 10ch;
+      max-width: 24vw;
+      font-size: min(1.1em, 3vw);
+      font-family: sans-serif;
     }
     &.isLong {
       .label {
-        font-size: 70%;
-        transform: rotate(-20deg);
+        transform: scale(90%) rotate(-20deg);
       }
     }
     &.isSelected {
