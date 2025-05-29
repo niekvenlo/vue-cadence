@@ -12,7 +12,9 @@ const isEditing = ref(false)
 
 <style>
 .task-list-card {
+  --background-color: hsl(var(--light-color));
   height: 4.5em;
+  background: var(--background-color);
   scroll-snap-align: start;
   display: grid;
   grid-template-columns: 2fr 1fr;
@@ -20,42 +22,53 @@ const isEditing = ref(false)
   padding-block: 0.5em;
   padding-inline: 1em;
   font-family: sans-serif;
-  background: hsl(var(--light-color));
   &:nth-child(2n) {
-    background: white;
+    --background-color: white;
   }
 
   &.isDueToday {
-    color: rgb(17, 87, 7);
+    /* color: hsl(113, 85%, 18%); */
+    background-image: linear-gradient(90deg, var(--background-color), hsl(161, 100%, 94%));
   }
   &.isOverdue {
-    color: rgb(144, 93, 0);
+    /* color: hsl(49, 100%, 22%); */
+    background-image: linear-gradient(90deg, var(--background-color), hsl(45, 100%, 94%));
   }
   &.isSelected {
-    background: hsl(var(--light-accent-color));
+    --background-color: hsl(var(--light-accent-color));
     &:nth-child(2n) {
-      background: hsl(var(--lighter-accent-color));
+      --background-color: hsl(var(--lighter-accent-color));
     }
   }
   .title {
     display: flex;
     align-items: center;
-    font-size: 1.1em;
+    font-size: 1.2em;
+    border: none;
+    background: unset;
+    color: currentColor;
   }
   .complete-edit {
     display: flex;
     flex-direction: row;
     justify-content: end;
     gap: 0.5em;
+    margin-left: -3em;
+    backdrop-filter: blur(2px);
   }
   .due-every {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    font-weight: 400;
+    border: none;
+    background: unset;
+    color: currentColor;
     @media only screen and (min-width: 600px) {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 2em;
+      align-items: center;
     }
   }
   .due,
@@ -156,7 +169,7 @@ const isEditing = ref(false)
       </div>
       <template #buttons><button>Save</button> <button>Delete</button></template>
     </ModalDialog>
-    <div class="title" @click="isSelected = !isSelected">{{ props.task.title }}</div>
+    <button class="title" @click="isSelected = !isSelected">{{ props.task.title }}</button>
     <template v-if="isSelected">
       <div class="complete-edit">
         <button class="edit" @click="isEditing = true">edit</button>
@@ -164,7 +177,7 @@ const isEditing = ref(false)
       </div>
     </template>
     <template v-else>
-      <div class="due-every" @click="isSelected = true">
+      <button class="due-every" @click="isSelected = true" tabindex="-1">
         <span class="due" v-if="props.task.daysFromNow < 0"
           >{{ -props.task.daysFromNow }} days <span class="hide-on-small-screens">overdue</span>
         </span>
@@ -176,7 +189,7 @@ const isEditing = ref(false)
           >every {{ props.task.cadenceInDays }}
           <span class="hide-on-small-screens">days</span></span
         >
-      </div>
+      </button>
     </template>
   </li>
 </template>
