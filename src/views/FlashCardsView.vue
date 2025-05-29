@@ -13,11 +13,20 @@ const isBackRevealed = ref(false)
 const isOnlyOneColumn = ref(false)
 
 useKeys((e: KeyboardEvent) => {
-  if (e.code !== 'Space') {
+  if (e.code !== 'Space' && e.code !== 'ArrowRight' && e.code !== 'ArrowLeft') {
     return
   }
   e.preventDefault()
-  isBackRevealed.value = e.type === 'keydown'
+  if (e.code === 'Space') {
+    isBackRevealed.value = e.type === 'keydown'
+  } else if (e.type === 'keyup') {
+    if (e.code === 'ArrowRight') {
+      showNextCard()
+    }
+    if (e.code === 'ArrowLeft') {
+      showPreviousCard()
+    }
+  }
 })
 
 const handlePaste = (event: ClipboardEvent) => {
@@ -49,9 +58,15 @@ const handleColumnSelection = (idx: number) => {
   }
 }
 
+const showPreviousCard = () => {
+  showCardIdx.value =
+    (showCardIdx.value + (cards.value?.length ?? 0) - 1) % (cards.value?.length ?? 0)
+  isBackRevealed.value = false // useless
+}
+
 const showNextCard = () => {
   showCardIdx.value = (showCardIdx.value + 1) % (cards.value?.length ?? 0)
-  isBackRevealed.value = false
+  isBackRevealed.value = false // useless
 }
 </script>
 
