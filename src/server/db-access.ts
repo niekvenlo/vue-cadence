@@ -66,5 +66,7 @@ export const getGetConnectionsSaveData = () => {
 
 export const updateGetConnectionsSaveData = (data: any) => {
   const original = getGetConnectionsSaveData()
-  return db.set('connections-save-data', { ...original, ...data })
+  const patch = { ...original, ...data }
+  db.set('connections-save-data', patch)
+  return patch
 }

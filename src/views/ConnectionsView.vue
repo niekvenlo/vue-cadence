@@ -1,16 +1,18 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import type { ConnectionsEntry } from '@/server/db-access'
 import { numIsBetween, toChunk } from '@/utils'
 
 type Color = 'yellow' | 'green' | 'blue' | 'purple'
 
 const root = import.meta.env.VITE_SERVER_ROOT || 'http://192.168.2.14:3333'
+const SEPARATOR = ', '
+const HYPHEN = '-'
 
 const error = ref('')
-const year = ref(2024)
-const month = ref(6)
-const date = ref(10)
+const year = ref<number>()
+const month = ref<number>()
+const date = ref<number>()
 
 const data = ref<ConnectionsEntry | null>(null)
 
@@ -105,12 +107,79 @@ const handleTileClick = (tile: string) => {
 
 // Fetch new data from the API.
 const getTiles = () => {
-  fetch(`${root}/api/v1/getNYConn?year=${year.value}&month=${month.value}&date=${date.value}`, {})
+  if (typeof year.value !== 'number') {
+    return
+  }
+  const params = new URLSearchParams()
+  if (year.value && month.value && date.value) {
+    params.append('year', year.value.toString())
+    params.append('month', month.value.toString())
+    params.append('date', date.value.toString())
+  }
+  fetch(`${root}/api/v1/getNYConn?${params}`, {})
     .then((response) => response.json())
-    .then((json) => (data.value = json))
+    .then((json) => {
+      data.value = json
+    })
     .catch((err) => (error.value = err.message))
 }
-watch([year, month, date], getTiles, { immediate: true })
+
+const patch = ({
+  sharedDate,
+  sharedTiles,
+  sharedCorrectTiles
+}: {
+  sharedDate: string
+  sharedTiles: string
+  sharedCorrectTiles: string
+}) => {
+  const [yyyy, mm, dd] = sharedDate.split(HYPHEN)
+  year.value = Number(yyyy)
+  month.value = Number(mm)
+  date.value = Number(dd)
+  console.log({ sharedTiles, sharedCorrectTiles })
+  selectedTiles.value = sharedTiles.split(SEPARATOR).filter((f) => f)
+  correctTiles.value = sharedCorrectTiles.split(SEPARATOR).filter((f) => f)
+}
+
+// Fetch shared game data from server.
+const getSharedData = () => {
+  fetch(`${root}/api/v1/getNYConnSave`, {})
+    .then((response) => response.json())
+    .then(patch)
+}
+const sendSharedData = () => {
+  const params = new URLSearchParams()
+  if (year.value && selectedTiles.value) {
+    params.append('sharedDate', [year.value, month.value, date.value].join(HYPHEN))
+    params.append('sharedTiles', selectedTiles.value.join(SEPARATOR))
+    params.append('sharedCorrectTiles', correctTiles.value.join(SEPARATOR))
+  }
+  fetch(`${root}/api/v1/updateNYConnSave?${params}`, {})
+    .then((response) => response.json())
+    .then(patch)
+    .catch((err) => console.error(err))
+}
+onMounted(() => {
+  setInterval(() => {
+    getSharedData()
+  }, 500)
+})
+watch(
+  [year, month, date],
+  () => {
+    selectedTiles.value = []
+    lastDeselectedTiles.value = []
+    correctTiles.value = []
+    getSharedData()
+    getTiles()
+  },
+  { immediate: true }
+)
+watch(
+  () => selectedTiles.value.join(SEPARATOR) + HYPHEN + correctTiles.value.join(SEPARATOR),
+  sendSharedData
+)
 </script>
 
 <style>
@@ -199,8 +268,6 @@ watch([year, month, date], getTiles, { immediate: true })
   grid-template-rows: repeat(4, 1fr);
   gap: 0.5em;
   padding: 0.5em;
-  perspective: 1000px;
-  perspective-origin: 50% 0%;
   .tile {
     display: flex;
     flex-direction: column;
@@ -210,7 +277,6 @@ watch([year, month, date], getTiles, { immediate: true })
     aspect-ratio: 1/1;
     border: 0.5px solid hsl(0, 0%, 83%);
     border-radius: 15px;
-    transform: rotateX(25deg);
     transition: translate 0.1s;
     &:hover {
       translate: 0 2px;
@@ -346,7 +412,7 @@ watch([year, month, date], getTiles, { immediate: true })
           </option>
         </select>
         <select v-model="date">
-          <option v-for="date in Array.from({ length: 30 }).map((_, i) => i + 1)" :key="date">
+          <option v-for="date in Array.from({ length: 31 }).map((_, i) => i + 1)" :key="date">
             {{ date }}
           </option>
         </select>
