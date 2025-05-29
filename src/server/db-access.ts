@@ -1,7 +1,7 @@
 import { getCurrentEpochDay } from '../utils'
 import JSONdb from 'simple-json-db'
 
-const db = new JSONdb('src/server/data/database.json')
+const db = new JSONdb('src/server/data/database.json', { asyncWrite: true })
 
 export type Task = {
   cadenceInDays: number
