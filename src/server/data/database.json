@@ -22,13 +22,6 @@
       "daysFromNow": -3
     },
     {
-      "title": "Clean out Eufy",
-      "cadenceInDays": 1,
-      "nextEpochDay": 20238,
-      "id": "ba96235d-7601-4d56-914e-484bc2904c30",
-      "daysFromNow": 0
-    },
-    {
       "title": "Clean stove hood",
       "cadenceInDays": 15,
       "id": "25679d98-79d7-4501-9d9f-48df0311c2c8",
@@ -48,6 +41,13 @@
       "nextEpochDay": 20238,
       "id": "5010f584-e0c1-4192-82ff-cb93986caf53",
       "daysFromNow": 1
+    },
+    {
+      "title": "Clean out Eufy",
+      "cadenceInDays": 1,
+      "nextEpochDay": 20238,
+      "id": "ba96235d-7601-4d56-914e-484bc2904c30",
+      "daysFromNow": 0
     },
     {
       "id": "58c36c00-58df-4130-907f-f7869b701312",
@@ -1085,10 +1085,166 @@
         ["SORT", "WING", "COOL", "IDEA"]
       ],
       "lastUpdated": "2024-08-29T07:58:11+00:00"
+    },
+    "2024-6-3": {
+      "id": "358",
+      "name": "Connections #358",
+      "createdAt": "2024-06-03T00:00:00+00:00",
+      "board": {
+        "REMOVE, AS BODY HAIR": {
+          "level": 0,
+          "members": ["LASER", "PLUCK", "THREAD", "WAX"]
+        },
+        "TWIST AROUND": {
+          "level": 1,
+          "members": ["COIL", "SPOOL", "WIND", "WRAP"]
+        },
+        "THINGS MADE OF CELLS": {
+          "level": 2,
+          "members": ["HONEYCOMB", "ORGANISM", "SOLAR PANEL", "SPREADSHEET"]
+        },
+        "B-___": {
+          "level": 3,
+          "members": ["BALL", "MOVIE", "SCHOOL", "VITAMIN"]
+        }
+      },
+      "startingBoard": [
+        ["SCHOOL", "SPOOL", "WAX", "SOLAR PANEL"],
+        ["MOVIE", "THREAD", "HONEYCOMB", "WIND"],
+        ["LASER", "BALL", "WRAP", "VITAMIN"],
+        ["COIL", "SPREADSHEET", "ORGANISM", "PLUCK"]
+      ],
+      "lastUpdated": "2024-08-29T07:58:11+00:00"
+    },
+    "2024-6-1": {
+      "id": "356",
+      "name": "Connections #356",
+      "createdAt": "2024-06-01T00:00:00+00:00",
+      "board": {
+        "“DON’T DELAY!”": {
+          "level": 0,
+          "members": ["HURRY", "NOW", "PRONTO", "STAT"]
+        },
+        "OCEAN PHENOMENA": {
+          "level": 1,
+          "members": ["CURRENT", "DRIFT", "TIDE", "WAVE"]
+        },
+        "DUMBBELL EXERCISES": {
+          "level": 2,
+          "members": ["CURL", "FLY", "PRESS", "ROW"]
+        },
+        "PHILOSOPHER HOMOPHONES": {
+          "level": 3,
+          "members": ["LOCK", "MARKS", "PANE", "RUSTLE"]
+        }
+      },
+      "startingBoard": [
+        ["PRESS", "LOCK", "HURRY", "WAVE"],
+        ["PANE", "FLY", "CURRENT", "CURL"],
+        ["NOW", "ROW", "STAT", "MARKS"],
+        ["DRIFT", "PRONTO", "RUSTLE", "TIDE"]
+      ],
+      "lastUpdated": "2024-08-29T07:58:10+00:00"
+    },
+    "2024-6-15": {
+      "id": "370",
+      "name": "Connections #370",
+      "createdAt": "2024-06-15T00:00:00+00:00",
+      "board": {
+        "BASKETBALL SHOTS": {
+          "level": 0,
+          "members": ["DUNK", "FLOATER", "LAYUP", "THREE"]
+        },
+        "FISH": {
+          "level": 1,
+          "members": ["PERCH", "PIKE", "SKATE", "SOLE"]
+        },
+        "QUALITIES OF THICK HAIR": {
+          "level": 2,
+          "members": ["BODY", "BOUNCE", "LIFT", "VOLUME"]
+        },
+        "___ CHILD": {
+          "level": 3,
+          "members": ["FLOWER", "ONLY", "POSTER", "PROBLEM"]
+        }
+      },
+      "startingBoard": [
+        ["SOLE", "FLOWER", "FLOATER", "BOUNCE"],
+        ["THREE", "BODY", "PROBLEM", "POSTER"],
+        ["LIFT", "DUNK", "ONLY", "SKATE"],
+        ["PERCH", "VOLUME", "LAYUP", "PIKE"]
+      ],
+      "lastUpdated": "2024-08-29T07:58:15+00:00"
+    },
+    "2024-6-12": {
+      "id": "367",
+      "name": "Connections #367",
+      "createdAt": "2024-06-12T00:00:00+00:00",
+      "board": {
+        "PLACES IN NEW YORK CITY": {
+          "level": 0,
+          "members": ["CHINATOWN", "DUMBO", "MANHATTAN", "WALL STREET"]
+        },
+        "RHYMING TITLES": {
+          "level": 1,
+          "members": ["BE KIND REWIND", "E.T.", "FRIGHT NIGHT", "KILL BILL"]
+        },
+        "ENDING IN UNITS OF MEASUREMENT": {
+          "level": 2,
+          "members": [
+            "HEDWIG AND THE ANGRY INCH",
+            "MY LEFT FOOT",
+            "THE GREEN MILE",
+            "THE LONGEST YARD"
+          ]
+        },
+        "STARTING WITH ANIMALS": {
+          "level": 3,
+          "members": ["BEETLEJUICE", "FOXY BROWN", "DOGMA", "OCTOPUSSY"]
+        }
+      },
+      "startingBoard": [
+        ["DUMBO", "E.T.", "MY LEFT FOOT", "DOGMA"],
+        ["THE GREEN MILE", "BEETLEJUICE", "WALL STREET", "KILL BILL"],
+        ["CHINATOWN", "FRIGHT NIGHT", "FOXY BROWN", "HEDWIG AND THE ANGRY INCH"],
+        ["OCTOPUSSY", "THE LONGEST YARD", "BE KIND REWIND", "MANHATTAN"]
+      ],
+      "lastUpdated": "2024-08-29T07:58:14+00:00"
+    },
+    "2024-6-13": {
+      "id": "368",
+      "name": "Connections #368",
+      "createdAt": "2024-06-13T00:00:00+00:00",
+      "board": {
+        "ENJOY": {
+          "level": 0,
+          "members": ["APPRECIATE", "DIG", "FANCY", "LIKE"]
+        },
+        "BLOCKBUSTER": {
+          "level": 1,
+          "members": ["HIT", "SENSATION", "SMASH", "SUCCESS"]
+        },
+        "CAMPAIGN SWAG": {
+          "level": 2,
+          "members": ["BUTTON", "HAT", "SHIRT", "STICKER"]
+        },
+        "WORDS AFTER “COPY”": {
+          "level": 3,
+          "members": ["CAT", "EDITOR", "PASTE", "THAT"]
+        }
+      },
+      "startingBoard": [
+        ["SMASH", "THAT", "LIKE", "BUTTON"],
+        ["FANCY", "CAT", "SHIRT", "SUCCESS"],
+        ["EDITOR", "HAT", "HIT", "DIG"],
+        ["APPRECIATE", "STICKER", "PASTE", "SENSATION"]
+      ],
+      "lastUpdated": "2024-08-29T07:58:14+00:00"
     }
   },
   "connections-save-data": {
-    "sharedDate": "2025-06-02",
-    "sharedTiles": []
+    "sharedDate": "2024-06-02",
+    "sharedTiles": "",
+    "sharedCorrectTiles": ""
   }
 }
