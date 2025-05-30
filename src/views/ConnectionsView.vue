@@ -144,9 +144,7 @@ const updateWithServerData = (data: { [key: string]: string } | null) => {
   fetch(url, { signal: abort.value.signal })
     .then((response) => response.json())
     .then((json) => {
-      if (json.error) {
-        error.value = json.error
-      }
+      error.value = json.error
       const { sharedDate, sharedTiles, sharedCorrectTiles } = json
       const [yyyy, mm, dd] = sharedDate.split(HYPHEN)
       year.value = Number(yyyy)
