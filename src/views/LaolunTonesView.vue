@@ -2,7 +2,8 @@
 import { computed, ref } from 'vue'
 import { breakPinyinIntoSylables, getTones } from '@/utils'
 
-const root = import.meta.env.VITE_SERVER_ROOT || 'http://192.168.2.14:3333'
+const root =
+  import.meta.env.VITE_SERVER_ROOT || 'http://62.131.229.29' || 'http://192.168.2.14:3333'
 
 type Phrase = {
   label: string
