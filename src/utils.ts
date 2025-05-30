@@ -94,3 +94,5 @@ export const shuffleArray = (array: any[]) => {
 export const numIsBetween = (num: number, low: number, high: number) => {
   return num >= low && num < high
 }
+
+export const twoDigitString = (n: number | string) => n.toString().padStart(2, '0')

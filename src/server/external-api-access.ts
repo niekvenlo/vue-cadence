@@ -1,3 +1,4 @@
+import { twoDigitString } from '../utils'
 import type { ConnectionsEntry } from './db-access'
 
 export const getNYConn = async ({
@@ -15,7 +16,7 @@ export const getNYConn = async ({
     }
     // query param `game` should be in the American DD-MM-YYYY format
     const response = await fetch(
-      `https://connectionsgame.org/get/getdaily.php?game=${date}-${month}-${year}`,
+      `https://connectionsgame.org/get/getdaily.php?game=${twoDigitString(date)}-${twoDigitString(month)}-${twoDigitString(year)}`,
       {
         credentials: 'include',
         headers: {
@@ -28,14 +29,14 @@ export const getNYConn = async ({
           'Sec-Fetch-Mode': 'cors',
           'Sec-Fetch-Site': 'same-origin'
         },
-        referrer: 'https://connectionsgame.org/?game=22-05-2025',
+        referrer: 'https://connectionsgame.org/?game=30-05-2025',
         method: 'GET',
         mode: 'cors'
       }
     )
     const json = await response.json()
     return json as ConnectionsEntry
-  } catch {
-    return { error: 'Whoopsy: Could not fetch data' }
+  } catch (err) {
+    return { error: 'Whoopsy: Could not fetch data: ' + err?.message }
   }
 }

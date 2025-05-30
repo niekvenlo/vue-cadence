@@ -121,6 +121,9 @@ const getTiles = () => {
   fetch(`${root}/api/v1/getNYConn?${params}`, {})
     .then((response) => response.json())
     .then((json) => {
+      if (json.error) {
+        error.value = json.error
+      }
       data.value = json
     })
     .catch((err) => (error.value = err.message))
@@ -141,6 +144,9 @@ const updateWithServerData = (data: { [key: string]: string } | null) => {
   fetch(url, { signal: abort.value.signal })
     .then((response) => response.json())
     .then((json) => {
+      if (json.error) {
+        error.value = json.error
+      }
       const { sharedDate, sharedTiles, sharedCorrectTiles } = json
       const [yyyy, mm, dd] = sharedDate.split(HYPHEN)
       year.value = Number(yyyy)
@@ -355,6 +361,7 @@ watch(
 <template>
   <div class="connections-wrapper">
     <div>
+      <h1 v-if="error">{{ error }}</h1>
       <div class="board">
         <button
           class="tile"

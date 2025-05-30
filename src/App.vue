@@ -4,7 +4,7 @@
   <div class="app-wrapper">
     <nav class="app-navigation">
       <RouterLink to="/tasks">tasks</RouterLink>
-      <RouterLink to="/flash">flash</RouterLink>
+      <RouterLink to="/flash" class="hide-on-small-screens">flash</RouterLink>
       <RouterLink to="/laolun">laolun</RouterLink>
       <RouterLink to="/connections">conn</RouterLink>
     </nav>
