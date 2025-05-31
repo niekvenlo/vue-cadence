@@ -1,5 +1,6 @@
 import express from 'express'
 import cors from 'cors'
+import cookieparser from 'cookie-parser'
 import {
   checkConnectionsCache,
   getGetConnectionsSaveData,
@@ -13,9 +14,13 @@ import { getCurrentEpochDay } from '../utils'
 
 const port = process.env.PORT || 3333
 
+const uuid = '228efd89-593e-4d74-b56c-2509fd541b6b';//crypto.randomUUID();
+
 const app = express()
+app.use(cookieparser())
 app.use(cors())
 app.use(express.json())
+
 
 app.get('/api/v1/getTasks', (_req, res) => {
   res.json(getTasks())
@@ -50,7 +55,11 @@ app.get('/api/v1/completeTask', ({ query }, res) => {
   res.json(getTasks())
 })
 
-app.get('/api/v1/updateTask', ({ query }, res) => {
+app.get('/api/v1/updateTask', ({ cookies, query }, res) => {
+  if (cookies.peanut !== uuid) {
+    res.status(401)
+  }
+
   const taskToUpdate = JSON.parse(`${query.taskJson}`)
   const tasks = getTasks()
   const idx = tasks.findIndex((task) => task.id === taskToUpdate.id)
@@ -92,14 +101,29 @@ app.get('/api/v1/getNYConnSave', async (_req, res) => {
   res.json(await getGetConnectionsSaveData())
 })
 
-app.get('/api/v1/updateNYConnSave', async ({ query }, res) => {
-  res.json(await updateGetConnectionsSaveData(query))
+app.get('/api/v1/updateNYConnSave', async (req, res) => {
+  if (req.cookies.peanut !== uuid) {
+    res.status(401)
+  }
+  res.json(await updateGetConnectionsSaveData(req.query))
 })
 
 app.post('/api/v1/setLaolun', async ({ body }, res) => {
   const { pinyin, phrases } = body
   await setLaolun({ pinyin, phrases })
   res.json(await getLaolun())
+})
+
+app.get('/api/v1/cookies', (req, res) => {
+  if (req.cookies.peanut === uuid) {
+    res.json({ok: `You're all set.`})
+  } else if (req.query.pw === 'banana') {
+    res.cookie('peanut', uuid, {maxAge: 15 * 60 * 1000})
+    res.json({reload: 'Password accepted. Please reload'})
+  } else {
+    res.json({notOk: 'Who are you even?'})
+  }
+  
 })
 
 app.post('/api/v1/uploadLaolunRecording', uploadSingleRecording, async ({ file }, res) => {
