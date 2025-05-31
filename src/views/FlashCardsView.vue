@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import BasicDialog from '@/components/BasicDialog.vue'
-import FlashCards from './FlashCards.vue'
-import DimSumCards from './DimsumCards.vue'
+import FlashCards from '@/components/flash/FlashCards.vue'
+import DimSumCards from '@/components/flash/DimsumCards.vue'
 import { shuffleArray } from '../utils'
 
 const cards = ref<string[][] | null>(null)
@@ -88,15 +88,17 @@ dialog.paste-modal {
         border-radius: 0.3em;
         flex-grow: 1;
         height: 20vh;
-        padding: 1em;
+        padding: 1em 0 1em calc(1em + 20ch);
         align-items: center;
         justify-content: center;
         color: hsl(62, 100%, 57%);
         background-color: hsl(0, 46%, 14%);
         font-family: monospace;
+        caret-color: hsl(112, 100%, 57%);
         font-size: 1rem;
         &::placeholder {
           color: hsl(112, 100%, 57%);
+          transform: translateX(-20ch);
         }
         outline: none;
       }
@@ -166,7 +168,7 @@ table {
           autocorrect="off"
           autocapitalize="off"
           spellcheck="false"
-          placeholder="> please paste here ▌"
+          placeholder="> please paste here"
         />
       </label>
       <button class="dismiss" @click="cards = []">Dismiss</button>
