@@ -42,6 +42,7 @@ const hitsCount = ref(0)
 }
 .dimsum-cards {
   flex-grow: 1;
+  height: 100%;
   max-width: 800px;
   display: grid;
   grid-template-columns: 1fr 1fr;
