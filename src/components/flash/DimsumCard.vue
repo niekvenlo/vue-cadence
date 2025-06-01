@@ -22,7 +22,7 @@ const dimsum = computed(() => {
   const randomIdx = Math.floor(Math.random() * (numCards - 1))
 
   const falseIdx = (idx + 1 + randomIdx) % numCards
-  const isCorrect = cardCount.value === -1 ? false : Math.random() < 0.4
+  const isCorrect = cardCount.value < 1 ? false : Math.random() < 0.4
 
   return {
     isCorrect,
@@ -31,8 +31,13 @@ const dimsum = computed(() => {
   }
 })
 
-const emitHelper = (type) =>
-  !props.isPaused && emit(type, { front: dimsum.value.front, back: dimsum.value.back, isCorrect: dimsum.value.isCorrect })
+const emitHelper = (type: 'miss' | 'hit' | 'ignored') =>
+  !props.isPaused &&
+  emit(type, {
+    front: dimsum.value.front,
+    back: dimsum.value.back,
+    isCorrect: dimsum.value.isCorrect
+  })
 
 const nextCard = (isClicked: boolean = false) => {
   clearTimeout(timeout.value)
@@ -94,7 +99,7 @@ const handleClick = () => {
 
 <style>
 #dimsum-wrapper {
-  .card {
+  button.card {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -103,13 +108,19 @@ const handleClick = () => {
     padding: 0.5em;
     font-weight: 600;
     font-size: 2em;
+    border: none;
+    will-change: transform;
+    color: currentColor;
+    font-family: sans-serif;
     &.isPaused {
-      filter: blur(2px)
+      filter: blur(2px);
     }
     &.miss {
       background-color: red;
       transform: translateY(5px) rotate(1deg);
-      transition: background-color 0.5s, transform 0.5s ease-out;
+      transition:
+        background-color 0.5s,
+        transform 0.5s ease-out;
     }
     &.ignored {
       opacity: 0.2;
@@ -118,7 +129,9 @@ const handleClick = () => {
     &.hit {
       background-color: green;
       transform: translateY(-5px) rotate(-0.5deg);
-      transition: background-color 0.5s, transform 0.5s ease-out;
+      transition:
+        background-color 0.5s,
+        transform 0.5s ease-out;
     }
 
     span.back {
@@ -134,7 +147,7 @@ const handleClick = () => {
 </style>
 
 <template>
-  <button class="card" :class="[className, {isPaused: props.isPaused}]" @click="handleClick">
+  <button class="card" :class="[className, { isPaused: props.isPaused }]" @click="handleClick">
     <span>{{ dimsum.front }}</span>
     <span class="back">{{ dimsum.back.join(', ') }}</span>
     <span class="card-id hide-on-small-screens">{{ cardId }}</span>

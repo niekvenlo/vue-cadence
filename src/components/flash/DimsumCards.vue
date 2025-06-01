@@ -9,21 +9,22 @@ const props = defineProps<{
   isOnlyOneColumn: boolean
 }>()
 
-const fronts = computed(() => props.cards?.map((c) => c[props.promptIdx]) ?? [])
+const fronts = computed(() => props.cards?.map((c) => c[props.promptIdx ?? 0]) ?? [])
 const backs = computed(
   () => props.cards?.map((c) => c.filter((_, i) => props.responseIndices.includes(i))) ?? []
 )
 
 const isPaused = ref(false)
-const misses = ref([])
+const misses = ref<{ front: string; back: string[]; isCorrect: boolean }[]>([])
 const hitsCount = ref(0)
 
-watch(() => props.cards, () => {
-  misses.value = []
-  hitsCount.value = 0;
-})
-
-
+watch(
+  () => props.cards,
+  () => {
+    misses.value = []
+    hitsCount.value = 0
+  }
+)
 </script>
 
 <style>
@@ -44,6 +45,11 @@ watch(() => props.cards, () => {
 .misses {
   max-height: 70vh;
   overflow: scroll;
+  &.small {
+    height: 10vh;
+    max-height: 10vh;
+    font-size: 1.3em;
+  }
 }
 .dimsum-cards {
   flex-grow: 1;
@@ -63,19 +69,30 @@ watch(() => props.cards, () => {
     <template v-if="promptIdx !== null && backs.length > 0 && backs[0].length > 0">
       <div class="misses hide-on-small-screens">
         misses: {{ Math.max(0, misses.length - 6) }} hits: {{ hitsCount }}
-        <p v-for="miss in misses">{{ miss.front }}: {{ miss.back.join(', ') }} {{ miss.isCorrect ? '✅' : '❎' }}</p>
+        <p v-for="(miss, idx) in misses" :key="miss.front + idx">
+          {{ miss.front }}: {{ miss.back.join(', ') }} {{ miss.isCorrect ? '✅' : '❎' }}
+        </p>
         <button @click="isPaused = !isPaused">{{ isPaused ? 'Continue' : 'Pause' }}</button>
       </div>
       <div class="dimsum-cards">
         <DimsumCard
           v-for="(_, idx) in Array.from({ length: 6 })"
+          :key="idx"
           :fronts="fronts"
           :backs="backs"
           @miss="(e) => misses.push(e)"
           @hit="hitsCount++"
           :isPaused="isPaused"
-          :cardId = "['Q','W','A','S','Z','X'][idx]"
+          :cardId="['Q', 'W', 'A', 'S', 'Z', 'X'][idx]"
         />
+        <div class="misses show-on-small-screens small">
+          misses: {{ Math.max(0, misses.length - 6) }} hits: {{ hitsCount }}
+        </div>
+        <div class="misses show-on-small-screens small">
+          <p v-for="(miss, idx) in [...misses].reverse()" :key="miss.front + idx">
+            {{ miss.front }}: {{ miss.back.join(', ') }} {{ miss.isCorrect ? '✅' : '❎' }}
+          </p>
+        </div>
       </div>
     </template>
   </div>

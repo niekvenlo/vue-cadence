@@ -5,7 +5,7 @@ const db = new JSONdb('src/server/data/database.json', { asyncWrite: true })
 
 export type Task = {
   cadenceInDays: number
-  daysFromNow: number
+  daysFromNow?: number
   id: string
   nextEpochDay: number
   title: string
