@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import type { log } from 'console'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import DimsumCard from './DimsumCard.vue'
 
 const props = defineProps<{
@@ -15,8 +14,14 @@ const backs = computed(
   () => props.cards?.map((c) => c.filter((_, i) => props.responseIndices.includes(i))) ?? []
 )
 
+const isPaused = ref(false)
 const misses = ref([])
 const hitsCount = ref(0)
+
+watch(() => props.cards, () => {
+  misses.value = []
+  hitsCount.value = 0;
+})
 
 
 </script>
@@ -56,17 +61,20 @@ const hitsCount = ref(0)
 <template>
   <div id="dimsum-wrapper">
     <template v-if="promptIdx !== null && backs.length > 0 && backs[0].length > 0">
-      <div class="misses">
+      <div class="misses hide-on-small-screens">
         misses: {{ Math.max(0, misses.length - 6) }} hits: {{ hitsCount }}
-        <p v-for="miss in misses">{{ miss.front }}: {{ miss.back.join(', ') }}</p>
+        <p v-for="miss in misses">{{ miss.front }}: {{ miss.back.join(', ') }} {{ miss.isCorrect ? '✅' : '❎' }}</p>
+        <button @click="isPaused = !isPaused">{{ isPaused ? 'Continue' : 'Pause' }}</button>
       </div>
       <div class="dimsum-cards">
         <DimsumCard
-          v-for="i in Array.from({ length: 6 })"
+          v-for="(_, idx) in Array.from({ length: 6 })"
           :fronts="fronts"
           :backs="backs"
           @miss="(e) => misses.push(e)"
           @hit="hitsCount++"
+          :isPaused="isPaused"
+          :cardId = "['Q','W','A','S','Z','X'][idx]"
         />
       </div>
     </template>

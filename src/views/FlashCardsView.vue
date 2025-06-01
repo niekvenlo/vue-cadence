@@ -140,7 +140,7 @@ table {
 <template>
   <div id="flash-cards-wrapper">
   <DimSumCards
-    v-if="isDimsumView"
+    v-if="isDimsumView && !isOnlyOneColumn"
     :cards="cards"
     :promptIdx="promptIdx"
     :responseIndices="responseIndices"
