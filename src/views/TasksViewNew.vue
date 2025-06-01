@@ -3,8 +3,7 @@ import { onMounted, ref } from 'vue'
 import TaskCardNew from './TaskCardNew.vue'
 import type { Task } from '@/server/db-access'
 
-const root =
-  import.meta.env.VITE_SERVER_ROOT || 'http://62.131.229.29:3333' || 'http://192.168.2.14:3333'
+const root = import.meta.env.VITE_SERVER_ROOT
 
 const tasks = ref<undefined | Task[]>(undefined)
 

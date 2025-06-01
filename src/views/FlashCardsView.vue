@@ -14,11 +14,17 @@ const isOnlyOneColumn = computed(() => cards.value?.[0].length === 1)
 
 const isDimsumView = ref(true)
 
+const locallyStored = localStorage.getItem('flash-cards')
+if (locallyStored) {
+  cards.value = JSON.parse(locallyStored)
+}
+
 const reset = () => {
   cards.value = null
   error.value = ''
   promptIdx.value = null
   responseIndices.value = []
+  localStorage.removeItem('flash-cards')
 }
 
 const handlePaste = (event: ClipboardEvent) => {
@@ -34,6 +40,7 @@ const handlePaste = (event: ClipboardEvent) => {
   }
   error.value = ''
   cards.value = shuffleArray(arrays)
+  localStorage.setItem('flash-cards', JSON.stringify(cards.value))
   if (arrays[0].length < 2) {
     promptIdx.value = 0
   }
@@ -57,6 +64,27 @@ const handleColumnSelection = (idx: number) => {
   padding: 1em;
   background: black;
   color: white;
+}
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  h1 {
+    text-transform: capitalize;
+  }
+  div {
+    display: flex;
+    /* gap: 0.1em; */
+    button {
+      background: black;
+      background-image: linear-gradient(-30deg, black, rgb(39, 39, 39));
+      color: white;
+      font-family: serif;
+      font-style: italic;
+      padding-inline: 1em;
+      border: none;
+      cursor: pointer;
+    }
+  }
 }
 dialog.paste-modal {
   box-shadow: var(--shadow-elevation-high);
@@ -139,23 +167,32 @@ table {
 
 <template>
   <div id="flash-cards-wrapper">
-  <DimSumCards
-    v-if="isDimsumView && !isOnlyOneColumn"
-    :cards="cards"
-    :promptIdx="promptIdx"
-    :responseIndices="responseIndices"
-    :isOnlyOneColumn="isOnlyOneColumn"
-  ></DimSumCards>
-  <FlashCards
-    v-else
-    :cards="cards"
-    :promptIdx="promptIdx"
-    :responseIndices="responseIndices"
-    :isOnlyOneColumn="isOnlyOneColumn"
-  ></FlashCards>
+    <DimSumCards
+      v-if="isDimsumView && !isOnlyOneColumn"
+      :cards="cards"
+      :promptIdx="promptIdx"
+      :responseIndices="responseIndices"
+      :isOnlyOneColumn="isOnlyOneColumn"
+    ></DimSumCards>
+    <FlashCards
+      v-else
+      :cards="cards"
+      :promptIdx="promptIdx"
+      :responseIndices="responseIndices"
+      :isOnlyOneColumn="isOnlyOneColumn"
+    ></FlashCards>
   </div>
 
   <div v-if="error" class="error">{{ error }}</div>
+  <div class="top-bar">
+    <h1>{{ isDimsumView ? 'dim sum' : 'standard' }} style</h1>
+    <div>
+      <button v-if="responseIndices.length > 0" @click="isDimsumView = !isDimsumView">
+        Switch to {{ isDimsumView ? 'standard flash cards' : 'dim sum' }}
+      </button>
+      <button v-if="cards" @click="reset">Clear current cards</button>
+    </div>
+  </div>
   <BasicDialog :isOpen="cards === null" class="paste-modal">
     <div class="input-modal">
       <label
@@ -179,7 +216,8 @@ table {
       You need to choose a column to use as your flashcard 'front' side.
     </p>
     <p v-else-if="!isOnlyOneColumn">
-      You may also choose which columns to use as your flashcard 'back' side. (Optional)
+      You may also choose which columns to use as your flashcard 'back' side. (Without a back side,
+      you can only use standard flash cards.)
     </p>
     <table>
       <thead>
@@ -198,7 +236,5 @@ table {
         <td v-for="column in card" :key="column">{{ column }}</td>
       </tr>
     </table>
-    <button v-if="cards" @click="reset">Clear current cards</button>
-    <button @click="isDimsumView = !isDimsumView">Toggle challenge type</button>
   </div>
 </template>

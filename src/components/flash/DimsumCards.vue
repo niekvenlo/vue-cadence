@@ -68,11 +68,11 @@ watch(
   <div id="dimsum-wrapper">
     <template v-if="promptIdx !== null && backs.length > 0 && backs[0].length > 0">
       <div class="misses hide-on-small-screens">
+        <button @click="isPaused = !isPaused">{{ isPaused ? 'Continue' : 'Pause' }}</button>
         misses: {{ Math.max(0, misses.length - 6) }} hits: {{ hitsCount }}
         <p v-for="(miss, idx) in misses" :key="miss.front + idx">
           {{ miss.front }}: {{ miss.back.join(', ') }} {{ miss.isCorrect ? '✅' : '❎' }}
         </p>
-        <button @click="isPaused = !isPaused">{{ isPaused ? 'Continue' : 'Pause' }}</button>
       </div>
       <div class="dimsum-cards">
         <DimsumCard

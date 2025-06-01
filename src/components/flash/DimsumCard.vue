@@ -124,7 +124,7 @@ const handleClick = () => {
     }
     &.ignored {
       opacity: 0.2;
-      transition: opacity 0.5s;
+      transition: opacity 0.5s ease-out;
     }
     &.hit {
       background-color: green;
