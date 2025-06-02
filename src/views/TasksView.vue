@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import TaskCardNew from './TaskCardNew.vue'
+import TaskCardNew from '../components/tasks/TaskCard.vue'
 import type { Task } from '@/server/db-access'
 
 const root = import.meta.env.VITE_SERVER_ROOT
@@ -22,6 +22,14 @@ onMounted(() => {
 
 const markComplete = (taskId: string) => {
   fetch(`${root}/api/v1/completeTask?taskId=${taskId}`, {})
+    .then((response) => response.json())
+    .then((json) => {
+      tasks.value = json
+    })
+}
+const updateTask = (task: Task) => {
+  console.log('taskv')
+  fetch(`${root}/api/v1/updateTask?taskJson=${JSON.stringify(task)}`, {})
     .then((response) => response.json())
     .then((json) => {
       tasks.value = json
@@ -60,6 +68,7 @@ const markComplete = (taskId: string) => {
       :key="item.id"
       :task="item"
       @completed="markComplete(item.id)"
+      @updated="updateTask"
     />
   </TransitionGroup>
 </template>

@@ -3,13 +3,19 @@ import JSONdb from 'simple-json-db'
 
 const db = new JSONdb('src/server/data/database.json', { asyncWrite: true })
 
-export type Task = {
+
+
+export type DbTask = {
   cadenceInDays: number
   daysFromNow?: number
   id: string
   nextEpochDay: number
   title: string
   type?: 'NUDGE' | 'STANDARD'
+}
+
+export type Task = DbTask &{
+  daysFromNow: number;
 }
 
 export type ConnectionsEntry = {

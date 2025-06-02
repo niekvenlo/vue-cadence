@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import TasksNew from '@/views/TasksViewNew.vue'
+import TasksView from '@/views/TasksView.vue'
 import FlashCardsView from '@/views/FlashCardsView.vue'
 
 const router = createRouter({
@@ -8,7 +8,7 @@ const router = createRouter({
     {
       path: '/tasks',
       name: 'tasks',
-      component: TasksNew
+      component: TasksView
     },
     {
       path: '/flash',
@@ -33,7 +33,7 @@ const router = createRouter({
       name: 'connections',
       component: () => import('@/views/ConnectionsView.vue')
     },
-    { path: '/:pathMatch(.*)*', name: 'NotFound', component: TasksNew }
+    { path: '/:pathMatch(.*)*', name: 'NotFound', component: () => import('@/views/TasksView.vue') }
   ]
 })
 

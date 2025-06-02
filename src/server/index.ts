@@ -6,11 +6,12 @@ import {
   getGetConnectionsSaveData,
   getTasks,
   setTasks,
-  updateGetConnectionsSaveData
+  updateGetConnectionsSaveData,
 } from './db-access'
 import { getLaolun, setLaolun, uploadSingleRecording } from './file.-access'
 import { getNYConn } from './external-api-access'
 import { getCurrentEpochDay } from '../utils'
+import type { DbTask } from './db-access'
 
 const port = process.env.PORT || 3333
 
@@ -50,15 +51,15 @@ app.get('/api/v1/completeTask', ({ query }, res) => {
       nextEpochDay: getCurrentEpochDay() + task?.cadenceInDays
     }
   }
-  tasks.forEach((t) => delete t.daysFromNow)
+  tasks.forEach((t: DbTask) => delete t.daysFromNow)
   setTasks(tasks)
   res.json(getTasks())
 })
 
 app.get('/api/v1/updateTask', ({ cookies, query }, res) => {
-  if (cookies.peanut !== uuid) {
-    res.status(401)
-  }
+  // if (cookies.peanut !== uuid) {
+  //   res.status(401)
+  // }
 
   const taskToUpdate = JSON.parse(`${query.taskJson}`)
   const tasks = getTasks()

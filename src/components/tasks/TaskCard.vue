@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import ModalDialog from './ModalDialog.vue'
+import EditModal from './EditModal.vue'
 import type { Task } from '@/server/db-access'
 
 const props = defineProps<{ task: Task }>()
-const emit = defineEmits(['completed'])
+const emit = defineEmits(['completed', 'updated'])
 
 const isSelected = ref(false)
 const isEditing = ref(false)
@@ -148,27 +149,12 @@ const isEditing = ref(false)
       fontWeight: 700 - 100 * Math.max(0, props.task.daysFromNow)
     }"
   >
-    <ModalDialog
-      :title="`Editing: ${props.task.title}`"
+    <EditModal
+      :task="props.task"
       :isOpen="isEditing"
       @didClose="isEditing = false"
-    >
-      <div class="edit-modal" v-if="isEditing">
-        <label>
-          Title
-          <input type="text" :value="props.task.title" />
-        </label>
-        <label>
-          Days from now
-          <input type="number" :value="props.task.daysFromNow" />
-        </label>
-        <label>
-          Cadence in days
-          <input type="number" :value="props.task.cadenceInDays" />
-        </label>
-      </div>
-      <template #buttons><button>Save</button> <button>Delete</button></template>
-    </ModalDialog>
+      @updated="(task: Task) => emit('updated', task)"
+    />
     <button class="title" @click="isSelected = !isSelected">{{ props.task.title }}</button>
     <template v-if="isSelected">
       <div class="complete-edit">
