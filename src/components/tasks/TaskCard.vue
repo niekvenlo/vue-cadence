@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import ModalDialog from './ModalDialog.vue'
+import { computed, ref } from 'vue'
+import { getCurrentEpochDay } from '../../utils'
 import EditModal from './EditModal.vue'
 import type { Task } from '@/server/db-access'
 
@@ -10,7 +10,15 @@ const emit = defineEmits(['completed', 'updated'])
 const isSelected = ref(false)
 const isEditing = ref(false)
 
-const updateTask = (task: Task) => {
+const daysFromNow = computed(() => props.task.nextEpochDay - getCurrentEpochDay())
+
+const completed = () => {
+  emit('completed')
+  isEditing.value = false
+  isSelected.value = false
+}
+
+const updated = (task: Task) => {
   emit('updated', task)
   isEditing.value = false
   isSelected.value = false
@@ -54,6 +62,7 @@ const updateTask = (task: Task) => {
     border: none;
     background: unset;
     color: currentColor;
+    text-align: left;
   }
   .complete-edit {
     display: flex;
@@ -147,35 +156,35 @@ const updateTask = (task: Task) => {
     class="task-list-card"
     :class="{
       isSelected,
-      isOverdue: props.task.daysFromNow < 0,
-      isDueToday: props.task.daysFromNow === 0
+      isOverdue: daysFromNow < 0,
+      isDueToday: daysFromNow === 0
     }"
     :style="{
-      opacity: Math.max(0.3, 1 / Math.max(0, props.task.daysFromNow + 1)),
-      fontWeight: 700 - 100 * Math.max(0, props.task.daysFromNow)
+      opacity: Math.max(0.3, 1 / Math.max(0, daysFromNow + 1)),
+      fontWeight: 700 - 100 * Math.max(0, daysFromNow)
     }"
   >
     <EditModal
       :task="props.task"
       :isOpen="isEditing"
       @didClose="isEditing = false"
-      @updated="updateTask"
+      @updated="updated"
     />
     <button class="title" @click="isSelected = !isSelected">{{ props.task.title }}</button>
     <template v-if="isSelected">
       <div class="complete-edit">
         <button class="edit" @click="isEditing = true">edit</button>
-        <button class="complete" @click="emit('completed')">complete</button>
+        <button class="complete" @click="completed">complete</button>
       </div>
     </template>
     <template v-else>
       <button class="due-every" @click="isSelected = true" tabindex="-1">
-        <span class="due" v-if="props.task.daysFromNow < 0"
-          >{{ -props.task.daysFromNow }} days <span class="hide-on-small-screens">overdue</span>
+        <span class="due" v-if="daysFromNow < 0"
+          >{{ -daysFromNow }} days <span class="hide-on-small-screens">overdue</span>
         </span>
-        <span class="due" v-else-if="props.task.daysFromNow === 0">due today</span>
+        <span class="due" v-else-if="daysFromNow === 0">due today</span>
         <span class="due" v-else
-          >due in {{ props.task.daysFromNow }} <span class="hide-on-small-screens">days</span></span
+          >due in {{ daysFromNow }} <span class="hide-on-small-screens">days</span></span
         >
         <span class="every"
           >every {{ props.task.cadenceInDays }}

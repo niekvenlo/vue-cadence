@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import ModalDialog from './ModalDialog.vue'
+import { getCurrentEpochDay } from '../../utils'
 import type { Task } from '@/server/db-access'
 
 const root = import.meta.env.VITE_SERVER_ROOT
@@ -13,17 +14,16 @@ const props = defineProps<{
 const emit = defineEmits(['updated'])
 
 const title = ref(props.task.title)
-const daysFromNow = ref(props.task.daysFromNow)
+const daysFromNow = ref(props.task.nextEpochDay - getCurrentEpochDay())
 const cadenceInDays = ref(props.task.cadenceInDays)
 
 const save = () => {
   emit('updated', {
+    ...props.task,
     title: title.value,
-    daysFromNow: daysFromNow.value,
-    cadenceInDays: cadenceInDays.value,
-    id: props.task.id
+    nextEpochDay: daysFromNow.value + getCurrentEpochDay(),
+    cadenceInDays: cadenceInDays.value
   })
-  console.log('modal')
 }
 </script>
 
@@ -44,7 +44,7 @@ const save = () => {
         <span>
           Days from now
           <span class="previous-value" v-if="daysFromNow !== props.task.daysFromNow">
-            (previously: {{ props.task.daysFromNow }})
+            (previously: {{ props.task.nextEpochDay - getCurrentEpochDay() }})
           </span>
         </span>
         <input type="number" v-model="daysFromNow" />

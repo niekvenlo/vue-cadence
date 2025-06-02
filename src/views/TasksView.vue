@@ -1,39 +1,49 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
+import { getCurrentEpochDay } from '../utils'
 import TaskCardNew from '../components/tasks/TaskCard.vue'
 import type { Task } from '@/server/db-access'
 
 const root = import.meta.env.VITE_SERVER_ROOT
 
-const tasks = ref<undefined | Task[]>(undefined)
+const queryClient = useQueryClient()
 
-const getTasks = () => {
-  fetch(`${root}/api/v1/getTasks`, {})
+const fetcher = (verb: 'PATCH' | 'GET', { body, queryKey }: { body?: any; queryKey?: string[] }) =>
+  fetch(`${root}/api/v2/freeform${verb === 'GET' ? '/cads' : ''}`, {
+    method: verb.toUpperCase(),
+    body: JSON.stringify(body),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
     .then((response) => response.json())
-    .then((json) => {
-      tasks.value = json
-    })
-}
+    .catch((err) => console.error(err))
+    .then((json) => queryClient.setQueryData(queryKey, json))
 
-onMounted(() => {
-  getTasks()
-  setInterval(getTasks, 60 * 1000)
+const { data: tasks, isPending } = useQuery({
+  queryKey: ['cads'],
+  queryFn: () => fetcher('GET', {}),
+  select: (d) => ({ ...d, data: d.data.sort(sortByNextDayAndCadence) })
 })
 
-const markComplete = (taskId: string) => {
-  fetch(`${root}/api/v1/completeTask?taskId=${taskId}`, {})
-    .then((response) => response.json())
-    .then((json) => {
-      tasks.value = json
-    })
+const patchTask = useMutation({
+  mutationFn: (task) => fetcher('PATCH', { body: task, queryKey: ['cads'] })
+})
+
+const markComplete = (task: Task) => {
+  const patch = { ...task, nextEpochDay: getCurrentEpochDay() + task.cadenceInDays }
+  patchTask.mutate(patch)
 }
-const updateTask = (task: Task) => {
-  console.log('taskv')
-  fetch(`${root}/api/v1/updateTask?taskJson=${JSON.stringify(task)}`, {})
-    .then((response) => response.json())
-    .then((json) => {
-      tasks.value = json
-    })
+
+const updated = (task: Task) => {
+  patchTask.mutate(task)
+}
+
+function sortByNextDayAndCadence(a: Task, b: Task) {
+  if (a.nextEpochDay === b.nextEpochDay) {
+    return a.cadenceInDays > b.cadenceInDays ? -1 : 1
+  }
+  return a.nextEpochDay < b.nextEpochDay ? -1 : 1
 }
 </script>
 
@@ -47,7 +57,8 @@ const updateTask = (task: Task) => {
   .list-move,
   .list-enter-active,
   .list-leave-active {
-    transition: all 0.5s ease-out;
+    transition: all 0.3s ease-out;
+    width: 100%;
   }
 
   .list-enter-from,
@@ -62,13 +73,13 @@ const updateTask = (task: Task) => {
 </style>
 
 <template>
-  <TransitionGroup name="list" tag="ul" className="list">
+  <TransitionGroup name="list" tag="ul" className="list" v-if="!isPending">
     <TaskCardNew
-      v-for="item in tasks"
-      :key="item.id + item.daysFromNow"
+      v-for="item in tasks?.data ?? []"
+      :key="item.id + item.nextEpochDay"
       :task="item"
-      @completed="markComplete(item.id)"
-      @updated="updateTask"
+      @completed="markComplete(item)"
+      @updated="updated"
     />
   </TransitionGroup>
 </template>
