@@ -92,7 +92,7 @@ const shuffledPhrases = computed(() => toChunk(phrases.value || [], 20))
       flex-direction: column;
       /* align-items: center; */
       .phrase-pinyin {
-        font-size: 0.3em;
+        font-size: 0.5em;
         opacity: 0.5;
         user-select: none;
       }
@@ -100,7 +100,7 @@ const shuffledPhrases = computed(() => toChunk(phrases.value || [], 20))
         font-size: 1.2em;
         user-select: none;
         overflow: hidden;
-        max-height: 0.63em;
+        max-height: 0.5em;
       }
       .phrase-hanzi {
       }

@@ -4,8 +4,6 @@ import ModalDialog from './ModalDialog.vue'
 import { getCurrentEpochDay } from '../../utils'
 import type { Task } from '@/server/db-access'
 
-const root = import.meta.env.VITE_SERVER_ROOT
-
 const props = defineProps<{
   task: Task
   isOpen: boolean

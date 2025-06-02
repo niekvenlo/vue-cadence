@@ -3,10 +3,10 @@
 <template>
   <div class="app-wrapper">
     <nav class="app-navigation">
-      <RouterLink to="/tasks">tasks</RouterLink>
-      <RouterLink to="/flash" class="hide-on-small-screens">flash</RouterLink>
-      <RouterLink to="/laolun">laolun</RouterLink>
-      <RouterLink to="/connections">conn</RouterLink>
+      <RouterLink to="/tasks">任务</RouterLink>
+      <RouterLink to="/flash" class="hide-on-small-screens">卡</RouterLink>
+      <RouterLink to="/laolun">劳伦</RouterLink>
+      <RouterLink to="/connections">连接</RouterLink>
     </nav>
     <div class="app-page">
       <RouterView />

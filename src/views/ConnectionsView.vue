@@ -216,6 +216,7 @@ watch(
 .selected {
   display: flex;
   flex-direction: column;
+  gap: 0.1em;
   .selected-group {
     display: flex;
     flex-direction: column;
@@ -234,11 +235,13 @@ watch(
       }
     }
     .groupName {
+      height: 2em;
       text-align: center;
       font-weight: bold;
       text-transform: lowercase;
     }
     button {
+      height: 2em;
       padding: 0.5em;
       background: hsla(120deg 100% 100% / 40%);
       border: none;
@@ -279,7 +282,7 @@ watch(
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-around;
+    justify-content: center;
     min-width: min(20vw, 9em);
     aspect-ratio: 1/1;
     border: 0.5px solid hsl(0, 0%, 83%);
@@ -301,7 +304,6 @@ watch(
     }
     &.isSelected {
       translate: 0 -5px;
-      box-shadow: 0 0 5px 1px hsl(333, 100%, 76%);
       z-index: 1;
     }
     &.isRecentlyDeselected {
@@ -322,37 +324,70 @@ watch(
 }
 
 .date-pick {
-  display: flex;
-  flex-direction: row;
+  margin-block: 6em;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  justify-content: center;
+  button,
   select {
+    border: none;
+  }
+  button {
+    border-radius: 10em;
+    background-color: transparent;
+    background-image: radial-gradient(
+      closest-side,
+      hsla(0 0% 0%/0.1) 0%,
+      hsla(0 0% 0%/0.1) 30%,
+      hsla(0 0% 0%/0) 100%
+    );
+    font-size: 3em;
+  }
+  select {
+    background: hsla(0 0% 0%/0.1);
     font-size: 2em;
+    text-align: center;
   }
 }
 
-.isYellowGroup {
+.isYellowCorrectGroup {
   background-color: hsl(60, 100%, 78%);
 }
-.isGreenGroup {
+.isGreenCorrectGroup {
   background-color: hsl(125, 100%, 78%);
 }
-.isBlueGroup {
+.isBlueCorrectGroup {
   background-color: hsl(204, 100%, 78%);
 }
-.isPurpleGroup {
+.isPurpleCorrectGroup {
   background-color: hsl(276, 100%, 78%);
 }
 
-.isYellow {
-  background-color: hsl(60, 100%, 50%);
+.hasYellowDot {
+  box-shadow: 0 0 5px 1px hsl(60, 100%, 78%);
+
+  > .highlight {
+    background-color: hsl(60, 100%, 50%);
+  }
 }
-.isGreen {
-  background-color: hsl(125, 100%, 50%);
+.hasGreenDot {
+  box-shadow: 0 0 5px 1px hsl(125, 100%, 50%);
+  > .highlight {
+    background-color: hsl(125, 100%, 50%);
+  }
 }
-.isBlue {
-  background-color: hsl(204, 100%, 50%);
+.hasBlueDot {
+  box-shadow: 0 0 5px 1px hsl(204, 100%, 50%);
+  > .highlight {
+    background-color: hsl(204, 100%, 50%);
+  }
 }
-.isPurple {
-  background-color: hsl(276, 100%, 50%);
+.hasPurpleDot {
+  box-shadow: 0 0 5px 1px hsl(276, 96.5%, 77.5%);
+  .highlight {
+    background-color: hsl(276, 96.5%, 77.5%);
+  }
 }
 </style>
 
@@ -367,28 +402,22 @@ watch(
             isLong: tile.split(' ').every((w) => w.length > 9),
             isSelected: isGroup('any', tile),
             isCorrect: correctTiles.includes(tile),
-            isYellowGroup: correctTiles.includes(tile) && isGroup('yellow', tile),
-            isGreenGroup: correctTiles.includes(tile) && isGroup('green', tile),
-            isBlueGroup: correctTiles.includes(tile) && isGroup('blue', tile),
-            isPurpleGroup: correctTiles.includes(tile) && isGroup('purple', tile),
-            isRecentlyDeselected: lastDeselectedTiles.includes(tile)
+            isYellowCorrectGroup: correctTiles.includes(tile) && isGroup('yellow', tile),
+            isGreenCorrectGroup: correctTiles.includes(tile) && isGroup('green', tile),
+            isBlueCorrectGroup: correctTiles.includes(tile) && isGroup('blue', tile),
+            isPurpleCorrectGroup: correctTiles.includes(tile) && isGroup('purple', tile),
+            isRecentlyDeselected: lastDeselectedTiles.includes(tile),
+            hasYellowDot: isGroup('yellow', tile),
+            hasGreenDot: isGroup('green', tile),
+            hasBlueDot: isGroup('blue', tile),
+            hasPurpleDot: isGroup('purple', tile)
           }"
           v-for="tile in data?.startingBoard?.flat() ?? []"
           :key="tile"
           @click="handleTileClick(tile)"
         >
-          <span> </span>
           <span class="label">{{ tile }}</span>
-          <span
-            class="highlight"
-            :class="{
-              isYellow: isGroup('yellow', tile),
-              isGreen: isGroup('green', tile),
-              isBlue: isGroup('blue', tile),
-              isPurple: isGroup('purple', tile)
-            }"
-            >{{ isGroup('any', tile) ? ' ' : '' }}</span
-          >
+          <span class="highlight">{{ isGroup('any', tile) ? ' ' : '' }}</span>
         </button>
       </div>
 
@@ -398,10 +427,10 @@ watch(
           v-for="(group, groupIdx) in toChunk(selectedTiles.slice(0, getLockedIdx()), 4)"
           :key="group.toString()"
           :class="{
-            isYellowGroup: groupIdx === 0,
-            isGreenGroup: groupIdx === 1,
-            isBlueGroup: groupIdx === 2,
-            isPurpleGroup: groupIdx === 3
+            isYellowCorrectGroup: groupIdx === 0,
+            isGreenCorrectGroup: groupIdx === 1,
+            isBlueCorrectGroup: groupIdx === 2,
+            isPurpleCorrectGroup: groupIdx === 3
           }"
         >
           <div class="tiles">
@@ -413,8 +442,11 @@ watch(
       </div>
 
       <div class="date-pick">
+        <button @click="year++">+</button>
+        <button @click="month++">+</button>
+        <button @click="date++">+</button>
         <select v-model="year">
-          <option v-for="month in [2025, 2024]" :key="month">{{ month }}</option>
+          <option v-for="month in [2025, 2024, 2023]" :key="month">{{ month }}</option>
         </select>
         <select v-model="month">
           <option v-for="month in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]" :key="month">
@@ -426,6 +458,9 @@ watch(
             {{ date }}
           </option>
         </select>
+        <button @click="year--">-</button>
+        <button @click="month = (12 + month - 1) % 12">-</button>
+        <button @click="date--">-</button>
       </div>
       <p>
         {{ data?.name }}
