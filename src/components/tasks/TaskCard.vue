@@ -9,6 +9,12 @@ const emit = defineEmits(['completed', 'updated'])
 
 const isSelected = ref(false)
 const isEditing = ref(false)
+
+const updateTask = (task: Task) => {
+  emit('updated', task)
+  isEditing.value = false
+  isSelected.value = false
+}
 </script>
 
 <style>
@@ -153,7 +159,7 @@ const isEditing = ref(false)
       :task="props.task"
       :isOpen="isEditing"
       @didClose="isEditing = false"
-      @updated="(task: Task) => emit('updated', task)"
+      @updated="updateTask"
     />
     <button class="title" @click="isSelected = !isSelected">{{ props.task.title }}</button>
     <template v-if="isSelected">
