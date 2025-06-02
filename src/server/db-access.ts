@@ -3,8 +3,6 @@ import JSONdb from 'simple-json-db'
 
 const db = new JSONdb('src/server/data/database.json', { asyncWrite: true })
 
-
-
 export type DbTask = {
   cadenceInDays: number
   daysFromNow?: number
@@ -14,8 +12,8 @@ export type DbTask = {
   type?: 'NUDGE' | 'STANDARD'
 }
 
-export type Task = DbTask &{
-  daysFromNow: number;
+export type Task = DbTask & {
+  daysFromNow: number
 }
 
 export type ConnectionsEntry = {
@@ -44,7 +42,11 @@ export const getTasks = () => {
     return { ...task, daysFromNow: task.nextEpochDay - getCurrentEpochDay() }
   }
 }
-export const setTasks = (tasks: Task[]) => db.set('tasks', tasks)
+export const setTasks = (tasks: Task[]) =>
+  db.set(
+    'tasks',
+    tasks.sort((a, b) => (a.id > b.id ? -1 : 1))
+  )
 
 export const getConnectionsCache = (): ConnectionsCache => {
   return db.get('connections-cache')

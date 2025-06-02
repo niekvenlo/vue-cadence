@@ -6,15 +6,15 @@ import {
   getGetConnectionsSaveData,
   getTasks,
   setTasks,
-  updateGetConnectionsSaveData,
+  updateGetConnectionsSaveData
 } from './db-access'
 import { getLaolun, setLaolun, uploadSingleRecording } from './file.-access'
 import { getNYConn } from './external-api-access'
 import { getCurrentEpochDay } from '../utils'
 import type { DbTask } from './db-access'
+import { DELETE, GET, PATCH, POST, PUT } from './verbs'
 
 const port = process.env.PORT || 3333
-
 const uuid = '228efd89-593e-4d74-b56c-2509fd541b6b' //crypto.randomUUID();
 
 const app = express()
@@ -80,13 +80,9 @@ app.get('/api/v1/updateTask', ({ cookies, query }, res) => {
     }
   }
   res.json(tasks)
-  tasks.forEach((t: DbTask) => t.nextEpochDay = getCurrentEpochDay() + t.daysFromNow!)
+  tasks.forEach((t: DbTask) => (t.nextEpochDay = getCurrentEpochDay() + t.daysFromNow!))
   tasks.forEach((t: DbTask) => delete t.daysFromNow)
   setTasks(tasks)
-})
-
-app.get('/api/v1/getLaolun', async (_req, res) => {
-  res.json(await getLaolun())
 })
 
 app.get('/api/v1/getNYConn', async ({ query }, res) => {
@@ -111,6 +107,10 @@ app.get('/api/v1/updateNYConnSave', async (req, res) => {
   res.json(await updateGetConnectionsSaveData(req.query))
 })
 
+app.get('/api/v1/getLaolun', async (_req, res) => {
+  res.json(await getLaolun())
+})
+
 app.post('/api/v1/setLaolun', async ({ body }, res) => {
   const { pinyin, phrases } = body
   await setLaolun({ pinyin, phrases })
@@ -132,8 +132,15 @@ app.post('/api/v1/uploadLaolunRecording', uploadSingleRecording, async ({ file }
   res.json({ message: 'File uploaded successfully', filename: file?.filename })
 })
 
+//////////////////////// V2
+
+app.get('/api/v2/freeform/:resource', GET)
+app.post('/api/v2/freeform', POST)
+app.patch('/api/v2/freeform', PATCH)
+app.put('/api/v2/freeform', PUT)
+app.delete('/api/v2/freeform', DELETE)
+
+////////////////////////
 app.listen(port, () => {
   console.log('Server listening on port', port)
 })
-
-// app.get('/api/v1/setTask', ({params, query}, res) => {});
