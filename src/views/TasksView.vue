@@ -65,7 +65,7 @@ const updateTask = (task: Task) => {
   <TransitionGroup name="list" tag="ul" className="list">
     <TaskCardNew
       v-for="item in tasks"
-      :key="item.id"
+      :key="item.id + item.daysFromNow"
       :task="item"
       @completed="markComplete(item.id)"
       @updated="updateTask"

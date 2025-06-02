@@ -79,8 +79,10 @@ app.get('/api/v1/updateTask', ({ cookies, query }, res) => {
       ...taskToUpdate
     }
   }
-  setTasks(tasks)
   res.json(tasks)
+  tasks.forEach((t: DbTask) => t.nextEpochDay = getCurrentEpochDay() + t.daysFromNow!)
+  tasks.forEach((t: DbTask) => delete t.daysFromNow)
+  setTasks(tasks)
 })
 
 app.get('/api/v1/getLaolun', async (_req, res) => {
