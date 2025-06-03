@@ -155,6 +155,7 @@ const handleColumnSelection = (idx: number) => {
     text-align: right;
   }
   .explanation {
+    padding-top: 2em;
     font-size: 1.2em;
     max-width: 70ch;
     margin: auto;
@@ -198,11 +199,7 @@ const handleColumnSelection = (idx: number) => {
       <div class="top-bar">
         <h1>{{ isDimsumView ? 'dim sum' : 'standard' }} style</h1>
         <div>
-          <button
-            v-if="responseIndices.length > 0"
-            class="black"
-            @click="isDimsumView = !isDimsumView"
-          >
+          <button class="black" @click="isDimsumView = !isDimsumView">
             Switch to {{ isDimsumView ? 'standard flash cards' : 'dim sum' }}
           </button>
           <button v-if="cards" class="black" @click="reset">Clear current cards</button>
