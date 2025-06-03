@@ -14,7 +14,7 @@ const backs = computed(
   () => props.cards?.map((c) => c.filter((_, i) => props.responseIndices.includes(i))) ?? []
 )
 
-const isPaused = ref(false)
+const isStopped = ref(false)
 const misses = ref<{ front: string; back: string[]; isCorrect: boolean }[]>([])
 const hitsCount = ref(0)
 
@@ -43,7 +43,11 @@ watch(
   }
 }
 .misses {
-  max-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  min-width: 20vw;
+  max-height: calc(100vh - var(--nav-height));
   overflow: scroll;
   &.small {
     height: 10vh;
@@ -68,9 +72,9 @@ watch(
   <div id="dimsum-wrapper">
     <template v-if="promptIdx !== null && backs.length > 0 && backs[0].length > 0">
       <div class="misses hide-on-small-screens">
-        <button @click="isPaused = !isPaused">{{ isPaused ? 'Continue' : 'Pause' }}</button>
-        misses: {{ Math.max(0, misses.length - 6) }} hits: {{ hitsCount }}
-        <p v-for="(miss, idx) in misses" :key="miss.front + idx">
+        <h2>misses: {{ misses.length }} hits: {{ hitsCount }}</h2>
+        <button @click="isStopped = !isStopped">{{ isStopped ? 'Continue' : 'Stop' }}</button>
+        <p v-for="(miss, idx) in [...misses].reverse()" :key="miss.front + idx">
           {{ miss.front }}: {{ miss.back.join(', ') }} {{ miss.isCorrect ? '✅' : '❎' }}
         </p>
       </div>
@@ -82,11 +86,12 @@ watch(
           :backs="backs"
           @miss="(e) => misses.push(e)"
           @hit="hitsCount++"
-          :isPaused="isPaused"
+          :isStopped="isStopped"
           :cardId="['Q', 'W', 'A', 'S', 'Z', 'X'][idx]"
         />
         <div class="misses show-on-small-screens small">
-          misses: {{ Math.max(0, misses.length - 6) }} hits: {{ hitsCount }}
+          <h4>misses: {{ misses.length }} hits: {{ hitsCount }}</h4>
+          <button @click="isStopped = !isStopped">{{ isStopped ? 'Continue' : 'Stop' }}</button>
         </div>
         <div class="misses show-on-small-screens small">
           <p v-for="(miss, idx) in [...misses].reverse()" :key="miss.front + idx">

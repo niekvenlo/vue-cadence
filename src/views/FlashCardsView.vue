@@ -151,7 +151,7 @@ table {
   }
   thead,
   tr:nth-of-type(2n) {
-    background-color: rgb(249, 249, 174);
+    background-color: hsl(60, 86.2%, 82.9%);
   }
   button {
     width: 100%;

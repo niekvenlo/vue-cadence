@@ -5,24 +5,34 @@ import { useKeys } from '@/composables/use-keys'
 const props = defineProps<{
   fronts: string[]
   backs: string[][]
-  isPaused: boolean
+  isStopped: boolean
   cardId: string
 }>()
 
 const emit = defineEmits(['miss', 'ignored', 'hit'])
 
+const isDelayed = ref(true)
 const cardCount = ref(-1)
 const timeout = ref<NodeJS.Timeout>()
 const timeout2 = ref<NodeJS.Timeout>()
 const className = ref<'miss' | 'ignored' | 'hit' | ''>('')
 
+setTimeout(() => {
+  nextCard()
+  isDelayed.value = false
+}, Math.random() * 6000)
+
 const dimsum = computed(() => {
+  if (isDelayed.value) {
+    return {}
+  }
+  cardCount.value // accessing to force rerender
   const numCards = props.fronts.length
   const idx = Math.floor(Math.random() * numCards)
   const randomIdx = Math.floor(Math.random() * (numCards - 1))
 
   const falseIdx = (idx + 1 + randomIdx) % numCards
-  const isCorrect = cardCount.value < 1 ? false : Math.random() < 0.4
+  const isCorrect = Math.random() < 0.4
 
   return {
     isCorrect,
@@ -32,7 +42,6 @@ const dimsum = computed(() => {
 })
 
 const emitHelper = (type: 'miss' | 'hit' | 'ignored') =>
-  !props.isPaused &&
   emit(type, {
     front: dimsum.value.front,
     back: dimsum.value.back,
@@ -42,7 +51,7 @@ const emitHelper = (type: 'miss' | 'hit' | 'ignored') =>
 const nextCard = (isClicked: boolean = false) => {
   clearTimeout(timeout.value)
   clearTimeout(timeout2.value)
-  if (props.isPaused) {
+  if (props.isStopped) {
     return
   }
   let delay = 0
@@ -64,7 +73,7 @@ const nextCard = (isClicked: boolean = false) => {
     delay = 4000
   }
   timeout2.value = setTimeout(() => {
-    if (props.isPaused) {
+    if (props.isStopped) {
       return
     }
     cardCount.value++
@@ -82,15 +91,11 @@ useKeys((e: KeyboardEvent) => {
   nextCard(true)
 })
 
-watch(
-  props,
-  () => {
-    if (!props.isPaused) {
-      nextCard()
-    }
-  },
-  { immediate: true }
-)
+watch(props, () => {
+  if (!props.isStopped) {
+    nextCard()
+  }
+})
 
 const handleClick = () => {
   nextCard(true)
@@ -99,12 +104,17 @@ const handleClick = () => {
 
 <style>
 #dimsum-wrapper {
+  .placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
   button.card {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background-color: hsla(0 0% 100% / 0.4);
+    background-color: hsl(60, 86.2%, 82.9%);
     padding: 0.5em;
     font-weight: 600;
     font-size: 2em;
@@ -112,8 +122,8 @@ const handleClick = () => {
     will-change: transform;
     color: currentColor;
     font-family: sans-serif;
-    &.isPaused {
-      filter: blur(2px);
+    &.isStopped {
+      filter: blur(1px);
     }
     &.miss {
       background-color: red;
@@ -147,7 +157,13 @@ const handleClick = () => {
 </style>
 
 <template>
-  <button class="card" :class="[className, { isPaused: props.isPaused }]" @click="handleClick">
+  <span v-if="isDelayed" class="placeholder"></span>
+  <button
+    v-else
+    class="card"
+    :class="[className, { isStopped: props.isStopped }]"
+    @click="handleClick"
+  >
     <span>{{ dimsum.front }}</span>
     <span class="back">{{ dimsum.back.join(', ') }}</span>
     <span class="card-id hide-on-small-screens">{{ cardId }}</span>

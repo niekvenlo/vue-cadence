@@ -28,11 +28,11 @@
 
 @media screen and (max-width: 900px) {
   .hide-on-small-screens {
-    display: none;
+    display: none !important;
   }
 }
 @media screen and (min-width: 900px) {
   .show-on-small-screens {
-    display: none;
+    display: none !important;
   }
 }
