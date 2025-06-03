@@ -57,184 +57,203 @@ const handleColumnSelection = (idx: number) => {
 
 <style>
 #flash-cards-wrapper {
-  --nav-height: 64px;
   --color-angle: 50deg;
-}
-.error {
-  padding: 1em;
-  background: black;
-  color: white;
-}
-.top-bar {
-  display: flex;
-  justify-content: space-between;
-  h1 {
-    text-transform: capitalize;
+  #flash-cards {
+    --nav-height: 64px;
   }
-  div {
-    display: flex;
-    /* gap: 0.1em; */
-    button {
+  #data-entry-wrapper {
+    .error {
+      padding: 1em;
       background: black;
-      background-image: linear-gradient(-30deg, black, rgb(39, 39, 39));
       color: white;
-      font-family: serif;
-      font-style: italic;
-      padding-inline: 1em;
-      border: none;
-      cursor: pointer;
     }
-  }
-}
-dialog.paste-modal {
-  box-shadow: var(--shadow-elevation-high);
-  .input-modal {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: stretch;
-    height: 100%;
-    padding: 3em;
-
-    opacity: 0.2;
-
-    &:focus-within {
-      opacity: 1;
-    }
-    label {
+    .top-bar {
       display: flex;
-      flex-direction: column;
-      font-size: 1.5em;
-      text-align: center;
-      font-weight: 100;
-      font-family: sans-serif;
-      transition: font-size 0.3s;
-      flex-grow: 1;
-
-      textarea {
-        display: flex;
-        border-radius: 0.3em;
+      justify-content: space-between;
+      h1 {
+        text-transform: capitalize;
         flex-grow: 1;
-        height: 20vh;
-        padding: 1em 0 1em calc(1em + 20ch);
-        align-items: center;
-        justify-content: center;
-        color: hsl(62, 100%, 57%);
-        background-color: hsl(0, 46%, 14%);
-        font-family: monospace;
-        caret-color: hsl(112, 100%, 57%);
-        font-size: 1rem;
-        &::placeholder {
-          color: hsl(112, 100%, 57%);
-          transform: translateX(-20ch);
+      }
+      div {
+        flex-grow: 1;
+        display: flex;
+        button {
+          padding-inline: 1em;
         }
-        outline: none;
       }
     }
-    .dismiss {
-      width: 100%;
-      padding: 1em;
-    }
-  }
-}
+    dialog.paste-modal {
+      box-shadow: var(--shadow-elevation-high);
+      .input-modal {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: stretch;
+        height: 100%;
+        padding: 3em;
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  td {
-    text-align: center;
-    color: hsl(231, 23%, 22%);
-    &:nth-of-type(2n) {
-      color: hsl(0, 23%, 22%);
-      font-style: italic;
+        opacity: 0.2;
+
+        &:focus-within {
+          opacity: 1;
+        }
+        label {
+          display: flex;
+          flex-direction: column;
+          font-size: 1.5em;
+          text-align: center;
+          font-weight: 100;
+          font-family: sans-serif;
+          transition: font-size 0.3s;
+          flex-grow: 1;
+
+          textarea {
+            display: flex;
+            border-radius: 0.3em;
+            flex-grow: 1;
+            height: 20vh;
+            padding: 1em 0 1em calc(1em + 20ch);
+            align-items: center;
+            justify-content: center;
+            color: hsl(62, 100%, 57%);
+            background-color: hsl(0, 46%, 14%);
+            font-family: monospace;
+            caret-color: hsl(112, 100%, 57%);
+            font-size: 1rem;
+            &::placeholder {
+              color: hsl(112, 100%, 57%);
+              transform: translateX(-20ch);
+            }
+            outline: none;
+          }
+        }
+        .dismiss {
+          width: 100%;
+          padding: 1em;
+        }
+      }
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      td {
+        text-align: center;
+        color: hsl(231, 23%, 22%);
+        &:nth-of-type(2n) {
+          color: hsl(0, 23%, 22%);
+          font-style: italic;
+        }
+      }
+      thead,
+      tr:nth-of-type(2n) {
+        background-color: hsl(60, 86.2%, 82.9%);
+      }
     }
   }
-  thead,
-  tr:nth-of-type(2n) {
-    background-color: hsl(60, 86.2%, 82.9%);
+  h2 {
+    text-align: right;
   }
-  button {
-    width: 100%;
-    padding-top: 2em;
+  .explanation {
+    font-size: 1.2em;
+    max-width: 70ch;
+    margin: auto;
+  }
+  button.black {
+    background-color: black;
+    background-image: linear-gradient(-30deg, black, rgb(39, 39, 39));
     border: none;
-    background-color: hsl(var(--color-angle), 80%, 70%);
     cursor: pointer;
-    text-transform: uppercase;
-    font-size: 0.9em;
+    color: white;
+    font-family: serif;
+    font-style: italic;
+    padding-inline: 2em;
+    padding-block: 1em;
+    width: 100%;
   }
 }
 </style>
 
 <template>
   <div id="flash-cards-wrapper">
-    <DimSumCards
-      v-if="isDimsumView && !isOnlyOneColumn"
-      :cards="cards"
-      :promptIdx="promptIdx"
-      :responseIndices="responseIndices"
-      :isOnlyOneColumn="isOnlyOneColumn"
-    ></DimSumCards>
-    <FlashCards
-      v-else
-      :cards="cards"
-      :promptIdx="promptIdx"
-      :responseIndices="responseIndices"
-      :isOnlyOneColumn="isOnlyOneColumn"
-    ></FlashCards>
-  </div>
-
-  <div v-if="error" class="error">{{ error }}</div>
-  <div class="top-bar">
-    <h1>{{ isDimsumView ? 'dim sum' : 'standard' }} style</h1>
-    <div>
-      <button v-if="responseIndices.length > 0" @click="isDimsumView = !isDimsumView">
-        Switch to {{ isDimsumView ? 'standard flash cards' : 'dim sum' }}
-      </button>
-      <button v-if="cards" @click="reset">Clear current cards</button>
+    <div id="flash-cards">
+      <DimSumCards
+        v-if="isDimsumView && !isOnlyOneColumn"
+        :cards="cards"
+        :promptIdx="promptIdx"
+        :responseIndices="responseIndices"
+        :isOnlyOneColumn="isOnlyOneColumn"
+      ></DimSumCards>
+      <FlashCards
+        v-else
+        :cards="cards"
+        :promptIdx="promptIdx"
+        :responseIndices="responseIndices"
+        :isOnlyOneColumn="isOnlyOneColumn"
+      ></FlashCards>
     </div>
-  </div>
-  <BasicDialog :isOpen="cards === null" class="paste-modal">
-    <div class="input-modal">
-      <label
-        ><p>Please paste your data into the field</p>
-        <p>(Ctrl + P / Cmd + P)</p>
 
-        <textarea
-          @paste="handlePaste"
-          autofocus
-          autocorrect="off"
-          autocapitalize="off"
-          spellcheck="false"
-          placeholder="> please paste here"
-        />
-      </label>
-      <button class="dismiss" @click="cards = []">Dismiss</button>
-    </div>
-  </BasicDialog>
-  <div v-if="cards !== null && cards.length">
-    <p v-if="promptIdx === null">
-      You need to choose a column to use as your flashcard 'front' side.
-    </p>
-    <p v-else-if="!isOnlyOneColumn">
-      You may also choose which columns to use as your flashcard 'back' side. (Without a back side,
-      you can only use standard flash cards.)
-    </p>
-    <table>
-      <thead>
-        <th v-for="(column, idx) in cards[0]" :key="column">
+    <div id="data-entry-wrapper">
+      <div v-if="error" class="error">{{ error }}</div>
+      <div class="top-bar">
+        <h1>{{ isDimsumView ? 'dim sum' : 'standard' }} style</h1>
+        <div>
           <button
-            v-if="idx !== promptIdx && !responseIndices.includes(idx)"
-            @click="() => handleColumnSelection(idx)"
+            v-if="responseIndices.length > 0"
+            class="black"
+            @click="isDimsumView = !isDimsumView"
           >
-            {{ promptIdx === null ? 'Use as front' : 'Use as back' }}
+            Switch to {{ isDimsumView ? 'standard flash cards' : 'dim sum' }}
           </button>
-          <p v-else-if="idx === promptIdx">Front</p>
-          <p v-else>Back</p>
-        </th>
-      </thead>
-      <tr v-for="card in cards" :key="card[0]">
-        <td v-for="column in card" :key="column">{{ column }}</td>
-      </tr>
-    </table>
+          <button v-if="cards" class="black" @click="reset">Clear current cards</button>
+        </div>
+      </div>
+      <BasicDialog :isOpen="cards === null" class="paste-modal">
+        <div class="input-modal">
+          <label
+            ><p>Please paste your data into the field</p>
+            <p>(Ctrl + P / Cmd + P)</p>
+
+            <textarea
+              @paste="handlePaste"
+              autofocus
+              autocorrect="off"
+              autocapitalize="off"
+              spellcheck="false"
+              placeholder="> please paste here"
+            />
+          </label>
+          <button class="dismiss" @click="cards = []">Dismiss</button>
+        </div>
+      </BasicDialog>
+      <div v-if="cards !== null && cards.length">
+        <h2>{{ cards.length }} entries.</h2>
+        <p v-if="promptIdx === null" class="explanation">
+          You need to choose a column to use as your flashcard 'front' side.
+        </p>
+        <p v-else-if="!isOnlyOneColumn" class="explanation">
+          Now that you have selected the 'front', you may also choose which columns to use as your
+          flashcard 'back' side. (Without a back side, you can only use standard flash cards.)
+        </p>
+        <table>
+          <thead>
+            <th v-for="(column, idx) in cards[0]" :key="column">
+              <button
+                v-if="idx !== promptIdx && !responseIndices.includes(idx)"
+                class="black"
+                @click="() => handleColumnSelection(idx)"
+              >
+                {{ promptIdx === null ? 'Use as front' : 'Use as back' }}
+              </button>
+              <p v-else-if="idx === promptIdx">Front</p>
+              <p v-else>Back</p>
+            </th>
+          </thead>
+          <tr v-for="card in cards" :key="card[0]">
+            <td v-for="column in card" :key="column">{{ column }}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
   </div>
 </template>

@@ -1,32 +1,114 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { onBeforeUnmount, ref, unref, watch, type MaybeRef } from 'vue'
 import { useKeys } from '@/composables/use-keys'
 
 const props = defineProps<{
   fronts: string[]
   backs: string[][]
-  isStopped: boolean
+  isPaused: boolean
   cardId: string
 }>()
 
-const emit = defineEmits(['miss', 'ignored', 'hit'])
+const emit = defineEmits(['miss', 'hit'])
 
-const isDelayed = ref(true)
-const cardCount = ref(-1)
-const timeout = ref<NodeJS.Timeout>()
-const timeout2 = ref<NodeJS.Timeout>()
-const className = ref<'miss' | 'ignored' | 'hit' | ''>('')
+function usePhase(
+  phases: MaybeRef<{ [name: string]: MaybeRef<number> }>,
+  { initialDelay, getIsPaused }: { initialDelay: number; getIsPaused: () => boolean }
+) {
+  const TICK_STEP = 50 // ms
+  const phase = ref('init') // exported
+  const countdown = ref(initialDelay)
+  watch(phase, () => {
+    // setTimeout allows us to make last-minute changes to phase value.
+    setTimeout(() => {
+      const newCountdown = unref(unref(phases)[phase.value])
+      countdown.value = newCountdown
+    }, 150)
+  })
 
-setTimeout(() => {
-  nextCard()
-  isDelayed.value = false
-}, Math.random() * 6000)
+  const timer = ref<NodeJS.Timeout>()
 
-const dimsum = computed(() => {
-  if (isDelayed.value) {
-    return {}
+  onBeforeUnmount(() => clearTimeout(timer.value))
+  timer.value = setInterval(() => {
+    if (!unref(getIsPaused())) {
+      countdown.value -= TICK_STEP
+    }
+    if (countdown.value <= 0) {
+      const phasesInOrder = Object.keys(unref(phases))
+      const idx = phasesInOrder.findIndex((p) => p === phase.value)
+      const nextIdx = (idx + 1) % phasesInOrder.length
+      phase.value = phasesInOrder[nextIdx]
+      countdown.value = unref(unref(phases)[phase.value])
+    }
+  }, TICK_STEP)
+  return phase
+}
+
+const revealLingerDelay = ref(0)
+const phases = ref<{ [name: string]: MaybeRef<number> }>({
+  'present-option': 5000,
+  'present-option tail-end': 2000,
+  'reveal-outcome': revealLingerDelay,
+  'refractory-phase': 2000,
+  'invisible-phase': 3000
+})
+
+const phase = usePhase(phases, {
+  getIsPaused: () => props.isPaused,
+  initialDelay: Math.floor(Math.random() * 8000)
+})
+
+const dimsum = ref<{ front: string; back: string[]; isCorrect: boolean }>()
+
+const isClicked = ref(false)
+
+watch(phase, () => {
+  if (phase.value === 'present-option') {
+    isClicked.value = false
+    dimsum.value = genNewDimSum()
   }
-  cardCount.value // accessing to force rerender
+  if (phase.value === 'reveal-outcome') {
+    revealOutcome()
+  }
+})
+
+const revealOutcome = () => {
+  if (!dimsum.value) {
+    return
+  }
+  const isCorrectActionTaken = isClicked.value === dimsum.value.isCorrect
+  if (isCorrectActionTaken) {
+    emit('hit', {
+      front: dimsum.value.front,
+      back: dimsum.value.back,
+      isCorrect: dimsum.value.isCorrect
+    })
+    revealLingerDelay.value = 1000 // no need to linger
+  } else {
+    emit('miss', {
+      front: dimsum.value.front,
+      back: dimsum.value.back,
+      isCorrect: dimsum.value.isCorrect
+    })
+    revealLingerDelay.value = 10000 // let's linger
+  }
+}
+
+const handleClick = () => {
+  if (phase.value.startsWith('present-option')) {
+    phase.value = 'reveal-outcome'
+    isClicked.value = true
+  }
+}
+
+useKeys((e: KeyboardEvent) => {
+  if (e.code == 'Key' + props.cardId && e.type !== 'keydown') {
+    e.preventDefault()
+    handleClick()
+  }
+})
+
+const genNewDimSum = () => {
   const numCards = props.fronts.length
   const idx = Math.floor(Math.random() * numCards)
   const randomIdx = Math.floor(Math.random() * (numCards - 1))
@@ -39,66 +121,6 @@ const dimsum = computed(() => {
     front: props.fronts[idx],
     back: isCorrect ? props.backs[idx] : props.backs[falseIdx]
   }
-})
-
-const emitHelper = (type: 'miss' | 'hit' | 'ignored') =>
-  emit(type, {
-    front: dimsum.value.front,
-    back: dimsum.value.back,
-    isCorrect: dimsum.value.isCorrect
-  })
-
-const nextCard = (isClicked: boolean = false) => {
-  clearTimeout(timeout.value)
-  clearTimeout(timeout2.value)
-  if (props.isStopped) {
-    return
-  }
-  let delay = 0
-  if (dimsum.value.isCorrect && !isClicked) {
-    emitHelper('miss')
-    className.value = 'miss'
-    delay = 10000
-  } else if (!dimsum.value.isCorrect && isClicked) {
-    emitHelper('miss')
-    className.value = 'miss'
-    delay = 10000
-  } else if (dimsum.value.isCorrect && isClicked) {
-    emitHelper('hit')
-    className.value = 'hit'
-    delay = 2000
-  } else if (cardCount.value > -1) {
-    emitHelper('ignored')
-    className.value = 'ignored'
-    delay = 4000
-  }
-  timeout2.value = setTimeout(() => {
-    if (props.isStopped) {
-      return
-    }
-    cardCount.value++
-    className.value = ''
-    const randomTimeWindow = 8000 + Math.random() * 4000
-    timeout.value = setTimeout(() => nextCard(), randomTimeWindow)
-  }, delay)
-}
-
-useKeys((e: KeyboardEvent) => {
-  if (e.code !== 'Key' + props.cardId || e.type !== 'keydown') {
-    return
-  }
-  e.preventDefault()
-  nextCard(true)
-})
-
-watch(props, () => {
-  if (!props.isStopped) {
-    nextCard()
-  }
-})
-
-const handleClick = () => {
-  nextCard(true)
 }
 </script>
 
@@ -108,13 +130,26 @@ const handleClick = () => {
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 100%;
+    height: 100%;
+    scale: 0.8;
+
+    rotate: -5deg;
+    &:nth-of-type(2n) {
+      rotate: 10deg;
+    }
+    &:nth-of-type(3n - 2) {
+      rotate: -10deg;
+    }
+    background: black;
   }
   button.card {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    background-color: hsl(60, 86.2%, 82.9%);
+    justify-content: space-between;
+    --background-color: hsl(60, 86.2%, 82.9%);
+    background-color: var(--background-color);
     padding: 0.5em;
     font-weight: 600;
     font-size: 2em;
@@ -122,50 +157,101 @@ const handleClick = () => {
     will-change: transform;
     color: currentColor;
     font-family: sans-serif;
-    &.isStopped {
-      filter: blur(1px);
+    cursor: default;
+    transform-origin: center;
+    @media not (hover) {
+      .card-id {
+        display: none;
+      }
     }
-    &.miss {
-      background-color: red;
-      transform: translateY(5px) rotate(1deg);
+    .front-and-back {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    &.init {
+      scale: 0.4;
+      rotate: -5deg;
+      &:nth-of-type(2n) {
+        rotate: 10deg;
+      }
+      &:nth-of-type(3n - 2) {
+        rotate: -10deg;
+      }
+      /* background: black; */
+    }
+    &.present-option {
+      cursor: pointer;
+      &:hover {
+        transform: translateY(-1px);
+        box-shadow:
+          0 1px 1px hsl(0deg 0% 0% / 0.075),
+          0 2px 2px hsl(0deg 0% 0% / 0.075),
+          0 4px 4px hsl(0deg 0% 0% / 0.075),
+          0 8px 8px hsl(0deg 0% 0% / 0.075),
+          0 16px 16px hsl(0deg 0% 0% / 0.075);
+      }
       transition:
-        background-color 0.5s,
-        transform 0.5s ease-out;
+        rotate 0.5s,
+        scale 0.5s;
+      &.tail-end {
+        transition: background-color 1s ease-in-out;
+        --background-color: hsl(60, 86.2%, 70%);
+      }
     }
-    &.ignored {
+    &.reveal-outcome,
+    &.refractory-phase,
+    &.invisible-phase {
+      transition:
+        background-color 0.1s ease-in-out,
+        transform 0.1s ease-in-out,
+        translateY 0.1s ease-in-out,
+        opacity 1s ease-in-out;
+
+      /* Miss */
+      &.isClicked,
+      &.isCorrect {
+        transform: translateY(5px) rotate(2deg);
+        --background-color: hsl(7, 71%, 57%);
+      }
+      /* Hit */
+      &.isCorrect.isClicked {
+        transform: translateY(-5px) rotate(-1deg);
+        --background-color: hsl(119, 71%, 57%);
+      }
+    }
+    &.refractory-phase {
       opacity: 0.2;
-      transition: opacity 0.5s ease-out;
     }
-    &.hit {
-      background-color: green;
-      transform: translateY(-5px) rotate(-0.5deg);
-      transition:
-        background-color 0.5s,
-        transform 0.5s ease-out;
+    &.invisible-phase {
+      opacity: 0;
     }
 
-    span.back {
+    .back {
       font-size: 80%;
     }
-    span.card-id {
+    .card-id {
       font-size: 1rem;
       font-style: italic;
       opacity: 0.5;
+      text-align: left;
+      width: 100%;
     }
   }
 }
 </style>
 
 <template>
-  <span v-if="isDelayed" class="placeholder"></span>
   <button
-    v-else
     class="card"
-    :class="[className, { isStopped: props.isStopped }]"
+    :class="[phase, { isClicked, isCorrect: dimsum?.isCorrect, isPaused: props.isPaused }]"
     @click="handleClick"
   >
-    <span>{{ dimsum.front }}</span>
-    <span class="back">{{ dimsum.back.join(', ') }}</span>
-    <span class="card-id hide-on-small-screens">{{ cardId }}</span>
+    <div class="front-and-back">
+      <div>{{ dimsum?.front }}</div>
+      <div class="back">{{ dimsum?.back.join(', ') }}</div>
+    </div>
+    <div class="card-id">{{ props.cardId }}</div>
   </button>
 </template>
