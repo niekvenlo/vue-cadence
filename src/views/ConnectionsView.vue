@@ -303,13 +303,18 @@ watch(
 
   .date-pick {
     margin-top: 6em;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    display: flex;
     justify-content: center;
     width: 100%;
     div {
+      flex-grow: 1;
+      padding-inline: 1em;
       text-align: center;
       font-size: 2em;
+      white-space: nowrap;
+    }
+    @media (max-width: 600px) {
+      flex-direction: column;
     }
   }
 

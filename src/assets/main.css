@@ -55,6 +55,7 @@ button.black {
 button.light {
   background: hsla(120deg 100% 100% / 40%);
   border: none;
+  color: currentColor;
   cursor: pointer;
   padding: 1em;
   text-transform: uppercase;
