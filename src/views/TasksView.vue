@@ -23,11 +23,11 @@ const fetcher = (verb: 'PATCH' | 'GET', { body, queryKey }: { body?: any; queryK
 const { data: tasks, isPending } = useQuery({
   queryKey: ['cads'],
   queryFn: () => fetcher('GET', {}),
-  select: (d) => ({ ...d, data: d.data.sort(sortByNextDayAndCadence) })
+  select: (d: any) => ({ ...d, data: d.data.sort(sortByNextDayAndCadence) })
 })
 
 const patchTask = useMutation({
-  mutationFn: (task) => fetcher('PATCH', { body: task, queryKey: ['cads'] })
+  mutationFn: (task: Task) => fetcher('PATCH', { body: task, queryKey: ['cads'] })
 })
 
 const markComplete = (task: Task) => {
@@ -54,11 +54,13 @@ function sortByNextDayAndCadence(a: Task, b: Task) {
   height: calc(100vh - 70px);
   overflow-y: scroll;
   scroll-snap-type: y mandatory;
+  will-change: position;
   .list-move,
   .list-enter-active,
   .list-leave-active {
     transition: all 0.3s ease-out;
     width: 100%;
+    background: white !important;
   }
 
   .list-enter-from,

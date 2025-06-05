@@ -36,3 +36,26 @@
     display: none !important;
   }
 }
+
+
+button.black {
+  background-color: black;
+  background-image: linear-gradient(-30deg, black, rgb(39, 39, 39));
+  border: none;
+  cursor: pointer;
+  color: white;
+  font-family: serif;
+  font-style: italic;
+  padding-inline: 2em;
+  padding-block: 1em;
+  text-transform: capitalize;
+  width: 100%;
+}
+
+button.light {
+  background: hsla(120deg 100% 100% / 40%);
+  border: none;
+  cursor: pointer;
+  padding: 1em;
+  text-transform: uppercase;
+}

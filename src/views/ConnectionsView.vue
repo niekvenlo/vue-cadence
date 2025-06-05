@@ -129,6 +129,17 @@ const getTiles = () => {
     .catch((err) => (error.value = err.message))
 }
 
+const modifyDate = (callback: (d: Date) => void) => {
+  if (!year.value || !month.value || !date.value) {
+    return
+  }
+  const currentDate = new Date(year.value, month.value - 1, date.value)
+  callback(currentDate)
+  year.value = currentDate.getFullYear()
+  month.value = currentDate.getMonth() + 1
+  date.value = currentDate.getDate()
+}
+
 const updateWithServerData = (data: { [key: string]: string } | null) => {
   abort.value?.abort()
   abort.value = new AbortController()
@@ -190,284 +201,214 @@ watch(
 </script>
 
 <style>
-.connections-wrapper {
-  padding-top: 1em;
+.connections-view {
+  padding: 1em;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  & > div {
-    max-width: 600px;
-    display: flex;
-    flex-direction: column;
-    gap: 1em;
-  }
-}
-
-.show-answers {
-  strong {
-    text-transform: capitalize;
-  }
-  div {
-    display: flex;
-    gap: 1em;
-  }
-}
-
-.selected {
-  display: flex;
-  flex-direction: column;
-  gap: 0.1em;
-  .selected-group {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    padding: 1.5em;
-    .tiles {
-      display: flex;
-      flex-direction: row;
-      flex-wrap: wrap;
-      gap: 2em;
-      justify-content: center;
-      align-items: center;
-      span {
-        text-wrap: none;
-      }
-    }
-    .groupName {
-      height: 2em;
-      text-align: center;
-      font-weight: bold;
-      text-transform: lowercase;
-    }
-    button {
-      height: 2em;
-      padding: 0.5em;
-      background: hsla(120deg 100% 100% / 40%);
-      border: none;
-    }
-  }
-}
-
-.correct-group {
-  padding: 2em;
-  p {
-    font-weight: 700;
-  }
-  div {
-    display: flex;
-    gap: 2em;
-  }
-  &:nth-of-type(1) {
-    background: hsl(351, 100%, 70%);
-  }
-  &:nth-of-type(2) {
-    background: hsl(61, 100%, 70%);
-  }
-  &:nth-of-type(3) {
-    background: hsl(189, 100%, 70%);
-  }
-  &:nth-of-type(4) {
-    background: hsl(108, 100%, 70%);
-  }
-}
-
-.board {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(4, 1fr);
-  gap: 0.5em;
-  padding: 0.5em;
-  .tile {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-width: min(20vw, 9em);
-    aspect-ratio: 1/1;
-    border: 0.5px solid hsl(0, 0%, 83%);
-    border-radius: 15px;
-    color: currentColor;
-    transition: translate 0.1s;
-    &:hover {
-      translate: 0 2px;
-    }
-    .label {
-      max-width: 24vw;
-      font-size: min(1.1em, 3vw);
-      font-family: sans-serif;
-    }
-    &.isLong {
-      .label {
-        transform: scale(90%) rotate(-20deg);
-      }
-    }
-    &.isSelected {
-      translate: 0 -5px;
-      z-index: 1;
-    }
-    &.isRecentlyDeselected {
-      border-color: black;
-    }
-    .highlight {
-      line-height: 0.5;
-      width: 1em;
-      aspect-ratio: 1/1;
-      border-radius: 50%;
-    }
-    &.isCorrect {
-      .highlight {
-        visibility: hidden;
-      }
-    }
-  }
-}
-
-.date-pick {
-  margin-block: 6em;
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
+  flex-wrap: wrap;
   justify-content: center;
-  button,
-  select {
-    border: none;
-  }
-  button {
-    border-radius: 10em;
-    background-color: transparent;
-    background-image: radial-gradient(
-      closest-side,
-      hsla(0 0% 0%/0.1) 0%,
-      hsla(0 0% 0%/0.1) 30%,
-      hsla(0 0% 0%/0) 100%
-    );
-    font-size: 3em;
-  }
-  select {
-    background: hsla(0 0% 0%/0.1);
-    font-size: 2em;
-    text-align: center;
-  }
-}
 
-.isYellowCorrectGroup {
-  background-color: hsl(60, 100%, 78%);
-}
-.isGreenCorrectGroup {
-  background-color: hsl(125, 100%, 78%);
-}
-.isBlueCorrectGroup {
-  background-color: hsl(204, 100%, 78%);
-}
-.isPurpleCorrectGroup {
-  background-color: hsl(276, 100%, 78%);
-}
+  .board {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    gap: 0.5em;
+    padding: 0.5em;
+    .tile {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4em;
 
-.hasYellowDot {
-  box-shadow: 0 0 5px 1px hsl(60, 100%, 78%);
+      aspect-ratio: 1/1;
+      border: 0.5px solid hsl(0, 0%, 83%);
+      border-radius: 15px;
+      color: currentColor;
+      cursor: pointer;
+      min-width: min(20vw, 9em);
+      transition: translate 0.1s;
+      .label {
+        font-size: min(1.1em, 3vw);
+        font-family: sans-serif;
+        max-width: 24vw;
+      }
+      &.isLong {
+        .label {
+          transform: scale(90%) rotate(-20deg);
+        }
+      }
+      &.isSelected {
+        border-color: hsl(0, 0%, 70%);
+        z-index: 1;
+      }
+      &.isRecentlyDeselected {
+        filter: brightness(95%);
+      }
+      .dot {
+        line-height: 0.5;
+        width: 1em;
+        aspect-ratio: 1/1;
+        border-radius: 50%;
+      }
+      &.isCorrect {
+        .dot {
+          opacity: 0;
+        }
+      }
+    }
+  }
 
-  > .highlight {
-    background-color: hsl(60, 100%, 50%);
+  .selected {
+    flex-grow: 1;
+    font-size: 1.1em;
+    font-family: sans-serif;
+    padding: 0.5em;
+    max-width: 100ch;
+    > div {
+      flex-grow: 1;
+      padding: 1.5em;
+      display: grid;
+      grid-template-columns: 1fr max-content;
+      grid-template-areas: 'tiles button';
+      align-items: center;
+      p {
+        grid-area: title;
+        display: none;
+      }
+      .tiles {
+        grid-area: tiles;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4em 3ch;
+      }
+      button {
+        grid-area: button;
+      }
+      &.isCorrect {
+        grid-template-areas:
+          'title'
+          'tiles';
+        p {
+          display: block;
+          text-transform: lowercase;
+          font-weight: 700;
+          font-size: 1.4em;
+        }
+        button {
+          display: none;
+        }
+      }
+    }
   }
-}
-.hasGreenDot {
-  box-shadow: 0 0 5px 1px hsl(125, 100%, 50%);
-  > .highlight {
-    background-color: hsl(125, 100%, 50%);
+
+  .date-pick {
+    margin-top: 6em;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    justify-content: center;
+    width: 100%;
+    div {
+      text-align: center;
+      font-size: 2em;
+    }
   }
-}
-.hasBlueDot {
-  box-shadow: 0 0 5px 1px hsl(204, 100%, 50%);
-  > .highlight {
-    background-color: hsl(204, 100%, 50%);
+
+  .isYellowCorrectGroup {
+    background-color: hsl(45, 100%, 78%);
   }
-}
-.hasPurpleDot {
-  box-shadow: 0 0 5px 1px hsl(276, 96.5%, 77.5%);
-  .highlight {
-    background-color: hsl(276, 96.5%, 77.5%);
+  .isGreenCorrectGroup {
+    background-color: hsl(125, 100%, 78%);
+  }
+  .isBlueCorrectGroup {
+    background-color: hsl(204, 100%, 78%);
+  }
+  .isPurpleCorrectGroup {
+    background-color: hsl(276, 100%, 78%);
+  }
+
+  .hasYellowDot {
+    box-shadow: 0 0 5px 1px hsl(45, 100%, 78%);
+    .dot {
+      background-color: hsl(45, 100%, 50%);
+    }
+  }
+  .hasGreenDot {
+    box-shadow: 0 0 5px 1px hsl(125, 100%, 50%);
+    .dot {
+      background-color: hsl(125, 100%, 50%);
+    }
+  }
+  .hasBlueDot {
+    box-shadow: 0 0 5px 1px hsl(204, 100%, 50%);
+    .dot {
+      background-color: hsl(204, 100%, 50%);
+    }
+  }
+  .hasPurpleDot {
+    box-shadow: 0 0 5px 1px hsl(276, 96.5%, 77.5%);
+    .dot {
+      background-color: hsl(276, 96.5%, 77.5%);
+    }
   }
 }
 </style>
 
 <template>
-  <div class="connections-wrapper">
-    <div>
-      <h1 v-if="error">{{ error }}</h1>
-      <div class="board">
-        <button
-          class="tile"
-          :class="{
-            isLong: tile.split(' ').every((w) => w.length > 9),
-            isSelected: isGroup('any', tile),
-            isCorrect: correctTiles.includes(tile),
-            isYellowCorrectGroup: correctTiles.includes(tile) && isGroup('yellow', tile),
-            isGreenCorrectGroup: correctTiles.includes(tile) && isGroup('green', tile),
-            isBlueCorrectGroup: correctTiles.includes(tile) && isGroup('blue', tile),
-            isPurpleCorrectGroup: correctTiles.includes(tile) && isGroup('purple', tile),
-            isRecentlyDeselected: lastDeselectedTiles.includes(tile),
-            hasYellowDot: isGroup('yellow', tile),
-            hasGreenDot: isGroup('green', tile),
-            hasBlueDot: isGroup('blue', tile),
-            hasPurpleDot: isGroup('purple', tile)
-          }"
-          v-for="tile in data?.startingBoard?.flat() ?? []"
-          :key="tile"
-          @click="handleTileClick(tile)"
-        >
-          <span class="label">{{ tile }}</span>
-          <span class="highlight">{{ isGroup('any', tile) ? ' ' : '' }}</span>
-        </button>
-      </div>
-
-      <div class="selected">
-        <div
-          class="selected-group"
-          v-for="(group, groupIdx) in toChunk(selectedTiles.slice(0, getLockedIdx()), 4)"
-          :key="group.toString()"
-          :class="{
-            isYellowCorrectGroup: groupIdx === 0,
-            isGreenCorrectGroup: groupIdx === 1,
-            isBlueCorrectGroup: groupIdx === 2,
-            isPurpleCorrectGroup: groupIdx === 3
-          }"
-        >
-          <div class="tiles">
-            <span v-for="tile in group" :key="tile">{{ tile }}</span>
-          </div>
-          <span class="groupName" v-if="isCorrectGroup(group)">{{ getGroupName(group) }}</span>
-          <button v-else @click="handleGroupCheckClick(group)">Check Group</button>
-        </div>
-      </div>
-
-      <div class="date-pick">
-        <button @click="year++">+</button>
-        <button @click="month++">+</button>
-        <button @click="date++">+</button>
-        <select v-model="year">
-          <option v-for="month in [2025, 2024, 2023]" :key="month">{{ month }}</option>
-        </select>
-        <select v-model="month">
-          <option v-for="month in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]" :key="month">
-            {{ month }}
-          </option>
-        </select>
-        <select v-model="date">
-          <option v-for="date in Array.from({ length: 31 }).map((_, i) => i + 1)" :key="date">
-            {{ date }}
-          </option>
-        </select>
-        <button @click="year--">-</button>
-        <button @click="month = (12 + month - 1) % 12">-</button>
-        <button @click="date--">-</button>
-      </div>
-      <p>
-        {{ data?.name }}
-      </p>
-      <p>
-        {{ data?.lastUpdated }}
-      </p>
+  <div class="connections-view">
+    <h1 v-if="error">{{ error }}</h1>
+    <div class="board">
+      <button
+        class="tile"
+        :class="{
+          isLong: tile.split(' ').every((w) => w.length > 9),
+          isSelected: isGroup('any', tile),
+          isCorrect: correctTiles.includes(tile),
+          isYellowCorrectGroup: correctTiles.includes(tile) && isGroup('yellow', tile),
+          isGreenCorrectGroup: correctTiles.includes(tile) && isGroup('green', tile),
+          isBlueCorrectGroup: correctTiles.includes(tile) && isGroup('blue', tile),
+          isPurpleCorrectGroup: correctTiles.includes(tile) && isGroup('purple', tile),
+          isRecentlyDeselected: lastDeselectedTiles.includes(tile),
+          hasYellowDot: isGroup('yellow', tile),
+          hasGreenDot: isGroup('green', tile),
+          hasBlueDot: isGroup('blue', tile),
+          hasPurpleDot: isGroup('purple', tile)
+        }"
+        v-for="tile in data?.startingBoard?.flat() ?? []"
+        :key="tile"
+        @click="handleTileClick(tile)"
+      >
+        <span class="label">{{ tile }}</span>
+        <span class="dot">{{ isGroup('any', tile) ? ' ' : '' }}</span>
+      </button>
     </div>
+    <div class="selected">
+      <div
+        v-for="(group, groupIdx) in toChunk(selectedTiles.slice(0, getLockedIdx()), 4)"
+        :key="group.toString()"
+        :class="{
+          isYellowCorrectGroup: groupIdx === 0,
+          isGreenCorrectGroup: groupIdx === 1,
+          isBlueCorrectGroup: groupIdx === 2,
+          isPurpleCorrectGroup: groupIdx === 3,
+          isCorrect: isCorrectGroup(group)
+        }"
+      >
+        <p>{{ getGroupName(group) }}</p>
+        <div class="tiles">
+          <span v-for="tile in group" :key="tile">{{ tile }}</span>
+        </div>
+        <button class="light" @click="handleGroupCheckClick(group)">Check Group</button>
+      </div>
+    </div>
+    <div class="date-pick">
+      <button class="black" @click="modifyDate((d) => d.setDate(d.getDate() - 1))">
+        yesterday
+      </button>
+      <div>{{ year }} - {{ month }} - {{ date }}</div>
+      <button class="black" @click="modifyDate((d) => d.setDate(d.getDate() + 1))">tomorrow</button>
+    </div>
+    <p>
+      {{ data?.name }}
+    </p>
   </div>
 </template>
