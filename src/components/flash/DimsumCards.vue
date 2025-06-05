@@ -18,6 +18,19 @@ const isPaused = ref(false)
 const misses = ref<{ front: string; back: string[]; isCorrect: boolean }[]>([])
 const hitsCount = ref(0)
 
+const togglePause = () => {
+  if (isPaused.value) {
+    setTimeout(() => (isPaused.value = false), 300)
+  } else {
+    isPaused.value = true
+  }
+}
+
+const resetCounters = () => {
+  misses.value = []
+  hitsCount.value = 0
+}
+
 watch(
   () => props.cards,
   () => {
@@ -44,12 +57,16 @@ watch(
     display: flex;
     flex-direction: column;
     align-items: start;
+    justify-content: space-between;
     width: 30vw;
     max-width: 30vw;
-    max-height: calc(100vh - var(--nav-height));
+    max-height: calc(100vh - var(--nav-height) - 1em);
     font-size: 1.2em;
     overflow: scroll;
     padding: 1rem;
+    & > div {
+      width: 100%;
+    }
     h1 {
       font-size: 1.4em;
     }
@@ -58,7 +75,14 @@ watch(
       flex-direction: column;
       flex-wrap: wrap;
       gap: 0.1em 1em;
-      max-height: calc(80vh - var(--nav-height));
+      max-height: calc(80vh - var(--nav-height) - 5.2em);
+      overflow-x: scroll;
+      p {
+        width: 40ch;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
     }
   }
 
@@ -112,15 +136,20 @@ watch(
         />
       </div>
       <div class="misses">
-        <button class="black" @click="isPaused = !isPaused">
-          {{ isPaused ? 'Continue' : 'Pause' }}
-        </button>
-        <h1>misses: {{ misses.length }} hits: {{ hitsCount }}</h1>
-        <div class="each-miss">
-          <p v-for="(miss, idx) in [...misses].reverse()" :key="miss.front + idx">
-            {{ miss.isCorrect ? '🟢' : '🟡' }} {{ miss.front }}
-            {{ miss.isCorrect ? 'is' : 'is not' }} {{ miss.back.join(', ') }}
-          </p>
+        <div>
+          <button class="black" @click="togglePause">
+            {{ isPaused ? 'Continue' : 'Pause' }}
+          </button>
+          <h1>misses: {{ misses.length }} hits: {{ hitsCount }}</h1>
+        </div>
+        <div>
+          <div class="each-miss">
+            <p v-for="(miss, idx) in [...misses].reverse()" :key="miss.front + idx">
+              {{ miss.isCorrect ? '🟢' : '🟡' }} {{ miss.front }}
+              {{ miss.isCorrect ? 'is' : 'is not' }} {{ miss.back.join(', ') }}
+            </p>
+          </div>
+          <button class="black" v-if="misses.length > 0" @click="resetCounters">Clear</button>
         </div>
       </div>
     </template>

@@ -78,12 +78,14 @@ const revealOutcome = () => {
   }
   const isCorrectActionTaken = isClicked.value === dimsum.value.isCorrect
   if (isCorrectActionTaken) {
-    emit('hit', {
-      front: dimsum.value.front,
-      back: dimsum.value.back,
-      isCorrect: dimsum.value.isCorrect
-    })
-    revealLingerDelay.value = 1000 // no need to linger
+    if (isClicked.value) {
+      emit('hit', {
+        front: dimsum.value.front,
+        back: dimsum.value.back,
+        isCorrect: dimsum.value.isCorrect
+      })
+      revealLingerDelay.value = 1000 // no need to linger
+    }
   } else {
     emit('miss', {
       front: dimsum.value.front,
