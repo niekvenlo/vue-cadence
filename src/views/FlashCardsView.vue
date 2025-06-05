@@ -160,18 +160,6 @@ const handleColumnSelection = (idx: number) => {
     max-width: 70ch;
     margin: auto;
   }
-  button.black {
-    background-color: black;
-    background-image: linear-gradient(-30deg, black, rgb(39, 39, 39));
-    border: none;
-    cursor: pointer;
-    color: white;
-    font-family: serif;
-    font-style: italic;
-    padding-inline: 2em;
-    padding-block: 1em;
-    width: 100%;
-  }
 }
 </style>
 

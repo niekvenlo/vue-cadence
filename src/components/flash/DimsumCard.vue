@@ -197,9 +197,21 @@ const genNewDimSum = () => {
       transition:
         rotate 0.5s,
         scale 0.5s;
+      background-image: linear-gradient(
+        to right,
+        hsla(0, 0%, 0%, 0) 0%,
+        hsla(0, 0%, 0%, 0) 50%,
+        hsla(0, 0%, 0%, 0.2) 50%,
+        hsla(0, 0%, 0%, 0.2) 100%
+      );
+      background-size: 200% 100%;
+      background-position: 100% 0;
       &.tail-end {
-        transition: background-color 1s ease-in-out;
-        --background-color: hsl(60, 86.2%, 70%);
+        transition:
+          rotate 0.5s,
+          scale 0.5s,
+          background-position 2s linear;
+        background-position: 0 0;
       }
     }
     &.reveal-outcome,
