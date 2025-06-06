@@ -222,7 +222,7 @@ watch(
 
       aspect-ratio: 1/1;
       border: 0.5px solid hsl(0, 0%, 83%);
-      border-radius: 15px;
+      border-radius: 0.5em;
       color: currentColor;
       cursor: pointer;
       min-width: min(20vw, 9em);
@@ -260,7 +260,7 @@ watch(
 
   .selected {
     flex-grow: 1;
-    font-size: 1.1em;
+    font-size: min(1.1em, 3vw);
     font-family: sans-serif;
     padding: 0.5em;
     max-width: 100ch;
@@ -270,6 +270,13 @@ watch(
       display: grid;
       grid-template-columns: 1fr max-content;
       grid-template-areas: 'tiles button';
+      @media (max-width: 600px) {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+          'tiles'
+          'button';
+        gap: 1em;
+      }
       align-items: center;
       p {
         grid-area: title;
@@ -283,6 +290,7 @@ watch(
       }
       button {
         grid-area: button;
+        width: 100%;
       }
       &.isCorrect {
         grid-template-areas:
@@ -306,13 +314,28 @@ watch(
     display: flex;
     justify-content: center;
     width: 100%;
-    div {
+    label {
       flex-grow: 1;
       padding-inline: 1em;
       text-align: center;
       font-size: 2em;
       white-space: nowrap;
+      &:focus-within {
+        background: #ddd;
+      }
+      input {
+        background: transparent;
+        border: none;
+        outline: none;
+        border-radius: 4em;
+        transform: translateY(-4px);
+        top: 0;
+        left: 0;
+        width: 0.75lh;
+        aspect-ratio: 1/1;
+      }
     }
+
     @media (max-width: 600px) {
       flex-direction: column;
     }
@@ -398,7 +421,7 @@ watch(
           isCorrect: isCorrectGroup(group)
         }"
       >
-        <p>{{ getGroupName(group) }}</p>
+        <p v-if="isCorrectGroup(group)">{{ getGroupName(group) }}</p>
         <div class="tiles">
           <span v-for="tile in group" :key="tile">{{ tile }}</span>
         </div>
@@ -409,7 +432,21 @@ watch(
       <button class="black" @click="modifyDate((d) => d.setDate(d.getDate() - 1))">
         yesterday
       </button>
-      <div>{{ year }} - {{ month }} - {{ date }}</div>
+      <label>
+        {{ year }} - {{ month }} - {{ date }}
+        <input
+          type="date"
+          :value="`${year}-${month?.toString().padStart(2, '0')}-${date?.toString().padStart(2, '0')}`"
+          @change="
+            (e) => {
+              const components = e.target?.value.split('-')
+              year = Number(components[0])
+              month = Number(components[1])
+              date = Number(components[2])
+            }
+          "
+        />
+      </label>
       <button class="black" @click="modifyDate((d) => d.setDate(d.getDate() + 1))">tomorrow</button>
     </div>
     <p>
