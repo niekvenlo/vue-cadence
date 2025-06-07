@@ -26,125 +26,101 @@ const updated = (task: Task) => {
 </script>
 
 <style>
-.task-list-card {
-  --background-color: hsl(var(--light-color));
-  height: 4.5em;
-  background: var(--background-color);
-  scroll-snap-align: start;
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 1vw;
-  padding-block: 0.5em;
-  padding-inline: 1em;
-  font-family: sans-serif;
-  &:nth-child(2n) {
-    --background-color: white;
-  }
-
-  &.isDueToday {
-    /* color: hsl(113, 85%, 18%); */
-    background-image: linear-gradient(90deg, var(--background-color), hsl(161, 100%, 94%));
-  }
-  &.isOverdue {
-    /* color: hsl(49, 100%, 22%); */
-    background-image: linear-gradient(90deg, var(--background-color), hsl(45, 100%, 94%));
-  }
-  &.isSelected {
-    --background-color: hsl(var(--light-accent-color));
+#tasksview {
+  .task-list-card {
+    --background-color: hsl(var(--light-color));
+    height: 4.5em;
+    background: var(--background-color);
+    scroll-snap-align: start;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1vw;
+    padding-block: 0.5em;
+    padding-inline: 1em;
+    font-family: sans-serif;
     &:nth-child(2n) {
-      --background-color: hsl(var(--lighter-accent-color));
+      --background-color: white;
     }
-  }
-  .title {
-    display: flex;
-    align-items: center;
-    font-size: 1.2em;
-    border: none;
-    background: unset;
-    color: currentColor;
-    text-align: left;
-  }
-  .complete-edit {
-    display: flex;
-    flex-direction: row;
-    justify-content: end;
-    gap: 0.5em;
-    margin-left: -3em;
-    backdrop-filter: blur(2px);
-  }
-  .due-every {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    font-weight: 400;
-    border: none;
-    background: unset;
-    color: currentColor;
-    @media only screen and (min-width: 600px) {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 2em;
+
+    &.isDueToday {
+      /* color: hsl(113, 85%, 18%); */
+      background-image: linear-gradient(90deg, var(--background-color), hsl(161, 100%, 94%));
+    }
+    &.isOverdue {
+      /* color: hsl(49, 100%, 22%); */
+      background-image: linear-gradient(90deg, var(--background-color), hsl(45, 100%, 94%));
+    }
+    &.isSelected {
+      --background-color: hsl(var(--light-accent-color));
+      &:nth-child(2n) {
+        --background-color: hsl(var(--lighter-accent-color));
+      }
+    }
+    .title {
+      display: flex;
       align-items: center;
+      font-size: 1.2em;
+      border: none;
+      background: unset;
+      color: currentColor;
+      text-align: left;
     }
-  }
-  .due,
-  .every,
-  .edit,
-  .complete {
-    font-size: 0.9em;
-  }
-  .due,
-  .every {
-    text-align: right;
-  }
-  .edit,
-  .complete {
-    background-color: rgba(0, 0, 0, 0.1);
-    text-transform: capitalize;
-    border-radius: 8px;
-    border-width: 0;
-    color: #333333;
-    cursor: pointer;
-    display: inline-block;
-    font-family: 'Haas Grot Text R Web', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    font-size: 0.9em;
-    font-weight: 500;
-    margin: 0;
-    padding: 10px 20px;
-    text-align: center;
-    transition: all 200ms;
-    vertical-align: baseline;
-    white-space: nowrap;
-    user-select: none;
-    -webkit-user-select: none;
-    touch-action: manipulation;
-    &:hover {
-      background-color: rgba(0, 0, 0, 0.2);
+    .complete-edit {
+      display: flex;
+      flex-direction: row;
+      justify-content: end;
+      gap: 0.5em;
+      margin-left: -3em;
+      backdrop-filter: blur(2px);
     }
-  }
-  .edit-modal {
-    display: flex;
-    flex-direction: column;
-    flex: 1 0 auto;
-    height: 100%;
-    gap: 1em;
-    justify-content: space-evenly;
-    max-width: 400px;
-    label {
+    .due-every {
       display: flex;
       flex-direction: column;
+      justify-content: space-between;
+      font-weight: 400;
+      border: none;
+      background: unset;
+      color: currentColor;
+      @media only screen and (min-width: 600px) {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2em;
+        align-items: center;
+      }
     }
-  }
-  label {
-    font-size: 0.9em;
-    color: #222;
-    input {
-      font-size: 1.1em;
+    .due,
+    .every,
+    .edit,
+    .complete {
+      font-size: 0.9em;
+    }
+    .due,
+    .every {
+      text-align: right;
+    }
+    .edit,
+    .complete {
+      background-color: rgba(0, 0, 0, 0.1);
+      text-transform: capitalize;
+      border-radius: 8px;
+      border-width: 0;
+      color: #333333;
+      cursor: pointer;
+      display: inline-block;
+      font-family: 'Haas Grot Text R Web', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 0.9em;
       font-weight: 500;
-      padding: 0.2em 1em;
-      outline: none;
-      &:focus {
-        box-shadow: var(--shadow-elevation-outline);
+      margin: 0;
+      padding: 10px 20px;
+      text-align: center;
+      transition: all 200ms;
+      vertical-align: baseline;
+      white-space: nowrap;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+      &:hover {
+        background-color: rgba(0, 0, 0, 0.2);
       }
     }
   }

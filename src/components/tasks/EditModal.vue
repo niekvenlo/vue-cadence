@@ -2,26 +2,34 @@
 import { ref } from 'vue'
 import ModalDialog from './ModalDialog.vue'
 import { getCurrentEpochDay } from '../../utils'
-import type { Task } from '@/server/db-access'
+import type { DbTask } from '@/server/db-access'
 
 const props = defineProps<{
-  task: Task
+  task: DbTask
   isOpen: boolean
+  isCreateNew?: boolean
 }>()
 
-const emit = defineEmits(['updated'])
+const emit = defineEmits(['create', 'updated', 'did-close'])
 
 const title = ref(props.task.title)
 const daysFromNow = ref(props.task.nextEpochDay - getCurrentEpochDay())
 const cadenceInDays = ref(props.task.cadenceInDays)
 
 const save = () => {
-  emit('updated', {
+  emit(props.isCreateNew ? 'create' : 'updated', {
     ...props.task,
     title: title.value,
     nextEpochDay: daysFromNow.value + getCurrentEpochDay(),
-    cadenceInDays: cadenceInDays.value
+    cadenceInDays: cadenceInDays.value,
+    meta: {
+      id: props.task.id,
+      resource: 'cads'
+    }
   })
+  if (props.isCreateNew) {
+    emit('did-close')
+  }
 }
 </script>
 
@@ -32,7 +40,12 @@ const save = () => {
 </style>
 
 <template>
-  <ModalDialog :title="`Editing: ${props.task.title}`" :isOpen="isOpen" class="edit-dialog">
+  <ModalDialog
+    :title="`${props.task.title ? 'Editing:' : 'Creating new task'} ${props.task.title}`"
+    :isOpen="isOpen"
+    class="edit-dialog"
+    @didClose="emit('did-close')"
+  >
     <div class="edit-modal" v-if="isOpen">
       <label>
         Title
@@ -57,6 +70,8 @@ const save = () => {
         <input type="number" v-model="cadenceInDays" />
       </label>
     </div>
-    <template #buttons> <button @click="save">Save</button> <button>Cancel</button> </template>
+    <template #buttons>
+      <button @click="save">Save</button> <button @click="emit('did-close')">Cancel</button>
+    </template>
   </ModalDialog>
 </template>
