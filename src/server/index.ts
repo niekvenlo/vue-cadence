@@ -13,6 +13,7 @@ import { getNYConn } from './external-api-access'
 import { getCurrentEpochDay } from '../utils'
 import type { DbTask } from './db-access'
 import { DELETE, GET, PATCH, POST, PUT } from './verbs'
+import { getUserByPw, getUserByUuid } from './user'
 
 // Adding a field to the EXPRESS REQUEST object
 declare global {
@@ -29,12 +30,6 @@ type User = {
 
 const port = process.env.PORT || 3333
 
-// PRETEND THIS IS NOT IN THE REPO, of course.
-const userLookup = <{ [key: string]: { code: string } }>{
-  '228efd89-593e-4d74-b56c-2509fd541b6b': { code: 'us' },
-  'b20b2eea-9f2f-4489-8a88-117720d77c0b': { code: 'gg' }
-}
-
 const app = express()
 app.use(cookieparser())
 app.use(cors({ origin: [/^http:\/\/(localhost|62.131.229.29)/], credentials: true }))
@@ -43,23 +38,20 @@ app.use(express.json())
 // Auth middleware
 app.use((req, res, next) => {
   const DAY = 24 * 60 * 60 * 1000
-  const cookie = (req.cookies.peanut || '') as string
-  if (userLookup[cookie]) {
-    req.user = userLookup[cookie]
+  const uuid = (req.cookies.peanut || '') as string
+  const userByUuid = getUserByUuid(uuid)
+  if (userByUuid) {
+    req.user = userByUuid
     next()
     return
   }
   if (req.path !== '/api/v2/tokens') {
-    res.json({ error: `SID: I don't think I know you.` })
+    res.json({ error: `I don't think I know you.` })
     return
   }
-  if (req.query.pw === '19') {
-    res.cookie('peanut', Object.keys(userLookup)[1], { maxAge: 90 * DAY })
-    res.json({ message: 'SID: Authorised' })
-    return
-  }
-  if (req.query.pw === '471') {
-    res.cookie('peanut', Object.keys(userLookup)[0], { maxAge: 90 * DAY })
+  const userByPw = getUserByPw(req.query.pw?.toString())
+  if (userByPw) {
+    res.cookie('peanut', userByPw.uuid, { maxAge: 90 * DAY })
     res.json({ message: 'SID: Authorised' })
     return
   }

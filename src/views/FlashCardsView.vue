@@ -112,19 +112,18 @@ const handleColumnSelection = (idx: number) => {
             border-radius: 0.3em;
             flex-grow: 1;
             height: 20vh;
-            padding: 1em 0 1em calc(1em + 20ch);
+            padding: 1em;
             align-items: center;
             justify-content: center;
             color: hsl(62, 100%, 57%);
             background-color: hsl(0, 46%, 14%);
             font-family: monospace;
-            caret-color: hsl(112, 100%, 57%);
+            caret-color: hsl(0, 0%, 0%);
             font-size: 1rem;
+            outline: none;
             &::placeholder {
               color: hsl(112, 100%, 57%);
-              transform: translateX(-20ch);
             }
-            outline: none;
           }
         }
         .dismiss {
@@ -184,7 +183,7 @@ const handleColumnSelection = (idx: number) => {
 
     <div id="data-entry-wrapper">
       <div v-if="error" class="error">{{ error }}</div>
-      <div class="top-bar">
+      <div class="top-bar" v-if="cards !== null">
         <h1>{{ isDimsumView ? 'dim sum' : 'standard' }} style</h1>
         <div>
           <button class="black" @click="isDimsumView = !isDimsumView">

@@ -18,7 +18,7 @@ const creatingTask = ref<DbTask>({
   nextEpochDay: getCurrentEpochDay() + 5,
   id: crypto.randomUUID() as string
 })
-const isCreating = ref(true)
+const isCreating = ref(false)
 
 const fetcher = (
   verb: 'GET' | 'PATCH' | 'POST',
