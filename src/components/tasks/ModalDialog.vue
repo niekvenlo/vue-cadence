@@ -4,6 +4,8 @@ const props = defineProps<{
   isOpen: boolean
   title: string
 }>()
+
+defineEmits(['did-close'])
 </script>
 
 <style>
@@ -97,7 +99,7 @@ const props = defineProps<{
 <template>
   <BasicDialog :title="props.title" :isOpen="isOpen" class="edit-dialog">
     <form method="dialog">
-      <button class="modal-close-x">
+      <button class="modal-close-x" @click="$emit('did-close')">
         <svg
           aria-hidden="true"
           focusable="false"

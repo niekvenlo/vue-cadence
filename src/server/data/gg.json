@@ -3,20 +3,48 @@
         {
             "id": "f01d955c-b950-47b0-88ae-09554b7e5737",
             "title": "Wash the bedsheets",
-            "nextEpochDay": 20246,
-            "cadenceInDays": 14
+            "nextEpochDay": 20248,
+            "cadenceInDays": 14,
+            "meta": {
+                "id": "f01d955c-b950-47b0-88ae-09554b7e5737",
+                "resource": "cads"
+            }
         },
         {
             "title": "Clean the shower doors",
             "cadenceInDays": 21,
-            "nextEpochDay": 20267,
-            "id": "efdb8179-b16f-43a6-ad18-3ca6aee0d5d1"
+            "nextEpochDay": 20263,
+            "id": "efdb8179-b16f-43a6-ad18-3ca6aee0d5d1",
+            "meta": {
+                "id": "efdb8179-b16f-43a6-ad18-3ca6aee0d5d1",
+                "resource": "cads"
+            }
         },
         {
             "title": "Take out the trash",
             "cadenceInDays": 4,
-            "nextEpochDay": 20248,
+            "nextEpochDay": 20244,
             "id": "eb9220be-02ba-4db3-988f-c0b119d4d053"
+        },
+        {
+            "title": "Take medication",
+            "cadenceInDays": 1,
+            "nextEpochDay": 20247,
+            "id": "9f61a62a-bcf6-4222-924b-9a1264b2e07c",
+            "meta": {
+                "id": "9f61a62a-bcf6-4222-924b-9a1264b2e07c",
+                "resource": "cads"
+            }
+        },
+        {
+            "title": "Put salt in the dishwasher",
+            "cadenceInDays": 200,
+            "nextEpochDay": 20396,
+            "id": "52f331e0-f342-4000-9879-32e6091338e2",
+            "meta": {
+                "id": "52f331e0-f342-4000-9879-32e6091338e2",
+                "resource": "cads"
+            }
         }
     ],
     "connections-save-data": {

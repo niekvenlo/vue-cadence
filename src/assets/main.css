@@ -37,7 +37,6 @@
   }
 }
 
-
 button.black {
   background-color: black;
   background-image: linear-gradient(-30deg, black, rgb(39, 39, 39));
@@ -59,4 +58,39 @@ button.light {
   cursor: pointer;
   padding: 1em;
   text-transform: uppercase;
+}
+
+button.floating-corner {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  font-family: serif;
+  font-style: italic;
+  padding: 1em;
+  @media (max-width: 800px) {
+    color: white;
+    background-color: black;
+    background-image: linear-gradient(-30deg, black, rgb(39, 39, 39));
+    border: none;
+    width: 100%;
+  }
+  @media (min-width: 800px) {
+    background-color: hsl(200deg, 50%, 90%);
+    margin: 0.5em;
+    width: unset;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    font-family: serif;
+    font-style: italic;
+    padding: 1em;
+    margin: 0.5em;
+    aspect-ratio: 1/1;
+    border-radius: 50%;
+    border-left: 0.5px hsl(var(--accent-color)) solid;
+    border-top: 0.5px hsl(var(--accent-color)) solid;
+    border-right: 0.5px hsl(var(--dark-shadow-color)) solid;
+    border-bottom: 0.5px hsl(var(--dark-shadow-color)) solid;
+    box-shadow: var(--shadow-elevation-medium);
+  }
 }
