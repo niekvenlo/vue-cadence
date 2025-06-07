@@ -12,7 +12,7 @@ const handleError = (err: any) => {
   clearTimeout(errors.value.get(name)?.timerId)
   const timerId = setTimeout(() => errors.value.delete(name), 3000)
   errors.value.set(name, { ...err, timerId })
-  if (name === `SID: I don't think I know you.`) {
+  if (name === `I don't think I know you.`) {
     isAuthorised.value = false
   }
 }
