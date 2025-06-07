@@ -16,7 +16,7 @@ const creatingTask = ref<DbTask>({
   title: '',
   cadenceInDays: 5,
   nextEpochDay: getCurrentEpochDay() + 5,
-  id: crypto.randomUUID() as string
+  id: ''
 })
 const isCreating = ref(false)
 
