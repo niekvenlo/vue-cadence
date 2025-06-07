@@ -8,17 +8,32 @@ const root = import.meta.env.VITE_SERVER_ROOT
 
 const queryClient = useQueryClient()
 
+const emit = defineEmits(['error'])
+
 const fetcher = (verb: 'PATCH' | 'GET', { body, queryKey }: { body?: any; queryKey?: string[] }) =>
   fetch(`${root}/api/v2/freeform${verb === 'GET' ? '/cads' : ''}`, {
     method: verb.toUpperCase(),
     body: JSON.stringify(body),
     headers: {
       'Content-Type': 'application/json'
-    }
+    },
+    credentials: 'include'
   })
     .then((response) => response.json())
-    .catch((err) => console.error(err))
-    .then((json) => queryClient.setQueryData(queryKey, json))
+    .then((json) => {
+      if (json.error) {
+        emit('error', json)
+        return null
+      }
+      if (queryKey) {
+        queryClient.setQueryData(queryKey, json)
+      }
+      return json
+    })
+    .catch((err) => {
+      emit('error', err)
+      throw new Error('Fetcher failed to fetch')
+    })
 
 const { data: tasks, isPending } = useQuery({
   queryKey: ['cads'],

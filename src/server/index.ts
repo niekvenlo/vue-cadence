@@ -14,123 +14,152 @@ import { getCurrentEpochDay } from '../utils'
 import type { DbTask } from './db-access'
 import { DELETE, GET, PATCH, POST, PUT } from './verbs'
 
+// Adding a field to the EXPRESS REQUEST object
+declare global {
+  namespace Express {
+    interface Request {
+      user: User
+    }
+  }
+}
+
+type User = {
+  code: string
+}
+
 const port = process.env.PORT || 3333
-const uuid = '228efd89-593e-4d74-b56c-2509fd541b6b' //crypto.randomUUID();
+
+// PRETEND THIS IS NOT IN THE REPO, of course.
+const userLookup = <{ [key: string]: { code: string } }>{
+  '228efd89-593e-4d74-b56c-2509fd541b6b': { code: 'us' },
+  'b20b2eea-9f2f-4489-8a88-117720d77c0b': { code: 'gg' }
+}
 
 const app = express()
 app.use(cookieparser())
-app.use(cors())
+app.use(cors({ origin: [/^http:\/\/(localhost|62.131.229.29)/], credentials: true }))
 app.use(express.json())
 
-app.get('/api/v1/getTasks', (_req, res) => {
-  res.json(getTasks())
-})
-
-app.post('/api/v1/setTasks', ({ body }, res) => {
-  const tasks = body
-  setTasks(tasks)
-  res.json(tasks)
-})
-
-app.get('/api/v1/completeTask', ({ query }, res) => {
-  const taskId = query.taskId
-  const tasks = getTasks()
-  const idx = tasks.findIndex((task) => task.id === taskId)
-  if (!taskId || idx < 0) {
-    res.status(404).json([{ error: 'not found' }])
+// Auth middleware
+app.use((req, res, next) => {
+  const DAY = 24 * 60 * 60 * 1000
+  const cookie = (req.cookies.peanut || '') as string
+  if (userLookup[cookie]) {
+    req.user = userLookup[cookie]
+    next()
     return
   }
-  const task = tasks[idx]
-  if (task.type == 'NUDGE') {
-    // remove
-    tasks.splice(idx, 1)
-  } else {
-    // reschedule
-    tasks[idx] = {
-      ...task,
-      nextEpochDay: getCurrentEpochDay() + task?.cadenceInDays
-    }
+  if (req.path !== '/api/v2/tokens') {
+    res.json({ error: `SID: I don't think I know you.` })
+    return
   }
-  tasks.forEach((t: DbTask) => delete t.daysFromNow)
-  setTasks(tasks)
-  res.json(getTasks())
+  if (req.query.pw === '19') {
+    res.cookie('peanut', Object.keys(userLookup)[1], { maxAge: 90 * DAY })
+    res.json({ message: 'SID: Authorised' })
+    return
+  }
+  if (req.query.pw === '471') {
+    res.cookie('peanut', Object.keys(userLookup)[0], { maxAge: 90 * DAY })
+    res.json({ message: 'SID: Authorised' })
+    return
+  }
+  res.json({ message: 'SID: Oh, I remember you' })
+  return
 })
 
-app.get('/api/v1/updateTask', ({ cookies, query }, res) => {
-  // if (cookies.peanut !== uuid) {
-  //   res.status(401)
-  // }
+{
+  app.get('/api/v1/getTasks', (_req, res) => {
+    res.json(getTasks())
+  })
 
-  const taskToUpdate = JSON.parse(`${query.taskJson}`)
-  const tasks = getTasks()
-  const idx = tasks.findIndex((task) => task.id === taskToUpdate.id)
-  if (idx < 0) {
-    // If the task is new, we add it:
-    tasks.push({
-      ...taskToUpdate,
-      id: crypto.randomUUID(),
-      nextEpochDay: getCurrentEpochDay() + taskToUpdate.daysFromNow
-    })
-  } else {
-    // Otherwise we update the existing task
+  app.post('/api/v1/setTasks', ({ body }, res) => {
+    const tasks = body
+    setTasks(tasks)
+    res.json(tasks)
+  })
+
+  app.get('/api/v1/completeTask', ({ query }, res) => {
+    const taskId = query.taskId
+    const tasks = getTasks()
+    const idx = tasks.findIndex((task) => task.id === taskId)
+    if (!taskId || idx < 0) {
+      res.status(404).json([{ error: 'not found' }])
+      return
+    }
     const task = tasks[idx]
-    tasks[idx] = {
-      ...task,
-      ...taskToUpdate
+    if (task.type == 'NUDGE') {
+      // remove
+      tasks.splice(idx, 1)
+    } else {
+      // reschedule
+      tasks[idx] = {
+        ...task,
+        nextEpochDay: getCurrentEpochDay() + task?.cadenceInDays
+      }
     }
-  }
-  res.json(tasks)
-  tasks.forEach((t: DbTask) => (t.nextEpochDay = getCurrentEpochDay() + t.daysFromNow!))
-  tasks.forEach((t: DbTask) => delete t.daysFromNow)
-  setTasks(tasks)
-})
+    tasks.forEach((t: DbTask) => delete t.daysFromNow)
+    setTasks(tasks)
+    res.json(getTasks())
+  })
 
-app.get('/api/v1/getNYConn', async ({ query }, res) => {
-  const year = query.year?.toString()
-  const month = query.month?.toString()
-  const date = query.date?.toString()
-  // const entry = await getNYConn({ year, month, date })
-  const entry = await checkConnectionsCache(`${year}-${month}-${date}`, () =>
-    getNYConn({ year, month, date })
-  )
-  res.json(entry)
-})
+  app.get('/api/v1/updateTask', ({ query }, res) => {
+    const taskToUpdate = JSON.parse(`${query.taskJson}`)
+    const tasks = getTasks()
+    const idx = tasks.findIndex((task) => task.id === taskToUpdate.id)
+    if (idx < 0) {
+      // If the task is new, we add it:
+      tasks.push({
+        ...taskToUpdate,
+        id: crypto.randomUUID(),
+        nextEpochDay: getCurrentEpochDay() + taskToUpdate.daysFromNow
+      })
+    } else {
+      // Otherwise we update the existing task
+      const task = tasks[idx]
+      tasks[idx] = {
+        ...task,
+        ...taskToUpdate
+      }
+    }
+    res.json(tasks)
+    tasks.forEach((t: DbTask) => (t.nextEpochDay = getCurrentEpochDay() + t.daysFromNow!))
+    tasks.forEach((t: DbTask) => delete t.daysFromNow)
+    setTasks(tasks)
+  })
 
-app.get('/api/v1/getNYConnSave', async (_req, res) => {
-  res.json(await getGetConnectionsSaveData())
-})
+  app.get('/api/v1/getNYConn', async ({ query }, res) => {
+    const year = query.year?.toString()
+    const month = query.month?.toString()
+    const date = query.date?.toString()
+    // const entry = await getNYConn({ year, month, date })
+    const entry = await checkConnectionsCache(`${year}-${month}-${date}`, () =>
+      getNYConn({ year, month, date })
+    )
+    res.json(entry)
+  })
 
-app.get('/api/v1/updateNYConnSave', async (req, res) => {
-  // if (req.cookies.peanut !== uuid) {
-  //   res.status(401)
-  // }
-  res.json(await updateGetConnectionsSaveData(req.query))
-})
+  app.get('/api/v1/getNYConnSave', async (_req, res) => {
+    res.json(await getGetConnectionsSaveData())
+  })
 
-app.get('/api/v1/getLaolun', async (_req, res) => {
-  res.json(await getLaolun())
-})
+  app.get('/api/v1/updateNYConnSave', async (req, res) => {
+    res.json(await updateGetConnectionsSaveData(req.query))
+  })
 
-app.post('/api/v1/setLaolun', async ({ body }, res) => {
-  const { pinyin, phrases } = body
-  await setLaolun({ pinyin, phrases })
-  res.json(await getLaolun())
-})
+  app.get('/api/v1/getLaolun', async (_req, res) => {
+    res.json(await getLaolun())
+  })
 
-app.get('/api/v1/cookies', (req, res) => {
-  if (req.cookies.peanut === uuid) {
-    res.json({ ok: `You're all set.` })
-  } else if (req.query.pw === 'banana') {
-    res.cookie('peanut', uuid, { maxAge: 15 * 60 * 1000 })
-    res.json({ reload: 'Password accepted. Please reload' })
-  } else {
-    res.json({ notOk: 'Who are you even?' })
-  }
-})
+  app.post('/api/v1/setLaolun', async ({ body }, res) => {
+    const { pinyin, phrases } = body
+    await setLaolun({ pinyin, phrases })
+    res.json(await getLaolun())
+  })
 
-app.post('/api/v1/uploadLaolunRecording', uploadSingleRecording, async ({ file }, res) => {
-  res.json({ message: 'File uploaded successfully', filename: file?.filename })
-})
+  app.post('/api/v1/uploadLaolunRecording', uploadSingleRecording, async ({ file }, res) => {
+    res.json({ message: 'File uploaded successfully', filename: file?.filename })
+  })
+}
 
 //////////////////////// V2
 
@@ -139,6 +168,11 @@ app.post('/api/v2/freeform', POST)
 app.patch('/api/v2/freeform', PATCH)
 app.put('/api/v2/freeform', PUT)
 app.delete('/api/v2/freeform', DELETE)
+
+app.get('/api/v2/tokens', (req, res) => {
+  // NO-OP: Cookie middleware can handle all responses.
+  res.json({ justInCase: '444' })
+})
 
 ////////////////////////
 app.listen(port, () => {

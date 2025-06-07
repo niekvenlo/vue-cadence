@@ -1,0 +1,28 @@
+{
+    "tasks": [
+        {
+            "id": "f01d955c-b950-47b0-88ae-09554b7e5737",
+            "title": "Wash the bedsheets",
+            "nextEpochDay": 20246,
+            "cadenceInDays": 14
+        },
+        {
+            "title": "Clean the shower doors",
+            "cadenceInDays": 21,
+            "nextEpochDay": 20267,
+            "id": "efdb8179-b16f-43a6-ad18-3ca6aee0d5d1"
+        },
+        {
+            "title": "Take out the trash",
+            "cadenceInDays": 4,
+            "nextEpochDay": 20248,
+            "id": "eb9220be-02ba-4db3-988f-c0b119d4d053"
+        }
+    ],
+    "connections-save-data": {
+        "sharedDate": "2024-05-26",
+        "sharedTiles": "",
+        "sharedCorrectTiles": "",
+        "correctTiles": ""
+    }
+}

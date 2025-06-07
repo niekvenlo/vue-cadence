@@ -6,6 +6,9 @@ import { numIsBetween, toChunk } from '@/utils'
 type Color = 'yellow' | 'green' | 'blue' | 'purple'
 
 const root = import.meta.env.VITE_SERVER_ROOT
+
+const emit = defineEmits(['error'])
+
 const HYPHEN = '-'
 
 const error = ref('')
@@ -118,11 +121,17 @@ const getTiles = () => {
     params.append('month', month.value.toString())
     params.append('date', date.value.toString())
   }
-  fetch(`${root}/api/v1/getNYConn?${params}`, {})
+  fetch(`${root}/api/v1/getNYConn?${params}`, {
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    credentials: 'include'
+  })
     .then((response) => response.json())
     .then((json) => {
+      error.value = json.error
       if (json.error) {
-        error.value = json.error
+        emit('error', json)
       }
       data.value = json
     })
@@ -152,10 +161,19 @@ const updateWithServerData = (data: { [key: string]: string } | null) => {
     })
     url = `${root}/api/v1/updateNYConnSave?${params}`
   }
-  fetch(url, { signal: abort.value.signal })
+  fetch(url, {
+    signal: abort.value.signal,
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    credentials: 'include'
+  })
     .then((response) => response.json())
     .then((json) => {
       error.value = json.error
+      if (json.error) {
+        emit('error', json)
+      }
       const { sharedDate, sharedTiles, sharedCorrectTiles } = json
       const [yyyy, mm, dd] = sharedDate.split(HYPHEN)
       year.value = Number(yyyy)
@@ -439,7 +457,8 @@ watch(
           :value="`${year}-${month?.toString().padStart(2, '0')}-${date?.toString().padStart(2, '0')}`"
           @change="
             (e) => {
-              const components = e.target?.value.split('-')
+              const target = e.target as HTMLInputElement
+              const components = target?.value.split('-')
               year = Number(components[0])
               month = Number(components[1])
               date = Number(components[2])

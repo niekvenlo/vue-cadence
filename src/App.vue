@@ -1,18 +1,38 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { ref } from 'vue'
 
-<template>
-  <div class="app-wrapper">
-    <nav class="app-navigation">
-      <RouterLink to="/tasks">任务</RouterLink>
-      <RouterLink to="/flash" class="hide-on-small-screens">卡</RouterLink>
-      <RouterLink to="/laolun">劳伦</RouterLink>
-      <RouterLink to="/connections">连接</RouterLink>
-    </nav>
-    <div class="app-page">
-      <RouterView />
-    </div>
-  </div>
-</template>
+const root = import.meta.env.VITE_SERVER_ROOT
+
+const isAuthorised = ref(true)
+const tokenName = ref('')
+const errors = ref<Map<string, any>>(new Map())
+
+const handleError = (err: any) => {
+  const name = err.error || err.message
+  clearTimeout(errors.value.get(name)?.timerId)
+  const timerId = setTimeout(() => errors.value.delete(name), 3000)
+  errors.value.set(name, { ...err, timerId })
+  if (name === `SID: I don't think I know you.`) {
+    isAuthorised.value = false
+  }
+}
+
+const requestToken = () =>
+  fetch(`${root}/api/v2/tokens?pw=${tokenName.value}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    credentials: 'include'
+  })
+    .then((response) => response.json())
+    .then((json) => {
+      isAuthorised.value = !json.error
+    })
+    .catch((err) => {
+      handleError(err)
+    })
+</script>
 
 <style>
 .app-wrapper {
@@ -50,8 +70,68 @@
   }
 }
 
+.unauthorised {
+  background: orange;
+  height: 100%;
+  div {
+    flex-grow: 1;
+    height: 70vh;
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    justify-content: center;
+    align-items: center;
+    input {
+      font-size: 4em;
+      text-align: center;
+      border: none;
+      background-color: transparent;
+      outline: none;
+    }
+  }
+}
+
 .app-page {
   flex-grow: 1;
   overflow: scroll;
 }
+
+.errors {
+  display: flex;
+  flex-direction: column;
+  p {
+    padding: 1em;
+    background-image: linear-gradient(to bottom right, hsl(0, 61%, 36%), hsl(0, 61%, 30%));
+    color: white;
+    font-weight: 500;
+  }
+}
 </style>
+
+<template>
+  <div class="app-wrapper">
+    <nav class="app-navigation">
+      <RouterLink to="/tasks">任务</RouterLink>
+      <RouterLink to="/flash" @click="isAuthorised = true" class="hide-on-small-screens"
+        >卡</RouterLink
+      >
+      <RouterLink to="/laolun">劳伦</RouterLink>
+      <RouterLink to="/connections">连接</RouterLink>
+    </nav>
+    <div class="unauthorised" v-if="!isAuthorised">
+      <div>
+        <h1>Who are you?</h1>
+        <input type="text" v-model="tokenName" />
+        <button class="black" @click="requestToken">I'm cool</button>
+      </div>
+    </div>
+    <div class="app-page" v-else>
+      <RouterView @error="handleError" />
+    </div>
+    <div class="errors">
+      <p v-for="message in errors.keys()" :key="message">
+        {{ message }}
+      </p>
+    </div>
+  </div>
+</template>

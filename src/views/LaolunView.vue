@@ -11,6 +11,8 @@ import {
 
 const root = import.meta.env.VITE_SERVER_ROOT
 
+const emit = defineEmits(['error'])
+
 type Phrase = {
   label: string
   parts: string[][]
@@ -18,7 +20,12 @@ type Phrase = {
 }
 
 const phrases = ref<undefined | Phrase[]>([])
-fetch(`${root}/api/v1/getLaolun`, {})
+fetch(`${root}/api/v1/getLaolun`, {
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  credentials: 'include'
+})
   .then((response) => response.json())
   .then((json) => {
     const addPinyin = (segment: string) => {
@@ -30,7 +37,7 @@ fetch(`${root}/api/v1/getLaolun`, {})
           (hanzi, i) => [hanzi, segmentPinyinArr[i], segmentTonesArr[i]] as [string, string, string]
         )
     }
-    const intermediateValue = json.phrases as { label: string; parts: string[][] }[]
+    const intermediateValue = (json.phrases || []) as { label: string; parts: string[][] }[]
     const selectedPhrases = [
       ...toShuffledPseudoRandom(
         intermediateValue.filter((_, idx, arr) => getPseudoRandomNumber(arr.length - idx) < 10)
@@ -43,6 +50,9 @@ fetch(`${root}/api/v1/getLaolun`, {})
       ...phrase,
       pickOne: () => phrase.parts.map((part) => addPinyin(getPseudoRandomElement(part)))
     }))
+  })
+  .catch((err) => {
+    emit('error', err)
   })
 
 const shuffledPhrases = computed(() => toChunk(phrases.value || [], 20))
