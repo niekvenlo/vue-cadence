@@ -116,6 +116,7 @@ const requestToken = () =>
         >卡</RouterLink
       >
       <RouterLink to="/laolun">劳伦</RouterLink>
+      <RouterLink to="/demo">示范</RouterLink>
       <RouterLink to="/connections">连接</RouterLink>
     </nav>
     <div class="unauthorised" v-if="!isAuthorised">
@@ -128,7 +129,7 @@ const requestToken = () =>
     <div class="app-page" v-else>
       <RouterView @error="handleError" />
     </div>
-    <div class="errors">
+    <div class="errors" v-if="[...errors.keys()].length">
       <p v-for="message in errors.keys()" :key="message">
         {{ message }}
       </p>
