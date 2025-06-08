@@ -7,7 +7,7 @@ const getCadsFileName = (req: Request) => {
     gg: 'src/server/data/gg.json'
   }
   const userCode = req.user.code
-  const fileName = fileNames[userCode]
+  const fileName = fileNames[userCode] || ''
   return fileName
 }
 
