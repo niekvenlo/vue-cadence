@@ -161,6 +161,11 @@ const genNewDimSum = () => {
     font-family: sans-serif;
     cursor: default;
     transform-origin: center;
+    box-shadow:
+      0 1px 1px hsl(0deg 0% 0% / 0.075),
+      0 2px 2px hsl(0deg 0% 0% / 0.075),
+      0 4px 4px hsl(0deg 0% 0% / 0.075),
+      0 8px 8px hsl(0deg 0% 0% / 0.075);
     @media not (hover) {
       .card-id {
         display: none;
@@ -199,10 +204,10 @@ const genNewDimSum = () => {
         scale 0.5s;
       background-image: linear-gradient(
         to right,
-        hsla(0, 0%, 0%, 0) 0%,
-        hsla(0, 0%, 0%, 0) 50%,
-        hsla(0, 0%, 0%, 0.2) 50%,
-        hsla(0, 0%, 0%, 0.2) 100%
+        hsla(0, 0%, 0%, 0.1) 0%,
+        hsla(0, 0%, 0%, 0.1) 50%,
+        hsla(0, 0%, 0%, 0) 51%,
+        hsla(0, 0%, 0%, 0) 100%
       );
       background-size: 200% 100%;
       background-position: 100% 0;
@@ -217,6 +222,7 @@ const genNewDimSum = () => {
     &.reveal-outcome,
     &.refractory-phase,
     &.invisible-phase {
+      background-image: linear-gradient(hsla(0, 0%, 0%, 0.1));
       transition:
         background-color 0.1s ease-in-out,
         transform 0.1s ease-in-out,
@@ -241,7 +247,6 @@ const genNewDimSum = () => {
     &.invisible-phase {
       opacity: 0;
     }
-
     .back {
       font-size: 80%;
     }
