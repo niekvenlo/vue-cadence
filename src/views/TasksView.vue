@@ -88,6 +88,7 @@ function sortByNextDayAndCadence(a: Task, b: Task) {
   .list {
     padding: 0;
     padding-top: 2px;
+    padding-bottom: 2em;
     height: calc(100vh - 70px);
     overflow-y: scroll;
     scroll-snap-type: y mandatory;

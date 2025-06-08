@@ -219,7 +219,7 @@ const handleColumnSelection = (idx: number) => {
           Now that you have selected the 'front', you may also choose which columns to use as your
           flashcard 'back' side. (Without a back side, you can only use standard flash cards.)
         </p>
-        <table>
+        <table cellpadding="0">
           <thead>
             <th v-for="(column, idx) in cards[0]" :key="column">
               <button
