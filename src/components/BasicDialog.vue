@@ -31,11 +31,12 @@ dialog {
   transform: translateX(-50%) translateY(50%);
   border: none;
   padding: 0;
+  --delay: 0.4s;
   transition:
-    transform 0.5s ease-out,
-    display 0.5s allow-discrete,
-    overlay 0.5s allow-discrete,
-    opacity 0.5s;
+    transform var(--delay) ease-out,
+    display var(--delay) allow-discrete,
+    overlay var(--delay) allow-discrete,
+    opacity var(--delay);
   opacity: 0;
 
   &[open] {
@@ -48,6 +49,15 @@ dialog {
       @media (prefers-reduced-motion: reduce) {
         transform: translateX(-50%) translateY(-50%);
       }
+    }
+  }
+  @media (max-width: 400px) {
+    & {
+      padding-top: 3em;
+      top: 100%;
+    }
+    &[open] {
+      transform: translateX(-50%) translateY(-100%);
     }
   }
 }

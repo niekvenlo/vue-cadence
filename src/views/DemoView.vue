@@ -1,20 +1,43 @@
 <script setup lang="ts">
-// import { ref, watch } from 'vue'
+import { onBeforeUnmount, onMounted, ref } from 'vue'
+
+const box = ref<HTMLDivElement>()
+const observer = ref()
+const isExpanded = ref(false)
+
+onMounted(() => {
+  if (box.value == undefined) {
+    return
+  }
+  observer.value = new IntersectionObserver(
+    (entries) => entries.forEach((entry) => (isExpanded.value = entry.intersectionRatio > 0.90)),
+    { threshold: [0.5, 0.91] }
+  )
+  observer.value.observe(box.value)
+})
+onBeforeUnmount(() => observer.value.unobserve(box.value))
 </script>
 
 <style>
 .demo-view {
-  --duration: 0.5s;
-  height: 200vh;
-  padding-top: 10em;
+  --duration: 0.6s;
+  height: 300vh;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  background-color: hsl(269, 100%, 25%);
+  h1 {
+    font-family: sans-serif;
+    font-size: 4em;
+    font-weight: bold;
+    color: white;
+    padding-top: 8em;
+  }
   .box {
     position: relative;
     height: 100vmin;
     width: 100vmin;
-    background: white;
-    border: none;
   }
   .explore,
   .sepanta,
@@ -26,11 +49,11 @@
     background-size: cover;
     height: 90vmin;
     transition:
-      scale var(--duration) var(--duration) ease-in-out,
-      translate var(--duration) var(--duration) ease-in-out,
-      height var(--duration) var(--duration),
-      width var(--duration) var(--duration),
-      opacity var(--duration) var(--duration);
+      scale var(--duration)  ease-in-out,
+      translate var(--duration) ease-in-out,
+      height var(--duration),
+      width var(--duration),
+      opacity var(--duration);
   }
   .explore {
     aspect-ratio: 1/2.1;
@@ -83,43 +106,40 @@
     width: 40vmin;
   }
   .lisa {
+    height: 71vmin;
     scale: 0.31;
     translate: 38vmin -16vmin;
-    height: 71vmin;
     width: 44vmin;
   }
   .profile {
-    scale: 0.88;
-    translate: 25vmin 3vmin;
     opacity: 0;
+    scale: 0.9;
+    translate: 22vmin -2vmin;
   }
-  .box:focus-within {
+  .box.isExpanded {
     .explore {
       translate: 53vmin 7vmin;
     }
     .profile {
-      translate: 3vmin -2vmin;
       opacity: 1;
       scale: 0.9;
+      translate: 3vmin -2vmin;
     }
-    .sepanta {
-      scale: 1;
-      height: 79vmin;
-      width: 41vmin;
-      translate: 54vmin 12vmin;
-      &::before {
+    .sepanta::before, .lisa::before {
         opacity: 1;
         transition: opacity var(--duration) var(--duration);
-      }
+    }
+    .sepanta {
+      height: 79vmin;
+      scale: 1;
+      translate: 54vmin 12vmin;
+      width: 41vmin;
     }
     .lisa {
-      scale: 1;
       height: 79vmin;
-      width: 41vmin;
+      scale: 1;
       translate: 54vmin 12vmin;
-      &::before {
-        opacity: 1;
-      }
+      width: 41vmin;
       &:hover {
         opacity: 0;
       }
@@ -130,11 +150,12 @@
 
 <template>
   <div class="demo-view">
-    <button class="box" tabindex="1">
+    <h1>F2F demo</h1>
+    <div class="box" :class="{ isExpanded }" ref="box">
       <div class="profile"></div>
       <div class="explore"></div>
       <div class="sepanta"></div>
       <div class="lisa"></div>
-    </button>
+    </div>
   </div>
 </template>

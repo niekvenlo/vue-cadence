@@ -46,7 +46,7 @@ const save = () => {
     class="edit-dialog"
     @didClose="emit('did-close')"
   >
-    <div class="edit-modal" v-if="isOpen">
+    <div class="edit-modal" :aria-hidden="!isOpen">
       <label>
         Title
         <input type="text" v-model="title" />
