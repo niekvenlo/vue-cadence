@@ -5,16 +5,16 @@
 <style>
 .demo-view {
   --duration: 0.5s;
-  background: #ede;
   height: 200vh;
   padding-top: 10em;
   display: flex;
   justify-content: center;
   .box {
     position: relative;
-    background: #ded;
-    height: 85vmin;
-    width: 85vmin;
+    height: 100vmin;
+    width: 100vmin;
+    background: white;
+    border: none;
   }
   .explore,
   .sepanta,
@@ -24,7 +24,7 @@
     top: 0;
     left: 0;
     background-size: cover;
-    height: 80vmin;
+    height: 90vmin;
     transition:
       scale var(--duration) var(--duration) ease-in-out,
       translate var(--duration) var(--duration) ease-in-out,
@@ -78,47 +78,50 @@
   }
   .sepanta {
     scale: 0.63;
-    translate: 19vmin 16.2vmin;
-    height: 60vmin;
+    translate: 19vmin 18vmin;
+    height: 70vmin;
+    width: 40vmin;
   }
   .lisa {
     scale: 0.31;
-    translate: 37vmin -14.8vmin;
-    height: 65vmin;
+    translate: 38vmin -16vmin;
+    height: 71vmin;
+    width: 44vmin;
   }
   .profile {
     scale: 0.88;
     translate: 25vmin 3vmin;
     opacity: 0;
   }
-  .box:hover {
-    .lisa {
-      scale: 1;
-      height: 70vmin;
-      width: 36.2vmin;
-      translate: 43vmin 10vmin;
-      &::before {
-        opacity: 1;
-      }
-    }
-  }
-  .box:hover {
+  .box:focus-within {
     .explore {
-      translate: 42vmin 5vmin;
+      translate: 53vmin 7vmin;
     }
     .profile {
-      translate: 2vmin -2vmin;
+      translate: 3vmin -2vmin;
       opacity: 1;
-      scale: 0.95;
+      scale: 0.9;
     }
     .sepanta {
       scale: 1;
-      height: 70vmin;
-      width: 36.2vmin;
-      translate: 43vmin 10vmin;
+      height: 79vmin;
+      width: 41vmin;
+      translate: 54vmin 12vmin;
       &::before {
         opacity: 1;
         transition: opacity var(--duration) var(--duration);
+      }
+    }
+    .lisa {
+      scale: 1;
+      height: 79vmin;
+      width: 41vmin;
+      translate: 54vmin 12vmin;
+      &::before {
+        opacity: 1;
+      }
+      &:hover {
+        opacity: 0;
       }
     }
   }
@@ -127,11 +130,11 @@
 
 <template>
   <div class="demo-view">
-    <div class="box" tabindex="1">
+    <button class="box" tabindex="1">
       <div class="profile"></div>
       <div class="explore"></div>
       <div class="sepanta"></div>
       <div class="lisa"></div>
-    </div>
+    </button>
   </div>
 </template>
