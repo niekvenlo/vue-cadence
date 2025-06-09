@@ -1,27 +1,50 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 
 const box = ref<HTMLDivElement>()
-const observer = ref()
+const ts = ref(Date.now())
 const isExpanded = ref(false)
-
-onMounted(() => {
-  if (box.value == undefined) {
+const scrollHandler = ref(() => {
+  if (Date.now() - ts.value < 30) {
     return
   }
-  observer.value = new IntersectionObserver(
-    (entries) => entries.forEach((entry) => (isExpanded.value = entry.intersectionRatio > 0.90)),
-    { threshold: [0.5, 0.91] }
-  )
-  observer.value.observe(box.value)
+  ts.value = Date.now()
+  const scrollFromTop = box.value?.getBoundingClientRect().top ?? 0
+  isExpanded.value = scrollFromTop < 60
 })
-onBeforeUnmount(() => observer.value.unobserve(box.value))
+
+onMounted(() =>
+  document.querySelector('.app-page')?.addEventListener('scroll', scrollHandler.value)
+)
+onUnmounted(() =>
+  document.querySelector('.app-page')?.removeEventListener('scroll', scrollHandler.value)
+)
+
+const messages = ref<string[]>([])
+const ws = ref(new WebSocket('ws://localhost:8080'))
+ws.value.onmessage = (event) => {
+  console.log(event.data)
+  messages.value.push(event.data)
+}
+
+const send = () =>
+  ws.value.send(Date.now() + ": Here's some text that the server is urgently awaiting!")
 </script>
 
 <style>
 .demo-view {
+  .message {
+    display: block;
+    padding: 1em;
+    margin: 0.3em;
+    color: white;
+    background: hsla(0, 88%, 44%, 0.4);
+    width: 100%;
+    text-align: center;
+  }
+
   --duration: 0.6s;
-  height: 300vh;
+  height: 400vh;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -49,7 +72,7 @@ onBeforeUnmount(() => observer.value.unobserve(box.value))
     background-size: cover;
     height: 90vmin;
     transition:
-      scale var(--duration)  ease-in-out,
+      scale var(--duration) ease-in-out,
       translate var(--duration) ease-in-out,
       height var(--duration),
       width var(--duration),
@@ -125,9 +148,10 @@ onBeforeUnmount(() => observer.value.unobserve(box.value))
       scale: 0.9;
       translate: 3vmin -2vmin;
     }
-    .sepanta::before, .lisa::before {
-        opacity: 1;
-        transition: opacity var(--duration) var(--duration);
+    .sepanta::before,
+    .lisa::before {
+      opacity: 1;
+      transition: opacity var(--duration) var(--duration);
     }
     .sepanta {
       height: 79vmin;
@@ -150,6 +174,7 @@ onBeforeUnmount(() => observer.value.unobserve(box.value))
 
 <template>
   <div class="demo-view">
+    <p class="message" v-for="m in messages" :key="m" @click="send">{{ m }}</p>
     <h1>F2F demo</h1>
     <div class="box" :class="{ isExpanded }" ref="box">
       <div class="profile"></div>
