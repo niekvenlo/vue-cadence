@@ -89,38 +89,12 @@ const updated = (task: Task) => {
       }
     }
     .due,
-    .every,
-    .edit,
-    .complete {
-      font-size: 0.9em;
-    }
-    .due,
     .every {
-      text-align: right;
-    }
-    .edit,
-    .complete {
-      background-color: rgba(0, 0, 0, 0.1);
-      text-transform: capitalize;
-      border-radius: 8px;
-      border-width: 0;
-      color: #333333;
-      cursor: pointer;
-      display: inline-block;
-      font-family: 'Haas Grot Text R Web', 'Helvetica Neue', Helvetica, Arial, sans-serif;
       font-size: 0.9em;
-      font-weight: 500;
-      margin: 0;
-      padding: 10px 20px;
-      text-align: center;
-      transition: all 200ms;
-      vertical-align: baseline;
-      white-space: nowrap;
-      user-select: none;
-      -webkit-user-select: none;
-      touch-action: manipulation;
-      &:hover {
-        background-color: rgba(0, 0, 0, 0.2);
+
+      .due,
+      .every {
+        text-align: right;
       }
     }
   }
@@ -149,8 +123,8 @@ const updated = (task: Task) => {
     <button class="title" @click="isSelected = !isSelected">{{ props.task.title }}</button>
     <template v-if="isSelected">
       <div class="complete-edit">
-        <button class="edit" @click="isEditing = true">edit</button>
-        <button class="complete" @click="completed">complete</button>
+        <button class="light" @click="isEditing = true">edit</button>
+        <button class="light" @click="completed">complete</button>
       </div>
     </template>
     <template v-else>

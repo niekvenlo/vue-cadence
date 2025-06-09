@@ -12,12 +12,16 @@ defineEmits(['did-close'])
 .edit-dialog {
   box-shadow: var(--shadow-elevation-high);
 
-  transition: min-width 0.2s;
-  min-width: 400px;
-  @media screen and (max-width: 500px) {
+  transition: min-width 0.2s,
+    transform var(--delay) ease-out,
+    display var(--delay) allow-discrete,
+    overlay var(--delay) allow-discrete,
+    opacity var(--delay);
+  min-width: 350px;
+  min-height: 15ch;
+  @media (max-width: 400px) {
     min-width: 100%;
   }
-  min-height: 15ch;
 }
 ::backdrop {
   background-image: linear-gradient(100deg, black, white, black);
