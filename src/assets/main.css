@@ -57,6 +57,7 @@ button.light {
   border: none;
   color: currentColor;
   cursor: pointer;
+  font-style: normal;
   padding: 1em;
   text-transform: uppercase;
   white-space: nowrap;
