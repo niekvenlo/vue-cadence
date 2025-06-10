@@ -4,6 +4,14 @@ import FlashCards from '@/components/flash/FlashCards.vue'
 import DimSumCards from '@/components/flash/DimsumCards.vue'
 import { shuffleArray } from '../utils'
 
+const dummyCards = {
+  Amsterdam: 'The Netherlands',
+  'Kuala Lumpur': 'Malaysia',
+  Tehran: 'Iran',
+  Beijing: 'China',
+  Paris: 'France',
+  Lima: 'Peru'
+}
 const cards = ref<string[][] | null>(null)
 const error = ref<string>('')
 const promptIdx = ref<number | null>(null)
@@ -75,8 +83,11 @@ const handleColumnSelection = (idx: number) => {
       display: flex;
       justify-content: space-between;
       h1 {
+        width: 50%;
         text-transform: capitalize;
-        flex-grow: 1;
+        text-align: center;
+        margin-top: 0.5em;
+        margin-bottom: 0;
       }
       div {
         flex-grow: 1;
@@ -90,6 +101,9 @@ const handleColumnSelection = (idx: number) => {
     table {
       width: 100%;
       border-collapse: collapse;
+      th {
+        height: 6em;
+      }
       th,
       td {
         padding-inline: 2vw;
@@ -107,6 +121,11 @@ const handleColumnSelection = (idx: number) => {
           width: max-content;
         }
       }
+      &.dummy-data {
+        th {
+          height: unset;
+        }
+      }
     }
   }
   h2 {
@@ -118,6 +137,9 @@ const handleColumnSelection = (idx: number) => {
     font-size: 1.2em;
     max-width: 70ch;
     margin: auto;
+    p {
+      margin: 0.7lh;
+    }
     div {
       position: relative;
       &:focus-within::before {
@@ -132,8 +154,8 @@ const handleColumnSelection = (idx: number) => {
         left: 0;
         font-family: sans-serif;
         font-size: 10vmin;
-        color: hsl(269, 100%, 25%);
-        text-shadow: white 0px 0px 3px;
+        color: hsl(60, 86.2%, 82.9%);
+        text-shadow: black 0px 0px 3px;
         pointer-events: none;
       }
     }
@@ -151,8 +173,8 @@ const handleColumnSelection = (idx: number) => {
         background-image: radial-gradient(circle at center center, #1a8fe5, #e4e4ed),
           repeating-radial-gradient(
             circle at center center,
-            hsl(269, 100%, 95%),
-            hsl(269, 100%, 95%),
+            hsla(69, 100%, 90%, 0.5),
+            hsla(0, 100%, 90%, 0.5),
             22px,
             transparent 34px,
             transparent 22px
@@ -186,7 +208,7 @@ const handleColumnSelection = (idx: number) => {
 
     <div id="data-entry-wrapper">
       <div class="top-bar">
-        <h1>{{ isDimsumView ? 'dim sum' : 'standard' }} style</h1>
+        <h1>Flash cards</h1>
         <div>
           <button class="black" @click="isDimsumView = !isDimsumView">
             Switch to {{ isDimsumView ? 'standard flash cards' : 'dim sum' }}
@@ -207,10 +229,33 @@ const handleColumnSelection = (idx: number) => {
             spellcheck="false"
           />
         </div>
+        <p>
+          Here's an example table. You can try selecting, copying and then pasting this into the box
+          above.
+        </p>
+        <p>
+          Avoid copying the header, or you'll get a card with "City" on the front, and "Country" on
+          the back.
+        </p>
+        <table cellpadding="0" class="dummy-data">
+          <thead>
+            <th>City</th>
+            <th>Country</th>
+          </thead>
+          <tr v-for="[city, country] in Object.entries(dummyCards)" :key="country">
+            <td>{{ city }}</td>
+            <td>{{ country }}</td>
+          </tr>
+        </table>
       </div>
       <div class="explanation" v-else-if="promptIdx === null">
         <h2>Step 2</h2>
-        <p>You need to choose a column to use as your flashcard 'front' side.</p>
+        <p>You have {{ cards.length }} cards!</p>
+        <p>
+          Flashcards usually have two sides. You'll need at least one to get started. You need to
+          choose a column to use as your flashcard 'front' side.
+        </p>
+        <p>(To load different cards, you can hit the "Forget cards" button at the top.)</p>
         <p v-if="!isDimsumView">
           (Since you have selected standard style, when you make your choice, the cards will
           automatically scroll into view.)
@@ -219,14 +264,17 @@ const handleColumnSelection = (idx: number) => {
       <div class="explanation" v-else-if="isOnlyOneColumn">
         <h2>Step 3</h2>
         <p>The data you've pasted only has one column, so you can only use standard flash cards.</p>
+        <p>(To load different cards, you can hit the "Forget cards" button at the top.)</p>
       </div>
       <div class="explanation" v-else>
         <h2>Step 3</h2>
         <p>You may also choose which columns to use as your flashcard 'back' side.</p>
         <p>
-          (Dimsum style requires a back side. Without a back side, you can only use standard flash
-          cards.)
+          A back side is not required for standard flash cards. You can simply look at the fronts of
+          these cards and check if you know them. However, to use the dimsum game, you do need to
+          choose at least one 'back' side column.
         </p>
+        <p v-if="isDimsumView">Choose a back column if you want to use dim sum cards.</p>
       </div>
 
       <div v-if="error" class="error">{{ error }}</div>
@@ -239,11 +287,7 @@ const handleColumnSelection = (idx: number) => {
               class="light"
               @click="() => handleColumnSelection(idx)"
             >
-              {{
-                promptIdx === null
-                  ? 'Use this column for the front'
-                  : 'Use this column for the back'
-              }}
+              {{ promptIdx === null ? 'Use column for front' : 'Use column for back' }}
             </button>
             <p v-else-if="idx === promptIdx">Front</p>
             <p v-else>Back</p>
