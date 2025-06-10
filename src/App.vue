@@ -12,7 +12,7 @@ const handleError = (err: any) => {
   clearTimeout(errors.value.get(name)?.timerId)
   const timerId = setTimeout(() => errors.value.delete(name), 3000)
   errors.value.set(name, { ...err, timerId })
-  if (name === `I don't think I know you.`) {
+  if (name === `Not recognised`) {
     isAuthorised.value = false
   }
 }
@@ -27,11 +27,14 @@ const requestToken = () =>
   })
     .then((response) => response.json())
     .then((json) => {
+      console.log(json.error)
       isAuthorised.value = !json.error
     })
     .catch((err) => {
       handleError(err)
     })
+
+requestToken()
 </script>
 
 <style>
@@ -72,7 +75,7 @@ const requestToken = () =>
 
 .unauthorised {
   background: orange;
-  height: 100%;
+  height: 100vh;
   div {
     flex-grow: 1;
     height: 70vh;
@@ -109,8 +112,15 @@ const requestToken = () =>
 </style>
 
 <template>
-  <div class="app-wrapper">
-    <nav class="app-navigation">
+  <div class="unauthorised" v-if="!isAuthorised && $route.fullPath !== '/flash'">
+    <div>
+      <h1>Who are you?</h1>
+      <input type="text" v-model="tokenName" />
+      <button class="black" @click="requestToken">I'm cool</button>
+    </div>
+  </div>
+  <div class="app-wrapper" v-else>
+    <nav class="app-navigation" v-if="isAuthorised">
       <RouterLink to="/tasks">任务</RouterLink>
       <RouterLink to="/flash" @click="isAuthorised = true" class="hide-on-small-screens"
         >卡</RouterLink
@@ -119,14 +129,7 @@ const requestToken = () =>
       <RouterLink to="/demo">示范</RouterLink>
       <RouterLink to="/connections">连接</RouterLink>
     </nav>
-    <div class="unauthorised" v-if="!isAuthorised">
-      <div>
-        <h1>Who are you?</h1>
-        <input type="text" v-model="tokenName" />
-        <button class="black" @click="requestToken">I'm cool</button>
-      </div>
-    </div>
-    <div class="app-page" v-else>
+    <div class="app-page">
       <RouterView @error="handleError" />
     </div>
     <div class="errors" v-if="[...errors.keys()].length">
