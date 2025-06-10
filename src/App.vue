@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 const root = import.meta.env.VITE_SERVER_ROOT
 
@@ -35,10 +35,13 @@ const requestToken = () =>
     })
 
 requestToken()
+
+const navHeight = computed(() => (isAuthorised.value ? '64px' : '0px'))
 </script>
 
 <style>
 .app-wrapper {
+  --nav-height: v-bind(navHeight);
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -96,7 +99,11 @@ requestToken()
 
 .app-page {
   flex-grow: 1;
+  display: flex;
   overflow: scroll;
+  & > * {
+    flex-grow: 1;
+  }
 }
 
 .errors {

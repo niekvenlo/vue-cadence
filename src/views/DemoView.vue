@@ -23,16 +23,6 @@ onUnmounted(() =>
 
 <style>
 .demo-view {
-  .message {
-    display: block;
-    padding: 1em;
-    margin: 0.3em;
-    color: white;
-    background: hsla(0, 88%, 44%, 0.4);
-    width: 100%;
-    text-align: center;
-  }
-
   --duration: 0.6s;
   height: 400vh;
   display: flex;

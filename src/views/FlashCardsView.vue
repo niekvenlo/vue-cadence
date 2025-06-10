@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import BasicDialog from '@/components/BasicDialog.vue'
 import FlashCards from '@/components/flash/FlashCards.vue'
 import DimSumCards from '@/components/flash/DimsumCards.vue'
 import { shuffleArray } from '../utils'
@@ -57,11 +56,64 @@ const handleColumnSelection = (idx: number) => {
 
 <style>
 #flash-cards-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
   --color-angle: 50deg;
-  #flash-cards {
-    --nav-height: 64px;
+  #paste-here {
+    flex-grow: 1;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+
+    textarea {
+      background-position: center;
+      background-image: url('/flash-instructions-1.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+      flex-grow: 1;
+      width: 100%;
+      height: 100%;
+      &:focus {
+        background-size: cover;
+        background-image: radial-gradient(
+            circle at center,
+            transparent,
+            transparent 40%,
+            white 50%,
+            white 100%
+          ),
+          url('/flash-instructions-2.png');
+      }
+    }
+
+    &::after {
+      position: absolute;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      content: 'Ctrl-V';
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      font-family: sans-serif;
+      font-size: 20vmin;
+      color: hsl(269, 100%, 25%);
+      text-shadow: white 3px 3px 3px;
+      pointer-events: none;
+    }
+
+    &:focus-within::after {
+      content: 'Ctrl-P';
+      color: hsl(269, 100%, 75%);
+      text-shadow: black 3px 3px 3px;
+    }
   }
   #data-entry-wrapper {
+    min-height: 100vh;
     .error {
       padding: 1em;
       background: black;
@@ -79,56 +131,6 @@ const handleColumnSelection = (idx: number) => {
         display: flex;
         button {
           padding-inline: 1em;
-        }
-      }
-    }
-    dialog.paste-modal {
-      box-shadow: var(--shadow-elevation-high);
-      .input-modal {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: stretch;
-        height: 100%;
-        padding: 3em;
-
-        opacity: 0.2;
-
-        &:focus-within {
-          opacity: 1;
-        }
-        label {
-          display: flex;
-          flex-direction: column;
-          font-size: 1.5em;
-          text-align: center;
-          font-weight: 100;
-          font-family: sans-serif;
-          transition: font-size 0.3s;
-          flex-grow: 1;
-
-          textarea {
-            display: flex;
-            border-radius: 0.3em;
-            flex-grow: 1;
-            height: 20vh;
-            padding: 1em;
-            align-items: center;
-            justify-content: center;
-            color: hsl(62, 100%, 57%);
-            background-color: hsl(0, 46%, 14%);
-            font-family: monospace;
-            caret-color: hsl(0, 0%, 0%);
-            font-size: 1rem;
-            outline: none;
-            &::placeholder {
-              color: hsl(112, 100%, 57%);
-            }
-          }
-        }
-        .dismiss {
-          width: 100%;
-          padding: 1em;
         }
       }
     }
@@ -181,7 +183,10 @@ const handleColumnSelection = (idx: number) => {
       ></FlashCards>
     </div>
 
-    <div id="data-entry-wrapper">
+    <div id="paste-here" v-if="cards === null">
+      <textarea @paste="handlePaste" autocorrect="off" autocapitalize="off" spellcheck="false" />
+    </div>
+    <div id="data-entry-wrapper" v-else>
       <div v-if="error" class="error">{{ error }}</div>
       <div class="top-bar" v-if="cards !== null">
         <h1>{{ isDimsumView ? 'dim sum' : 'standard' }} style</h1>
@@ -192,25 +197,7 @@ const handleColumnSelection = (idx: number) => {
           <button v-if="cards" class="black" @click="reset">Clear current cards</button>
         </div>
       </div>
-      <BasicDialog :isOpen="cards === null" class="paste-modal">
-        <div class="input-modal">
-          <label
-            ><p>Please paste your data into the field</p>
-            <p>(Ctrl + P / Cmd + P)</p>
-
-            <textarea
-              @paste="handlePaste"
-              autofocus
-              autocorrect="off"
-              autocapitalize="off"
-              spellcheck="false"
-              placeholder="> please paste here"
-            />
-          </label>
-          <button class="dismiss" @click="cards = []">Dismiss</button>
-        </div>
-      </BasicDialog>
-      <div v-if="cards !== null && cards.length">
+      <div v-if="cards.length">
         <h2>{{ cards.length }} entries.</h2>
         <p v-if="promptIdx === null" class="explanation">
           You need to choose a column to use as your flashcard 'front' side.
