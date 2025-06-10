@@ -45,17 +45,13 @@ app.use((req, res, next) => {
     next()
     return
   }
-  if (req.path !== '/api/v2/tokens') {
-    res.json({ error: `I don't think I know you.` })
-    return
-  }
   const userByPw = getUserByPw(req.query.pw?.toString())
   if (userByPw) {
     res.cookie('peanut', userByPw.uuid, { maxAge: 90 * DAY })
     res.json({ message: 'SID: Authorised' })
     return
   }
-  res.json({ message: 'SID: Oh, I remember you' })
+  res.json({ error: 'Not recognised' })
   return
 })
 

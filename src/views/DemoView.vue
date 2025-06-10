@@ -10,7 +10,7 @@ const scrollHandler = ref(() => {
   }
   ts.value = Date.now()
   const scrollFromTop = box.value?.getBoundingClientRect().top ?? 0
-  isExpanded.value = scrollFromTop < 60
+  isExpanded.value = scrollFromTop < 80
 })
 
 onMounted(() =>
@@ -19,30 +19,10 @@ onMounted(() =>
 onUnmounted(() =>
   document.querySelector('.app-page')?.removeEventListener('scroll', scrollHandler.value)
 )
-
-const messages = ref<string[]>([])
-const ws = ref(new WebSocket('ws://localhost:8080'))
-ws.value.onmessage = (event) => {
-  console.log(event.data)
-  messages.value.push(event.data)
-}
-
-const send = () =>
-  ws.value.send(Date.now() + ": Here's some text that the server is urgently awaiting!")
 </script>
 
 <style>
 .demo-view {
-  .message {
-    display: block;
-    padding: 1em;
-    margin: 0.3em;
-    color: white;
-    background: hsla(0, 88%, 44%, 0.4);
-    width: 100%;
-    text-align: center;
-  }
-
   --duration: 0.6s;
   height: 400vh;
   display: flex;
@@ -174,7 +154,6 @@ const send = () =>
 
 <template>
   <div class="demo-view">
-    <p class="message" v-for="m in messages" :key="m" @click="send">{{ m }}</p>
     <h1>F2F demo</h1>
     <div class="box" :class="{ isExpanded }" ref="box">
       <div class="profile"></div>
