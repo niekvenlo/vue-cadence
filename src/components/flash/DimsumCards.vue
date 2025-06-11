@@ -14,7 +14,7 @@ const backs = computed(
   () => props.cards?.map((c) => c.filter((_, i) => props.responseIndices.includes(i))) ?? []
 )
 
-const isPaused = ref(false)
+const isPaused = ref(true)
 const misses = ref<{ front: string; back: string[]; isCorrect: boolean }[]>([])
 const hitsCount = ref(0)
 
@@ -61,20 +61,23 @@ watch(
     width: 30vw;
     max-width: 30vw;
     max-height: calc(100vh - var(--nav-height) - 1em);
-    font-size: 1.2em;
     overflow: scroll;
-    padding: 1rem;
     & > div {
       width: 100%;
     }
     h1 {
-      font-size: 1.4em;
+      font-size: 1.6em;
+      padding: 1em;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0 1em;
     }
     .each-miss {
       display: flex;
       flex-direction: column;
       flex-wrap: wrap;
       gap: 0.1em 1em;
+      padding: 1em;
       max-height: calc(80vh - var(--nav-height) - 5.2em);
       overflow-x: scroll;
       p {
@@ -82,12 +85,26 @@ watch(
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        font-family: sans-serif;
+        font-style: italic;
+        span {
+          font-style: normal;
+          font-family: serif;
+          font-size: 1.2em;
+        }
       }
     }
   }
 
+  .cards-and-top-buttons {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+  }
   .cards {
-    width: 50vw;
+    width: 100%;
     flex-grow: 1;
     height: 100%;
     display: grid;
@@ -102,19 +119,16 @@ watch(
   }
   @media (orientation: portrait) {
     overflow: scroll;
-    .cards,
+    .cards-and-top-buttons,
     .misses {
       min-width: 100vw;
       max-width: 100vw;
-    }
-    .misses {
-      padding: 3em;
     }
   }
   &.isPaused {
     .cards {
       scale: 0.9;
-      filter: grayscale(80%);
+      filter: grayscale(40%);
     }
   }
 }
@@ -123,33 +137,40 @@ watch(
 <template>
   <div id="dimsum-wrapper" :class="{ isPaused }">
     <template v-if="promptIdx !== null && backs.length > 0 && backs[0].length > 0">
-      <div class="cards">
-        <DimsumCard
-          v-for="(_, idx) in Array.from({ length: 6 })"
-          :key="idx"
-          :fronts="fronts"
-          :backs="backs"
-          @miss="(e) => misses.push(e)"
-          @hit="hitsCount++"
-          :isPaused="isPaused"
-          :cardId="['Q', 'W', 'A', 'S', 'Z', 'X'][idx]"
-        />
+      <div class="cards-and-top-buttons">
+        <button class="black" @click="togglePause">
+          {{ isPaused ? 'Start' : 'Pause' }}
+        </button>
+        <div class="cards">
+          <DimsumCard
+            v-for="(_, idx) in Array.from({ length: 6 })"
+            :key="idx"
+            :fronts="fronts"
+            :backs="backs"
+            @miss="(e) => misses.push(e)"
+            @hit="hitsCount++"
+            :isPaused="isPaused"
+            :cardId="['Q', 'W', 'A', 'S', 'Z', 'X'][idx]"
+          />
+        </div>
       </div>
+
       <div class="misses">
         <div>
-          <button class="black" @click="togglePause">
-            {{ isPaused ? 'Continue' : 'Pause' }}
+          <button class="black" :disabled="misses.length === 0" @click="resetCounters">
+            Clear
           </button>
-          <h1>misses: {{ misses.length }} hits: {{ hitsCount }}</h1>
+          <h1>
+            <span>misses: {{ misses.length }} </span><span>hits: {{ hitsCount }}</span>
+          </h1>
         </div>
         <div>
           <div class="each-miss">
             <p v-for="(miss, idx) in [...misses].reverse()" :key="miss.front + idx">
-              {{ miss.isCorrect ? '🟢' : '🟡' }} {{ miss.front }}
-              {{ miss.isCorrect ? 'is' : 'is not' }} {{ miss.back.join(', ') }}
+              {{ miss.isCorrect ? '🟢' : '🟡' }} <span>{{ miss.front }}</span>
+              {{ miss.isCorrect ? 'is' : 'is not' }} <span>{{ miss.back.join(', ') }}</span>
             </p>
           </div>
-          <button class="black" v-if="misses.length > 0" @click="resetCounters">Clear</button>
         </div>
       </div>
     </template>
