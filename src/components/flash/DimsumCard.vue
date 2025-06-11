@@ -227,6 +227,7 @@ const genNewDimSum = () => {
         transform 0.1s ease-in-out,
         translateY 0.1s ease-in-out,
         opacity 1s ease-in-out;
+      box-shadow: 0 1px 1px hsl(0deg 0% 0% / 0.075);
 
       /* Miss */
       &.isClicked,

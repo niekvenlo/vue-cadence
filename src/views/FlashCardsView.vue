@@ -10,15 +10,14 @@ const dummyCards = {
   Tehran: 'Iran',
   Beijing: 'China',
   Paris: 'France',
-  Lima: 'Peru'
+  Lima: 'Peru',
+  Rabat: 'Morocco'
 }
 const cards = ref<string[][] | null>(null)
 const error = ref<string>('')
 const promptIdx = ref<number | null>(null)
 const responseIndices = ref<number[]>([])
-
-const isOnlyOneColumn = computed(() => cards.value?.[0].length === 1)
-
+const numberOfColumns = computed(() => cards.value?.[0].length ?? 0)
 const isDimsumView = ref(true)
 
 const locallyStored = localStorage.getItem('flash-cards')
@@ -84,7 +83,6 @@ const handleColumnSelection = (idx: number) => {
       justify-content: space-between;
       h1 {
         width: 50%;
-        text-transform: capitalize;
         text-align: center;
         margin-top: 0.5em;
         margin-bottom: 0;
@@ -164,23 +162,21 @@ const handleColumnSelection = (idx: number) => {
       background-position: center;
       background-size: contain;
       background-repeat: no-repeat;
+      background-attachment: fixed;
       flex-grow: 1;
       width: 100%;
       height: 100%;
       aspect-ratio: 2/1;
       &:focus {
         background-size: cover;
-        background-image: radial-gradient(circle at center center, #1a8fe5, #e4e4ed),
-          repeating-radial-gradient(
-            circle at center center,
-            hsla(69, 100%, 90%, 0.5),
-            hsla(0, 100%, 90%, 0.5),
-            22px,
-            transparent 34px,
-            transparent 22px
-          );
-        background-blend-mode: multiply;
-        background-color: #e4e4ed;
+        background-image: repeating-radial-gradient(
+          circle at center center,
+          hsla(69, 100%, 90%, 0.5),
+          hsla(0, 100%, 90%, 0.5),
+          22px,
+          transparent 34px,
+          transparent 22px
+        );
       }
     }
   }
@@ -191,27 +187,27 @@ const handleColumnSelection = (idx: number) => {
   <div id="flash-cards-wrapper">
     <div id="flash-cards">
       <DimSumCards
-        v-if="isDimsumView && !isOnlyOneColumn"
+        v-if="isDimsumView && numberOfColumns > 1"
         :cards="cards"
         :promptIdx="promptIdx"
         :responseIndices="responseIndices"
-        :isOnlyOneColumn="isOnlyOneColumn"
+        :isOnlyOneColumn="numberOfColumns === 1"
       ></DimSumCards>
       <FlashCards
         v-else
         :cards="cards"
         :promptIdx="promptIdx"
         :responseIndices="responseIndices"
-        :isOnlyOneColumn="isOnlyOneColumn"
+        :isOnlyOneColumn="numberOfColumns === 1"
       ></FlashCards>
     </div>
 
     <div id="data-entry-wrapper">
       <div class="top-bar">
-        <h1>Flash cards</h1>
+        <h1>{{ isDimsumView ? 'Dim Sum cards' : 'Basic flash cards' }}</h1>
         <div>
           <button class="black" @click="isDimsumView = !isDimsumView">
-            Switch to {{ isDimsumView ? 'standard flash cards' : 'dim sum' }}
+            Switch to {{ isDimsumView ? 'basic flash' : 'dim sum' }} cards
           </button>
           <button v-if="cards" class="black" @click="reset">
             Forget current {{ cards.length }} cards
@@ -250,7 +246,7 @@ const handleColumnSelection = (idx: number) => {
       </div>
       <div class="explanation" v-else-if="promptIdx === null">
         <h2>Step 2</h2>
-        <p>You have {{ cards.length }} cards!</p>
+        <p>You have {{ cards.length }} cards! (And your browser should remember these for you.)</p>
         <p>
           Flashcards usually have two sides. You'll need at least one to get started. You need to
           choose a column to use as your flashcard 'front' side.
@@ -261,20 +257,51 @@ const handleColumnSelection = (idx: number) => {
           automatically scroll into view.)
         </p>
       </div>
-      <div class="explanation" v-else-if="isOnlyOneColumn">
+      <div class="explanation" v-else-if="numberOfColumns < 2">
         <h2>Step 3</h2>
         <p>The data you've pasted only has one column, so you can only use standard flash cards.</p>
         <p>(To load different cards, you can hit the "Forget cards" button at the top.)</p>
       </div>
-      <div class="explanation" v-else>
+      <div class="explanation" v-else-if="responseIndices.length < 1">
         <h2>Step 3</h2>
         <p>You may also choose which columns to use as your flashcard 'back' side.</p>
         <p>
           A back side is not required for standard flash cards. You can simply look at the fronts of
-          these cards and check if you know them. However, to use the dimsum game, you do need to
-          choose at least one 'back' side column.
+          these cards and check if you know them.
         </p>
+        <p>To use the dimsum cards, you do need to choose at least one 'back' side column.</p>
         <p v-if="isDimsumView">Choose a back column if you want to use dim sum cards.</p>
+        <p>
+          You can use the forward/back buttons to navigate, or use the left/right arrow keys on your
+          keyboard.
+        </p>
+      </div>
+      <div class="explanation" v-else-if="isDimsumView">
+        <h2>Step 4</h2>
+        <p>
+          You have selected a back column, which means we can begin with dimsum cards.
+          <span v-if="numberOfColumns - 1 > responseIndices.length"
+            >(But feel free to add other columns.)</span
+          >
+        </p>
+        <p>
+          If you press 'Start' above, the game begins. You'll be shown several flashcards, but only
+          some of them will be correct.
+        </p>
+        <p>
+          Click or touch the correct cards before the time runs out. If you select an incorrect
+          card, or if you miss a correct card, it'll turn red.
+        </p>
+        <p>Don't worry about your score. But if it seems too hard, maybe start with fewer cards.</p>
+      </div>
+      <div class="explanation" v-else>
+        <h2>Step 4</h2>
+        <p>Your flashcards are ready.</p>
+        <p>
+          You can use the forward/back buttons to navigate, or use the left/right arrow keys on your
+          keyboard.
+        </p>
+        <p>Hover over the bottom part of the page to reveal the back.</p>
       </div>
 
       <div v-if="error" class="error">{{ error }}</div>

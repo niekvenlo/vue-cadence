@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useKeys } from '@/composables/use-keys'
+import UpArrow from '../UpArrow.vue'
 
 const props = defineProps<{
   cards: string[][] | null
@@ -116,17 +117,32 @@ const showNextCard = () => {
     background: hsl(var(--color-angle), 100%, 16%);
     display: flex;
     overflow: hidden;
-    font-size: 8em;
-    line-height: 0.6;
-    * {
+    button {
       color: white;
       text-transform: lowercase;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       font-size: 1.5em;
-      flex-grow: 1;
+      width: 50%;
       border: none;
       background: none;
       &:hover {
         background: hsl(var(--color-angle), 100%, 10%);
+        svg {
+          will-change: translate;
+          translate: 10px;
+          transition: translate 1s ease-in-out;
+        }
+        &:nth-of-type(1) svg {
+          translate: -10px;
+        }
+      }
+      &:nth-of-type(1) svg {
+        transform: rotateZ(-90deg);
+      }
+      &:nth-of-type(2) svg {
+        transform: rotateZ(90deg);
       }
     }
   }
@@ -148,11 +164,9 @@ const showNextCard = () => {
         {{ cards?.[showCardIdx][idx] }}
       </div>
     </div>
-    <div class="buttons" @click="showNextCard">
-      <button>1</button>
-      <button>2</button>
-      <button>3</button>
-      <button>4</button>
+    <div class="buttons">
+      <button @click="showPreviousCard"><UpArrow /></button>
+      <button @click="showNextCard"><UpArrow /></button>
     </div>
   </div>
 </template>
