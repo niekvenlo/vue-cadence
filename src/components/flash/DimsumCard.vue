@@ -97,7 +97,7 @@ const revealOutcome = () => {
 }
 
 const handleClick = () => {
-  if (phase.value.startsWith('present-option')) {
+  if (!props.isPaused && phase.value.startsWith('present-option')) {
     phase.value = 'reveal-outcome'
     isClicked.value = true
   }
@@ -178,15 +178,14 @@ const genNewDimSum = () => {
       justify-content: center;
     }
     &.init {
-      scale: 0.4;
-      rotate: -5deg;
+      scale: 0.8;
+      rotate: -2deg;
       &:nth-of-type(2n) {
-        rotate: 10deg;
+        rotate: 3deg;
       }
       &:nth-of-type(3n - 2) {
-        rotate: -10deg;
+        rotate: -4deg;
       }
-      /* background: black; */
     }
     &.present-option {
       cursor: pointer;
@@ -248,7 +247,12 @@ const genNewDimSum = () => {
       opacity: 0;
     }
     .back {
-      font-size: 80%;
+      font-size: 70%;
+      display: flex;
+      flex-direction: column;
+      span:nth-of-type(2n) {
+        font-style: italic;
+      }
     }
     .card-id {
       font-size: 1rem;
@@ -269,8 +273,9 @@ const genNewDimSum = () => {
   >
     <div class="front-and-back">
       <div>{{ dimsum?.front }}</div>
-      <div class="back">{{ dimsum?.back.join(', ') }}</div>
+      <div class="back">
+        <span v-for="line in dimsum?.back ?? []" :key="line">{{ line }}</span>
+      </div>
     </div>
-    <div class="card-id">{{ props.cardId }}</div>
   </button>
 </template>
