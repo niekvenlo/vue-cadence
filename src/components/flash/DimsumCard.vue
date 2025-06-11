@@ -250,6 +250,9 @@ const genNewDimSum = () => {
       font-size: 70%;
       display: flex;
       flex-direction: column;
+      span:nth-of-type(2) {
+        font-size: 0.8em;
+      }
       span:nth-of-type(2n) {
         font-style: italic;
       }

@@ -11,7 +11,12 @@ const props = defineProps<{
 
 const fronts = computed(() => props.cards?.map((c) => c[props.promptIdx ?? 0]) ?? [])
 const backs = computed(
-  () => props.cards?.map((c) => c.filter((_, i) => props.responseIndices.includes(i))) ?? []
+  () =>
+    props.cards?.map((c) => {
+      const b: string[] = []
+      props.responseIndices.forEach((idx) => b.push(c[idx]))
+      return b
+    }) ?? []
 )
 
 const isPaused = ref(true)
