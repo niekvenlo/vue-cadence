@@ -173,7 +173,8 @@ watch(
           <div class="each-miss">
             <p v-for="(miss, idx) in [...misses].reverse()" :key="miss.front + idx">
               {{ miss.isCorrect ? '🟢' : '🟡' }} <span>{{ miss.front }}</span>
-              {{ miss.isCorrect ? 'is' : 'is not' }} <span>{{ miss.back.join(', ') }}</span>
+              {{ miss.isCorrect ? 'is' : 'is not' }}
+              <span>{{ miss.back.filter((f) => f).join(', ') }}</span>
             </p>
           </div>
         </div>
