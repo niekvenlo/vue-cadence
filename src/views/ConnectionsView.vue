@@ -224,6 +224,14 @@ watch(
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  background-image: repeating-radial-gradient(
+    circle at 20% 80%,
+    hsla(31, 100%, 90%, 0.5),
+    hsla(208, 100%, 90%, 0.5),
+    22px,
+    transparent 34px,
+    transparent 22px
+  );
 
   .board {
     display: grid;
@@ -244,6 +252,8 @@ watch(
       color: currentColor;
       cursor: pointer;
       min-width: min(20vw, 9em);
+      background-color: transparent;
+      backdrop-filter: blur(5px);
       transition: translate 0.1s;
       .label {
         font-size: min(1.1em, 3vw);
@@ -359,17 +369,21 @@ watch(
     }
   }
 
+  .tile.isYellowCorrectGroup,
   .isYellowCorrectGroup {
-    background-color: hsl(45, 100%, 78%);
+    background-color: hsla(45, 100%, 78%, 0.5);
   }
+  .tile.isGreenCorrectGroup,
   .isGreenCorrectGroup {
-    background-color: hsl(125, 100%, 78%);
+    background-color: hsla(125, 100%, 78%, 0.5);
   }
+  .tile.isBlueCorrectGroup,
   .isBlueCorrectGroup {
-    background-color: hsl(204, 100%, 78%);
+    background-color: hsla(204, 100%, 78%, 0.5);
   }
+  .tile.isPurpleCorrectGroup,
   .isPurpleCorrectGroup {
-    background-color: hsl(276, 100%, 78%);
+    background-color: hsla(276, 100%, 78%, 0.5);
   }
 
   .hasYellowDot {

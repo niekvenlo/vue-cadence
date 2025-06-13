@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { onBeforeUnmount, ref, unref, watch, type MaybeRef } from 'vue'
-import { useKeys } from '@/composables/use-keys'
+import { onBeforeUnmount, ref, unref, watch } from 'vue'
+import type { MaybeRef } from 'vue'
 
 const props = defineProps<{
   fronts: string[]
@@ -103,13 +103,6 @@ const handleClick = () => {
   }
 }
 
-useKeys((e: KeyboardEvent) => {
-  if (e.code == 'Key' + props.cardId && e.type !== 'keydown') {
-    e.preventDefault()
-    handleClick()
-  }
-})
-
 const genNewDimSum = () => {
   const numCards = props.fronts.length
   const idx = Math.floor(Math.random() * numCards)
@@ -128,23 +121,6 @@ const genNewDimSum = () => {
 
 <style>
 #dimsum-wrapper {
-  .placeholder {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    scale: 0.8;
-
-    rotate: -5deg;
-    &:nth-of-type(2n) {
-      rotate: 10deg;
-    }
-    &:nth-of-type(3n - 2) {
-      rotate: -10deg;
-    }
-    background: black;
-  }
   button.card {
     display: flex;
     flex-direction: column;
@@ -152,6 +128,14 @@ const genNewDimSum = () => {
     justify-content: space-between;
     --background-color: hsl(60, 86.2%, 82.9%);
     background-color: var(--background-color);
+    /* background-size: 20px 20px;
+    background-image: repeating-linear-gradient(
+      0deg,
+      hsla(50, 60%, 60%, 0.8),
+      hsla(50, 60%, 60%, 0.8) 1px,
+      transparent 1px,
+      transparent
+    ); */
     padding: 0.5em;
     font-weight: 600;
     font-size: 2em;
@@ -166,16 +150,12 @@ const genNewDimSum = () => {
       0 2px 2px hsl(0deg 0% 0% / 0.075),
       0 4px 4px hsl(0deg 0% 0% / 0.075),
       0 8px 8px hsl(0deg 0% 0% / 0.075);
-    @media not (hover) {
-      .card-id {
-        display: none;
-      }
-    }
     .front-and-back {
       flex-grow: 1;
       display: flex;
       flex-direction: column;
       justify-content: center;
+      width: 100%;
     }
     &.init {
       scale: 0.8;
@@ -248,6 +228,8 @@ const genNewDimSum = () => {
       opacity: 0;
     }
     .back {
+      background: hsla(0, 100%, 100%, 0.5);
+      padding: 0.6em 1em;
       font-size: 70%;
       display: flex;
       flex-direction: column;
@@ -257,13 +239,13 @@ const genNewDimSum = () => {
       span:nth-of-type(2n) {
         font-style: italic;
       }
-    }
-    .card-id {
-      font-size: 1rem;
-      font-style: italic;
-      opacity: 0.5;
-      text-align: left;
-      width: 100%;
+      box-shadow:
+        0 1px 1px hsl(0deg 0% 0% / 0.075),
+        0 2px 2px hsl(0deg 0% 0% / 0.075),
+        0 4px 4px hsl(0deg 0% 0% / 0.075);
+      &:empty {
+        opacity: 0.1;
+      }
     }
   }
 }

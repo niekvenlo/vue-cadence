@@ -235,8 +235,10 @@ const handleColumnSelection = (idx: number) => {
         </p>
         <table cellpadding="0" class="dummy-data">
           <thead>
-            <th>City</th>
-            <th>Country</th>
+            <tr>
+              <th>City</th>
+              <th>Country</th>
+            </tr>
           </thead>
           <tr v-for="[city, country] in Object.entries(dummyCards)" :key="country">
             <td>{{ city }}</td>
@@ -271,9 +273,9 @@ const handleColumnSelection = (idx: number) => {
         </p>
         <p>To use the dimsum cards, you do need to choose at least one 'back' side column.</p>
         <p v-if="isDimsumView">Choose a back column if you want to use dim sum cards.</p>
-        <p>
-          You can use the forward/back buttons to navigate, or use the left/right arrow keys on your
-          keyboard.
+        <p v-else>
+          For basic flash cards, you can use the forward/back buttons to navigate, or use the
+          left/right arrow keys on your keyboard.
         </p>
       </div>
       <div class="explanation" v-else-if="isDimsumView">
@@ -308,17 +310,19 @@ const handleColumnSelection = (idx: number) => {
 
       <table cellpadding="0" v-if="cards !== null">
         <thead>
-          <th v-for="(column, idx) in cards[0]" :key="column">
-            <button
-              v-if="idx !== promptIdx && !responseIndices.includes(idx)"
-              class="light"
-              @click="() => handleColumnSelection(idx)"
-            >
-              {{ promptIdx === null ? 'Use column for front' : 'Use column for back' }}
-            </button>
-            <p v-else-if="idx === promptIdx">Front</p>
-            <p v-else>Back</p>
-          </th>
+          <tr>
+            <th v-for="(column, idx) in cards[0]" :key="column">
+              <button
+                v-if="idx !== promptIdx && !responseIndices.includes(idx)"
+                class="light"
+                @click="() => handleColumnSelection(idx)"
+              >
+                {{ promptIdx === null ? 'Use column for front' : 'Use column for back' }}
+              </button>
+              <p v-else-if="idx === promptIdx">Front</p>
+              <p v-else>Back</p>
+            </th>
+          </tr>
         </thead>
         <tr v-for="card in cards" :key="card[0]">
           <td v-for="column in card" :key="column">{{ column }}</td>
