@@ -11,7 +11,6 @@ const emit = defineEmits(['error'])
 
 const HYPHEN = '-'
 
-const error = ref('')
 const year = ref<number>()
 const month = ref<number>()
 const date = ref<number>()
@@ -34,6 +33,18 @@ const getGroupName = (fourTiles: string[]) => {
   })
   return category
 }
+
+const getHint = () => {
+  if (data.value === null) {
+    return
+  }
+  const getRandomIdx = (max = 4) => Math.floor(Math.random() * max)
+  const randomGroup = Object.values(data.value.board)[getRandomIdx(4)].members
+  const firstAnswer = randomGroup[getRandomIdx(4)]
+  const secondAnswer = randomGroup.filter((a) => a !== firstAnswer)[getRandomIdx(3)]
+  hint.value = `${firstAnswer} + ${secondAnswer}`
+}
+const hint = ref('')
 
 const selectedTiles = ref<string[]>([])
 const lastDeselectedTiles = ref<string[]>([])
@@ -129,13 +140,12 @@ const getTiles = () => {
   })
     .then((response) => response.json())
     .then((json) => {
-      error.value = json.error
       if (json.error) {
         emit('error', json)
       }
       data.value = json
     })
-    .catch((err) => (error.value = err.message))
+    .catch((err) => console.log(err))
 }
 
 const modifyDate = (callback: (d: Date) => void) => {
@@ -170,7 +180,6 @@ const updateWithServerData = (data: { [key: string]: string } | null) => {
   })
     .then((response) => response.json())
     .then((json) => {
-      error.value = json.error
       if (json.error) {
         emit('error', json)
       }
@@ -182,7 +191,7 @@ const updateWithServerData = (data: { [key: string]: string } | null) => {
       selectedTiles.value = sharedTiles.split(',').filter((f: string) => f)
       correctTiles.value = sharedCorrectTiles.split(',').filter((f: string) => f)
     })
-    .catch((err) => (error.value = err.message))
+    .catch((err) => console.log(err))
 }
 
 const resetTimer = () => {
@@ -220,6 +229,10 @@ watch(
 
 <style>
 .connections-view {
+  --yellow: 45, 100%, 50%;
+  --green: 125, 100%, 78%;
+  --blue: 204, 100%, 78%;
+  --purple: 276, 100%, 78%;
   padding: 1em;
   display: flex;
   flex-wrap: wrap;
@@ -232,6 +245,7 @@ watch(
     transparent 34px,
     transparent 22px
   );
+  overflow: scroll;
 
   .board {
     display: grid;
@@ -251,34 +265,50 @@ watch(
       border-radius: 0.5em;
       color: currentColor;
       cursor: pointer;
-      min-width: min(20vw, 9em);
-      background-color: transparent;
       backdrop-filter: blur(5px);
+      background-color: transparent;
+      box-shadow: 0 0 5px 1px hsl(var(--color));
+      min-width: min(20vw, 9em);
       transition: translate 0.1s;
       .label {
         font-size: min(1.1em, 3vw);
         font-family: sans-serif;
         max-width: 24vw;
       }
-      &.isLong {
-        .label {
-          transform: scale(90%) rotate(-20deg);
-        }
-      }
-      &.isSelected {
-        border-color: hsl(0, 0%, 70%);
-        z-index: 1;
-      }
-      &.isRecentlyDeselected {
-        filter: brightness(95%);
-      }
       .dot {
         line-height: 0.5;
         width: 1em;
         aspect-ratio: 1/1;
         border-radius: 50%;
+        background-color: hsl(var(--color));
+      }
+      &.isLong {
+        .label {
+          transform: scale(90%) rotate(-20deg);
+        }
+      }
+      &.isYellow {
+        --color: var(--yellow);
+      }
+      &.isGreen {
+        --color: var(--green);
+      }
+      &.isBlue {
+        --color: var(--blue);
+      }
+      &.isPurple {
+        --color: var(--purple);
+      }
+      &.isSelected {
+        background-color: hsla(var(--color), 0.1);
+        border-color: hsl(0, 0%, 50%);
+        z-index: 1;
+      }
+      &.isRecentlyDeselected {
+        filter: brightness(95%);
       }
       &.isCorrect {
+        background-color: hsla(var(--color), 0.4);
         .dot {
           opacity: 0;
         }
@@ -292,12 +322,28 @@ watch(
     font-family: sans-serif;
     padding: 0.5em;
     max-width: 100ch;
+    min-width: 50ch;
+    .isYellow {
+      --color: var(--yellow);
+    }
+    .isGreen {
+      --color: var(--green);
+    }
+    .isBlue {
+      --color: var(--blue);
+    }
+    .isPurple {
+      --color: var(--purple);
+    }
     > div {
+      align-items: center;
+      background-color: hsla(var(--color), 0.3);
       flex-grow: 1;
       padding: 1.5em;
       display: grid;
       grid-template-columns: 1fr max-content;
       grid-template-areas: 'tiles button';
+      transition: background-color 2s;
       @media (max-width: 600px) {
         grid-template-columns: 1fr;
         grid-template-areas:
@@ -305,7 +351,6 @@ watch(
           'button';
         gap: 1em;
       }
-      align-items: center;
       p {
         grid-area: title;
         display: none;
@@ -321,6 +366,7 @@ watch(
         width: 100%;
       }
       &.isCorrect {
+        background-color: hsla(var(--color), 0.5);
         grid-template-areas:
           'title'
           'tiles';
@@ -368,46 +414,20 @@ watch(
       flex-direction: column;
     }
   }
-
-  .tile.isYellowCorrectGroup,
-  .isYellowCorrectGroup {
-    background-color: hsla(45, 100%, 78%, 0.5);
-  }
-  .tile.isGreenCorrectGroup,
-  .isGreenCorrectGroup {
-    background-color: hsla(125, 100%, 78%, 0.5);
-  }
-  .tile.isBlueCorrectGroup,
-  .isBlueCorrectGroup {
-    background-color: hsla(204, 100%, 78%, 0.5);
-  }
-  .tile.isPurpleCorrectGroup,
-  .isPurpleCorrectGroup {
-    background-color: hsla(276, 100%, 78%, 0.5);
-  }
-
-  .hasYellowDot {
-    box-shadow: 0 0 5px 1px hsl(45, 100%, 78%);
-    .dot {
-      background-color: hsl(45, 100%, 50%);
-    }
-  }
-  .hasGreenDot {
-    box-shadow: 0 0 5px 1px hsl(125, 100%, 50%);
-    .dot {
-      background-color: hsl(125, 100%, 50%);
-    }
-  }
-  .hasBlueDot {
-    box-shadow: 0 0 5px 1px hsl(204, 100%, 50%);
-    .dot {
-      background-color: hsl(204, 100%, 50%);
-    }
-  }
-  .hasPurpleDot {
-    box-shadow: 0 0 5px 1px hsl(276, 96.5%, 77.5%);
-    .dot {
-      background-color: hsl(276, 96.5%, 77.5%);
+  .hint {
+    display: flex;
+    flex-direction: column;
+    background-color: #fde;
+    margin: 2em;
+    padding: 2em;
+    text-align: center;
+    > .hint {
+      font-family: sans-serif;
+      font-size: min(1.1em, 3vw);
+      padding: 2em;
+      &:empty {
+        display: none;
+      }
     }
   }
 }
@@ -415,7 +435,6 @@ watch(
 
 <template>
   <div class="connections-view">
-    <h1 v-if="error">{{ error }}</h1>
     <div class="board">
       <button
         class="tile"
@@ -423,15 +442,10 @@ watch(
           isLong: tile.split(' ').every((w) => w.length > 9),
           isSelected: isGroup('any', tile),
           isCorrect: correctTiles.includes(tile),
-          isYellowCorrectGroup: correctTiles.includes(tile) && isGroup('yellow', tile),
-          isGreenCorrectGroup: correctTiles.includes(tile) && isGroup('green', tile),
-          isBlueCorrectGroup: correctTiles.includes(tile) && isGroup('blue', tile),
-          isPurpleCorrectGroup: correctTiles.includes(tile) && isGroup('purple', tile),
-          isRecentlyDeselected: lastDeselectedTiles.includes(tile),
-          hasYellowDot: isGroup('yellow', tile),
-          hasGreenDot: isGroup('green', tile),
-          hasBlueDot: isGroup('blue', tile),
-          hasPurpleDot: isGroup('purple', tile)
+          isYellow: isGroup('yellow', tile),
+          isGreen: isGroup('green', tile),
+          isBlue: isGroup('blue', tile),
+          isPurple: isGroup('purple', tile)
         }"
         v-for="tile in data?.startingBoard?.flat() ?? []"
         :key="tile"
@@ -446,10 +460,10 @@ watch(
         v-for="(group, groupIdx) in toChunk(selectedTiles.slice(0, getLockedIdx()), 4)"
         :key="group.toString()"
         :class="{
-          isYellowCorrectGroup: groupIdx === 0,
-          isGreenCorrectGroup: groupIdx === 1,
-          isBlueCorrectGroup: groupIdx === 2,
-          isPurpleCorrectGroup: groupIdx === 3,
+          isYellow: groupIdx === 0,
+          isGreen: groupIdx === 1,
+          isBlue: groupIdx === 2,
+          isPurple: groupIdx === 3,
           isCorrect: isCorrectGroup(group)
         }"
       >
@@ -481,6 +495,10 @@ watch(
         />
       </label>
       <button class="black" @click="modifyDate((d) => d.setDate(d.getDate() + 1))">tomorrow</button>
+      <div class="hint">
+        <button class="light" @click="getHint">Get a hint</button>
+        <button class="light hint" @click="hint = ''">{{ hint }}</button>
+      </div>
     </div>
     <p>
       {{ data?.name }}
