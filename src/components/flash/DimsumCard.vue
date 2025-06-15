@@ -6,7 +6,6 @@ const props = defineProps<{
   fronts: string[]
   backs: string[][]
   isPaused: boolean
-  cardId: string
 }>()
 
 const emit = defineEmits(['miss', 'hit'])

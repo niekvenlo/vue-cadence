@@ -71,6 +71,36 @@ const handleColumnSelection = (idx: number) => {
   height: 100%;
   --color-angle: 50deg;
 
+  table.yellow {
+    width: 100%;
+    border-collapse: collapse;
+    th {
+      height: 6em;
+    }
+    th,
+    td {
+      padding-inline: 2vw;
+      color: hsl(231, 23%, 22%);
+      &:nth-of-type(2n) {
+        color: hsl(0, 23%, 22%);
+        font-style: italic;
+      }
+    }
+    thead,
+    tr:nth-of-type(2n) {
+      text-align: left;
+      background-color: hsl(60, 86.2%, 82.9%);
+      button {
+        width: max-content;
+      }
+    }
+    &.dummy-data {
+      th {
+        height: unset;
+      }
+    }
+  }
+
   #data-entry-wrapper {
     min-height: 100vh;
     .error {
@@ -92,36 +122,6 @@ const handleColumnSelection = (idx: number) => {
         display: flex;
         button {
           padding-inline: 1em;
-        }
-      }
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      th {
-        height: 6em;
-      }
-      th,
-      td {
-        padding-inline: 2vw;
-        color: hsl(231, 23%, 22%);
-        &:nth-of-type(2n) {
-          color: hsl(0, 23%, 22%);
-          font-style: italic;
-        }
-      }
-      thead,
-      tr:nth-of-type(2n) {
-        text-align: left;
-        background-color: hsl(60, 86.2%, 82.9%);
-        button {
-          width: max-content;
-        }
-      }
-      &.dummy-data {
-        th {
-          height: unset;
         }
       }
     }
@@ -233,7 +233,7 @@ const handleColumnSelection = (idx: number) => {
           Avoid copying the header, or you'll get a card with "City" on the front, and "Country" on
           the back.
         </p>
-        <table cellpadding="0" class="dummy-data">
+        <table cellpadding="0" class="yellow dummy-data">
           <thead>
             <tr>
               <th>City</th>
@@ -308,7 +308,7 @@ const handleColumnSelection = (idx: number) => {
 
       <div v-if="error" class="error">{{ error }}</div>
 
-      <table cellpadding="0" v-if="cards !== null">
+      <table cellpadding="0" v-if="cards !== null" class="yellow">
         <thead>
           <tr>
             <th v-for="(column, idx) in cards[0]" :key="column">

@@ -417,14 +417,15 @@ watch(
   .hint {
     display: flex;
     flex-direction: column;
+    width: 100%;
     background-color: #fde;
-    margin: 2em;
+    margin: 2em 0;
     padding: 2em;
     text-align: center;
-    > .hint {
+    gap: 2em;
+    > .inner-hint {
       font-family: sans-serif;
       font-size: min(1.1em, 3vw);
-      padding: 2em;
       &:empty {
         display: none;
       }
@@ -495,10 +496,15 @@ watch(
         />
       </label>
       <button class="black" @click="modifyDate((d) => d.setDate(d.getDate() + 1))">tomorrow</button>
-      <div class="hint">
-        <button class="light" @click="getHint">Get a hint</button>
-        <button class="light hint" @click="hint = ''">{{ hint }}</button>
-      </div>
+    </div>
+    <div class="hint">
+      <button class="light" @click="getHint">Get a hint</button>
+      <button class="light inner-hint" @click="hint = ''">{{ hint }}</button>
+      <a
+        :href="`https://duckduckgo.com/?t=ffab&q=connections+hints+${data.id}&ia=web`"
+        target="_blank"
+        >DuckDuckGo</a
+      >
     </div>
     <p>
       {{ data?.name }}
