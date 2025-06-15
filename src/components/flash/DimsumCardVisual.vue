@@ -86,7 +86,8 @@ const props = defineProps<{
         }
         &::after {
           background-color: transparent;
-          transition: background-color 1s;
+          transition: background-color 0.5s;
+          transition-delay: 1500ms;
           content: '';
           position: absolute;
           pointer-events: none;
@@ -95,7 +96,7 @@ const props = defineProps<{
         }
 
         &.tail-end::after {
-          background-color: rgba(0, 204, 255, 0.3);
+          background-color: rgba(0, 204, 255, 0.2);
         }
       }
       &.reveal-outcome,
@@ -107,6 +108,17 @@ const props = defineProps<{
           translateY 0.1s ease-in-out,
           opacity 1s ease-in-out;
         box-shadow: var(--low-shadow);
+        
+
+        &::after {
+          background-color: rgba(0, 204, 255, 0.2);
+          transition: background-color 1s;
+          content: '';
+          position: absolute;
+          pointer-events: none;
+          width: 100%;
+          height: 100%;
+        }
 
         /* Hit */
         &.isCorrect.isClicked {
