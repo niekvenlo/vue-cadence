@@ -101,6 +101,9 @@ const handleColumnSelection = (idx: number) => {
       border-collapse: collapse;
       th {
         height: 6em;
+        p {
+          min-width: 20ch;
+        }
       }
       th,
       td {

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onBeforeUnmount, ref, unref, watch } from 'vue'
 import type { MaybeRef } from 'vue'
+import DimsumCardVisual from './DimsumCardVisual.vue'
 
 const props = defineProps<{
   fronts: string[]
@@ -58,7 +59,7 @@ const phase = usePhase(phases, {
   initialDelay: Math.floor(Math.random() * 8000)
 })
 
-const dimsum = ref<{ front: string; back: string[]; isCorrect: boolean }>()
+const dimsum = ref<{ front: string; back: string[]; correct: string[]; isCorrect: boolean }>()
 
 const isClicked = ref(false)
 
@@ -114,154 +115,23 @@ const genNewDimSum = () => {
   return {
     isCorrect,
     front: props.fronts[idx],
-    back: isCorrect ? props.backs[idx] : props.backs[falseIdx]
+    back: isCorrect ? props.backs[idx] : props.backs[falseIdx],
+    correct: props.backs[idx]
   }
 }
 </script>
 
-<style>
-#dimsum-wrapper {
-  button.card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-    --background-color: hsl(60, 86.2%, 82.9%);
-    background-color: var(--background-color);
-    /* background-size: 20px 20px;
-    background-image: repeating-linear-gradient(
-      0deg,
-      hsla(50, 60%, 60%, 0.8),
-      hsla(50, 60%, 60%, 0.8) 1px,
-      transparent 1px,
-      transparent
-    ); */
-    padding: 0.5em;
-    font-weight: 600;
-    font-size: 2em;
-    border: none;
-    will-change: transform;
-    color: currentColor;
-    font-family: sans-serif;
-    cursor: default;
-    transform-origin: center;
-    box-shadow:
-      0 1px 1px hsl(0deg 0% 0% / 0.075),
-      0 2px 2px hsl(0deg 0% 0% / 0.075),
-      0 4px 4px hsl(0deg 0% 0% / 0.075),
-      0 8px 8px hsl(0deg 0% 0% / 0.075);
-    .front-and-back {
-      flex-grow: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      width: 100%;
-    }
-    &.init {
-      scale: 0.8;
-      rotate: -2deg;
-      &:nth-of-type(2n) {
-        rotate: 3deg;
-      }
-      &:nth-of-type(3n - 2) {
-        rotate: -4deg;
-      }
-    }
-    &.present-option {
-      cursor: pointer;
-      &:hover {
-        transform: translateY(-1px);
-        box-shadow:
-          0 1px 1px hsl(0deg 0% 0% / 0.075),
-          0 2px 2px hsl(0deg 0% 0% / 0.075),
-          0 4px 4px hsl(0deg 0% 0% / 0.075),
-          0 8px 8px hsl(0deg 0% 0% / 0.075),
-          0 16px 16px hsl(0deg 0% 0% / 0.075);
-      }
-      transition:
-        rotate 0.5s,
-        scale 0.5s;
-      background-image: linear-gradient(
-        to right,
-        hsla(0, 0%, 0%, 0.1) 0%,
-        hsla(0, 0%, 0%, 0.1) 50%,
-        hsla(0, 0%, 0%, 0) 51%,
-        hsla(0, 0%, 0%, 0) 100%
-      );
-      background-size: 200% 100%;
-      background-position: 100% 0;
-      &.tail-end {
-        transition:
-          rotate 0.5s,
-          scale 0.5s,
-          background-position 2s linear;
-        background-position: 0 0;
-      }
-    }
-    &.reveal-outcome,
-    &.refractory-phase,
-    &.invisible-phase {
-      background-image: linear-gradient(hsla(0, 0%, 0%, 0.1));
-      transition:
-        background-color 0.1s ease-in-out,
-        transform 0.1s ease-in-out,
-        translateY 0.1s ease-in-out,
-        opacity 1s ease-in-out;
-      box-shadow: 0 1px 1px hsl(0deg 0% 0% / 0.075);
-
-      /* Miss */
-      &.isClicked,
-      &.isCorrect {
-        transform: translateY(5px) rotate(2deg);
-        --background-color: hsl(7, 71%, 57%);
-      }
-      /* Hit */
-      &.isCorrect.isClicked {
-        transform: translateY(-5px) rotate(-1deg);
-        --background-color: hsl(119, 71%, 57%);
-      }
-    }
-    &.refractory-phase {
-      opacity: 0.2;
-    }
-    &.invisible-phase {
-      opacity: 0;
-    }
-    .back {
-      background: hsla(0, 100%, 100%, 0.5);
-      padding: 0.6em 1em;
-      font-size: 70%;
-      display: flex;
-      flex-direction: column;
-      span:nth-of-type(2) {
-        font-size: 0.8em;
-      }
-      span:nth-of-type(2n) {
-        font-style: italic;
-      }
-      box-shadow:
-        0 1px 1px hsl(0deg 0% 0% / 0.075),
-        0 2px 2px hsl(0deg 0% 0% / 0.075),
-        0 4px 4px hsl(0deg 0% 0% / 0.075);
-      &:empty {
-        opacity: 0.1;
-      }
-    }
-  }
-}
-</style>
+<style></style>
 
 <template>
-  <button
-    class="card"
-    :class="[phase, { isClicked, isCorrect: dimsum?.isCorrect, isPaused: props.isPaused }]"
+  <DimsumCardVisual
+    :phase="phase"
+    :isClicked="isClicked"
+    :isCorrect="dimsum?.isCorrect"
+    :isPaused="props.isPaused"
+    :front="dimsum?.front ?? ''"
+    :back="dimsum?.back ?? []"
+    :correct="dimsum?.correct ?? []"
     @click="handleClick"
-  >
-    <div class="front-and-back">
-      <div>{{ dimsum?.front }}</div>
-      <div class="back">
-        <span v-for="line in dimsum?.back ?? []" :key="line">{{ line }}</span>
-      </div>
-    </div>
-  </button>
+  ></DimsumCardVisual>
 </template>

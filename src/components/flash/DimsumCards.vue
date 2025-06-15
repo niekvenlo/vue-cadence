@@ -48,7 +48,7 @@ watch(
 <style>
 #dimsum-wrapper {
   display: flex;
-  background: hsl(var(--color-angle), 100%, 40%);
+  background: hsl(50, 100%, 72%);
   height: calc(100vh - var(--nav-height));
   max-width: 100vw;
   transition:
@@ -107,20 +107,7 @@ watch(
     flex-direction: column;
     height: 100%;
     width: 100%;
-    .cards {
-      width: 100%;
-      flex-grow: 1;
-      height: 100%;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      grid-template-rows: 1fr 1fr 1fr;
-      gap: 1em;
-      padding: 1em;
-      overflow-y: scroll;
-      transition:
-        scale 0.3s,
-        filter 0.3s;
-    }
+    
   }
   @media (orientation: portrait) {
     overflow: scroll;
