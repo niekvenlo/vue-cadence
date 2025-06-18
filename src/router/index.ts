@@ -42,6 +42,11 @@ const router = createRouter({
       component: () => import('@/views/ExView.vue')
     },
     {
+      path: '/aud',
+      name: 'audio',
+      component: () => import('@/views/AudioView.vue')
+    },
+    {
       path: '/connections',
       name: 'connections',
       component: () => import('@/views/ConnectionsView.vue')
