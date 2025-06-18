@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 
 const isInitiated = ref(false)
 
@@ -33,38 +33,112 @@ const tracks = [
 ]
 
 const index = ref(-1)
+const playerFocusIndex = ref(1)
 
 const vid1 = ref<HTMLVideoElement>()
+const vid2 = ref<HTMLVideoElement>()
+const vid3 = ref<HTMLVideoElement>()
+const names = ref(['', '', ''])
 
-const name = computed(() => tracks[index.value])
+const getVideoIdx = () => {
+  return index.value % tracks.length
+}
 
-const switchToRandomTrack = () => {
-  if (!vid1.value) return
-  index.value++
-  if (index.value >= tracks.length) {
-    index.value = 0
+const switchTrack = () => {
+  if (!vid1.value || !vid2.value || !vid3.value) return
+  index.value = (index.value + 1) % tracks.length
+  playerFocusIndex.value = (playerFocusIndex.value + 1) % 3
+
+  const player = [vid1, vid2, vid3][playerFocusIndex.value].value
+  if (!player) {
+    return
   }
-  vid1.value.src = `/nato/${tracks[index.value]}.MP4`
-  vid1.value.play()
-
-  vid1.value.muted = false
-  vid1.value.volume = 1
+  const trackName = tracks[getVideoIdx()]
+  player.src = `/nato/${trackName}.MP4`
+  player.play()
+  player.muted = false
+  player.volume = 1
+  names.value[playerFocusIndex.value] = trackName
 }
 
 const play = () => {
   isInitiated.value = true
-  if (!vid1.value) return
-  vid1.value.play()
-  vid1.value.muted = true
-  vid1.value.volume = 0
+  if (!vid1.value || !vid2.value || !vid3.value) return
 
   setInterval(() => {
-    switchToRandomTrack()
-  }, 2000)
+    switchTrack()
+  }, 3000)
 }
 </script>
 
 <style>
+@keyframes animate1 {
+  0% {
+    /* pushes the sun down past the viewport */
+    transform: translateX(0%);
+  }
+  33% {
+    /* returns the sun to its default position */
+    transform: translateX(-100%);
+  }
+  33.2% {
+    /* returns the sun to its default position */
+    transform: translateX(200%);
+  }
+  66% {
+    /* returns the sun to its default position */
+    transform: translateX(100%);
+  }
+  100% {
+    /* returns the sun to its default position */
+    transform: translateX(0%);
+  }
+}
+@keyframes animate2 {
+  0% {
+    /* returns the sun to its default position */
+    transform: translateX(0%);
+  }
+  33% {
+    /* returns the sun to its default position */
+    transform: translateX(-100%);
+  }
+  66% {
+    /* returns the sun to its default position */
+    transform: translateX(-200%);
+  }
+  66.2% {
+    /* returns the sun to its default position */
+    transform: translateX(100%);
+  }
+  100% {
+    /* pushes the sun down past the viewport */
+    transform: translateX(0%);
+  }
+}
+@keyframes animate3 {
+  0% {
+    /* returns the sun to its default position */
+    transform: translateX(0%);
+  }
+  33% {
+    /* returns the sun to its default position */
+    transform: translateX(-100%);
+  }
+  66% {
+    /* returns the sun to its default position */
+    transform: translateX(-200%);
+  }
+  99.8% {
+    /* pushes the sun down past the viewport */
+    transform: translateX(-300%);
+  }
+  100% {
+    /* returns the sun to its default position */
+    transform: translateX(0%);
+  }
+}
+
 #video-view {
   button.hero {
     margin: auto;
@@ -73,16 +147,36 @@ const play = () => {
     background: #ede;
     border: none;
     margin: 0.1em;
+    width: 100%;
   }
-  .video-block {
+  .players {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
 
-    background: #def;
-    video {
-      height: 70dvh;
+    clip-path: polygon(65% 39%, 52% 68%, 61% 99%, 0 100%, 0 0, 50% 0);
+
+    .video-block {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+
+      background: #def;
+      video {
+        height: 70dvh;
+        aspect-ratio: 1/2;
+      }
+      &.hasFocus {
+        background: #ada;
+      }
+      &:nth-of-type(1) {
+        animation: 9s linear 0s infinite animate1;
+      }
+      &:nth-of-type(2) {
+        animation: 9s linear 0s infinite animate2;
+      }
+      &:nth-of-type(3) {
+        animation: 9s linear 0s infinite animate3;
+      }
     }
   }
 }
@@ -91,10 +185,18 @@ const play = () => {
 <template>
   <div id="video-view">
     <button class="hero" v-if="!isInitiated" @click="play">Start show</button>
-    <div v-show="isInitiated">
-      <div class="video-block">
-        <h1>{{ name }}</h1>
-        <video ref="vid1" src="/rr/1 - A Hamilton for the Museum.mp3" controls />
+    <div class="players" v-show="isInitiated">
+      <div class="video-block" :class="{ hasFocus: playerFocusIndex % 3 === 0 }">
+        <h1>{{ names[0] }}</h1>
+        <video ref="vid1" src="/rr/1 - A Hamilton for the Museum.mp3" />
+      </div>
+      <div class="video-block" :class="{ hasFocus: playerFocusIndex % 3 === 1 }">
+        <h1>{{ names[1] }}</h1>
+        <video ref="vid2" src="/rr/1 - A Hamilton for the Museum.mp3" />
+      </div>
+      <div class="video-block" :class="{ hasFocus: playerFocusIndex % 3 === 2 }">
+        <h1>{{ names[2] }}</h1>
+        <video ref="vid3" src="/rr/1 - A Hamilton for the Museum.mp3" />
       </div>
     </div>
   </div>
