@@ -40,25 +40,25 @@ const vid2 = ref<HTMLVideoElement>()
 const vid3 = ref<HTMLVideoElement>()
 const names = ref(['', '', ''])
 
-const getVideoIdx = () => {
-  return index.value % tracks.length
-}
-
 const switchTrack = () => {
   if (!vid1.value || !vid2.value || !vid3.value) return
   index.value = (index.value + 1) % tracks.length
   playerFocusIndex.value = (playerFocusIndex.value + 1) % 3
+  const nextPlayerIndex = (playerFocusIndex.value + 1) % 3
 
   const player = [vid1, vid2, vid3][playerFocusIndex.value].value
-  if (!player) {
+  const nextPlayer = [vid1, vid2, vid3][nextPlayerIndex].value
+  if (!player || !nextPlayer) {
     return
   }
-  const trackName = tracks[getVideoIdx()]
-  player.src = `/nato/${trackName}.MP4`
+
+  const idx = index.value % tracks.length
+  const trackName = tracks[idx]
+  nextPlayer.src = `/nato/${trackName}.MP4`
   player.play()
   player.muted = false
   player.volume = 1
-  names.value[playerFocusIndex.value] = trackName
+  names.value[nextPlayerIndex] = trackName
 }
 
 const play = () => {
@@ -74,72 +74,77 @@ const play = () => {
 <style>
 @keyframes animate1 {
   0% {
-    /* pushes the sun down past the viewport */
-    transform: translateX(0%);
+    transform: translateX(50%);
+    opacity: 1;
   }
   33% {
-    /* returns the sun to its default position */
-    transform: translateX(-100%);
+    transform: translateX(-50%);
+    opacity: 0;
   }
   33.2% {
-    /* returns the sun to its default position */
-    transform: translateX(200%);
+    transform: translateX(250%);
+    opacity: 0;
   }
   66% {
-    /* returns the sun to its default position */
-    transform: translateX(100%);
+    transform: translateX(150%);
+    opacity: 1;
   }
   100% {
-    /* returns the sun to its default position */
-    transform: translateX(0%);
+    transform: translateX(50%);
+    opacity: 1;
   }
 }
 @keyframes animate2 {
   0% {
-    /* returns the sun to its default position */
-    transform: translateX(0%);
+    transform: translateX(50%);
+    opacity: 1;
   }
   33% {
-    /* returns the sun to its default position */
-    transform: translateX(-100%);
+    transform: translateX(-50%);
+    opacity: 1;
   }
   66% {
-    /* returns the sun to its default position */
-    transform: translateX(-200%);
+    transform: translateX(-150%);
+    opacity: 0;
   }
   66.2% {
-    /* returns the sun to its default position */
-    transform: translateX(100%);
+    transform: translateX(150%);
+    opacity: 0;
   }
   100% {
-    /* pushes the sun down past the viewport */
-    transform: translateX(0%);
+    transform: translateX(50%);
+    opacity: 1;
   }
 }
 @keyframes animate3 {
   0% {
-    /* returns the sun to its default position */
-    transform: translateX(0%);
+    transform: translateX(50%);
+    opacity: 1;
   }
   33% {
-    /* returns the sun to its default position */
-    transform: translateX(-100%);
+    transform: translateX(-50%);
+    opacity: 1;
   }
   66% {
-    /* returns the sun to its default position */
-    transform: translateX(-200%);
+    transform: translateX(-150%);
+    opacity: 1;
   }
   99.8% {
-    /* pushes the sun down past the viewport */
-    transform: translateX(-300%);
+    transform: translateX(-250%);
+    opacity: 0;
   }
   100% {
-    /* returns the sun to its default position */
-    transform: translateX(0%);
+    transform: translateX(50%);
+    opacity: 0;
   }
 }
 
 #video-view {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background-color: hsl(269, 100%, 25%);
   button.hero {
     margin: auto;
     font-size: 3em;
@@ -152,21 +157,27 @@ const play = () => {
   .players {
     display: flex;
 
-    clip-path: polygon(65% 39%, 52% 68%, 61% 99%, 0 100%, 0 0, 50% 0);
-
     .video-block {
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
 
-      background: #def;
-      video {
-        height: 70dvh;
-        aspect-ratio: 1/2;
+      position: relative;
+
+      h1 {
+        position: absolute;
+        bottom: 1em;
+        margin: 0;
+        color: hsl(269, 100%, 25%);
+        text-shadow:
+          -2px -2px 2px white,
+          2px 2px 2px white,
+          2px -2px 2px white,
+          -2px 2px 2px white;
       }
-      &.hasFocus {
-        background: #ada;
+      video {
+        height: 90dvh;
       }
       &:nth-of-type(1) {
         animation: 9s linear 0s infinite animate1;
@@ -186,17 +197,17 @@ const play = () => {
   <div id="video-view">
     <button class="hero" v-if="!isInitiated" @click="play">Start show</button>
     <div class="players" v-show="isInitiated">
-      <div class="video-block" :class="{ hasFocus: playerFocusIndex % 3 === 0 }">
+      <div class="video-block">
         <h1>{{ names[0] }}</h1>
-        <video ref="vid1" src="/rr/1 - A Hamilton for the Museum.mp3" />
+        <video ref="vid1" src="/nato/Alpha.MP4?url" width="200" />
       </div>
-      <div class="video-block" :class="{ hasFocus: playerFocusIndex % 3 === 1 }">
+      <div class="video-block">
         <h1>{{ names[1] }}</h1>
-        <video ref="vid2" src="/rr/1 - A Hamilton for the Museum.mp3" />
+        <video ref="vid2" src="/nato/Bravo.MP4?url" width="200" />
       </div>
-      <div class="video-block" :class="{ hasFocus: playerFocusIndex % 3 === 2 }">
+      <div class="video-block">
         <h1>{{ names[2] }}</h1>
-        <video ref="vid3" src="/rr/1 - A Hamilton for the Museum.mp3" />
+        <video ref="vid3" src="/nato/Charlie.MP4?url" width="200" />
       </div>
     </div>
   </div>
