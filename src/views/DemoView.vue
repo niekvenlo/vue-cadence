@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import DimsumCardVisual from '@/components/flash/DimsumCardVisual.vue'
 import { onMounted, onUnmounted, ref } from 'vue'
 
 const box = ref<HTMLDivElement>()
@@ -154,6 +155,43 @@ onUnmounted(() =>
 
 <template>
   <div class="demo-view">
+    <div id="dimsum-wrapper">
+      <div class="cards">
+        <DimsumCardVisual
+          front="Example"
+          :back="['Back example']"
+          is-correct
+          is-clicked
+          phase="present-option"
+        /><DimsumCardVisual
+          front="Example"
+          :back="['Back example']"
+          is-correct
+          is-clicked
+          phase="present-option tail-end"
+        /><DimsumCardVisual
+          front="Example"
+          :back="['Back example']"
+          is-correct
+          is-clicked
+          phase="reveal-outcome"
+        /><DimsumCardVisual
+          front="Example"
+          :back="['Back example']"
+          is-clicked
+          phase="reveal-outcome"
+        /><DimsumCardVisual
+          front="Example"
+          :back="['Back example']"
+          phase="reveal-outcome"
+        /><DimsumCardVisual
+          front="Example"
+          :back="['Back example , Back example ,Back example Back example']"
+          is-clicked
+          phase="refractory-phase"
+        />
+      </div>
+    </div>
     <h1>F2F demo</h1>
     <div class="box" :class="{ isExpanded }" ref="box">
       <div class="profile"></div>
