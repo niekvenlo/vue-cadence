@@ -19,8 +19,6 @@ const props = defineProps<{
   .cards {
     flex-grow: 1;
     margin: auto;
-    height: 80dvmin;
-    width: 80dvmin;
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr 1fr 1fr;
@@ -35,6 +33,7 @@ const props = defineProps<{
       --red-line-color: hsla(10, 63%, 77%, 0.9);
       --neutral-card-color: hsl(60, 86.2%, 90%);
       --sticky-tape-color: 170, 100%, 95%;
+      --progress-bar-color: 194, 71%, 57%;
       --horizontal-rule-background: repeating-linear-gradient(
           0deg,
           var(--blue-line-color),
@@ -76,7 +75,6 @@ const props = defineProps<{
       justify-content: center;
 
       background: var(--ruled-background);
-      --sticky-tape-color: 170, 100%, 95%;
       border: none;
       box-shadow: var(--medium-shadow);
       cursor: default;
@@ -91,6 +89,54 @@ const props = defineProps<{
       transition:
         rotate 0.5s,
         scale 0.5s;
+
+      .sticky-tape {
+        position: relative;
+        height: 3em;
+        .in-front,
+        .behind {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 20ch;
+          height: 100%;
+          translate: -50%;
+
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+
+          box-shadow: var(--low-shadow);
+          font-size: 70%;
+          line-height: 80%;
+          min-height: 4em;
+          padding: 0.2em 2em;
+
+          span:nth-of-type(2n) {
+            font-style: italic;
+          }
+          &:empty {
+            opacity: 0.1;
+          }
+        }
+        .behind {
+          background-color: hsla(119, 71%, 57%, 0.8);
+          opacity: 0;
+        }
+        .in-front {
+          /* background-color: hsla(var(--sticky-tape-color), 0.8); */
+          --progress: 0%;
+          background: linear-gradient(
+              to right,
+              hsla(var(--progress-bar-color), 0.8) 0%,
+              hsla(194, 71%, 57%, 0.8) var(--progress),
+              hsla(var(--sticky-tape-color), 0.8) var(--progress),
+              hsla(var(--sticky-tape-color), 0.8) 100%
+            );
+        }
+      }
+
+      /* Different phases */
       &.init {
         scale: 0.95;
       }
@@ -100,19 +146,10 @@ const props = defineProps<{
           transform: translateY(-1px);
           box-shadow: var(--high-shadow);
         }
-        &::after {
-          background-color: transparent;
-          transition: background-color 0.5s;
-          transition-delay: 1500ms;
-          content: '';
-          position: absolute;
-          pointer-events: none;
-          width: 100%;
-          height: 100%;
-        }
-
-        &.tail-end::after {
-          background-color: rgba(0, 204, 255, 0.2);
+        &.tail-end {
+          .sticky-tape .in-front {
+            --progress: 50%;
+          }
         }
       }
       &.reveal-outcome,
@@ -125,16 +162,6 @@ const props = defineProps<{
           opacity 1s ease-in-out;
         box-shadow: var(--low-shadow);
 
-        &::after {
-          background-color: rgba(0, 204, 255, 0.2);
-          transition: background-color 1s;
-          content: '';
-          position: absolute;
-          pointer-events: none;
-          width: 100%;
-          height: 100%;
-        }
-
         /* Hit */
         &.isCorrect.isClicked {
           --sticky-tape-color: 119, 71%, 57%;
@@ -145,24 +172,18 @@ const props = defineProps<{
         &.isCorrect:not(.isClicked) {
           --sticky-tape-color: 7, 71%, 57%;
           .sticky-tape {
-            position: relative;
-            transform: translateY(-3px) rotate(-2deg);
+            transition: transform 1s ease-in;
+            transform: translateY(3px) rotate(-2deg);
           }
         }
         &.isClicked:not(.isCorrect) {
           .sticky-tape {
-            transition: transform 1s ease-in;
-            transform: translateY(50px) rotate(2deg);
-            &::before {
-              position: absolute;
-              left: 0;
-              top: 0;
-              width: 100%;
-              height: 100%;
-              content: attr(data-correct);
+            .behind {
               opacity: 1;
-              font-size: 0.8em;
-              transform: translateY(-50px) rotate(-2deg);
+            }
+            .in-front {
+              transition: transform 1s ease-in;
+              transform: translateX(-4px) translateY(50px) rotate(4deg);
             }
           }
         }
@@ -181,38 +202,6 @@ const props = defineProps<{
           2px -2px 2px var(--neutral-card-color),
           -2px 2px 2px var(--neutral-card-color);
       }
-      .sticky-tape {
-        background-color: hsla(var(--sticky-tape-color), 0.8);
-        font-size: 70%;
-        line-height: 80%;
-        min-height: 4em;
-        padding: 0.2em 2em;
-
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-
-        span:nth-of-type(2n) {
-          font-style: italic;
-        }
-        box-shadow: var(--low-shadow);
-        &:empty {
-          opacity: 0.1;
-        }
-        &::before {
-          color: transparent;
-          opacity: 0;
-
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: rgb(27, 94, 27);
-
-          transition:
-            color 0.1s,
-            opacity 10s;
-        }
-      }
     }
   }
 }
@@ -221,8 +210,13 @@ const props = defineProps<{
 <template>
   <button class="card" :class="[phase, props]">
     <div class="header">{{ front }}</div>
-    <div class="sticky-tape" :data-correct="isCorrect ? null : correct.join(',')">
-      <span v-for="line in back ?? []" :key="line">{{ line }}</span>
+    <div class="sticky-tape">
+      <div class="behind">
+        <span v-for="line in correct ?? []" :key="line">{{ line }}</span>
+      </div>
+      <div class="in-front">
+        <span v-for="line in back ?? []" :key="line">{{ line }}</span>
+      </div>
     </div>
   </button>
 </template>
