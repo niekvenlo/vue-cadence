@@ -14,6 +14,12 @@ const props = defineProps<{
 </script>
 
 <style>
+@property --progress {
+  syntax: '<percentage>';
+  initial-value: 1%;
+  inherits: true;
+}
+
 #dimsum-wrapper {
   background: white;
   .cards {
@@ -33,7 +39,7 @@ const props = defineProps<{
       --red-line-color: hsla(10, 63%, 77%, 0.9);
       --neutral-card-color: hsl(60, 86.2%, 90%);
       --sticky-tape-color: 170, 100%, 95%;
-      --progress-bar-color: 194, 71%, 57%;
+      --progress-bar-color: 194, 71%, 70%;
       --horizontal-rule-background: repeating-linear-gradient(
           0deg,
           var(--blue-line-color),
@@ -124,15 +130,13 @@ const props = defineProps<{
           opacity: 0;
         }
         .in-front {
-          /* background-color: hsla(var(--sticky-tape-color), 0.8); */
-          --progress: 0%;
           background: linear-gradient(
-              to right,
-              hsla(var(--progress-bar-color), 0.8) 0%,
-              hsla(194, 71%, 57%, 0.8) var(--progress),
-              hsla(var(--sticky-tape-color), 0.8) var(--progress),
-              hsla(var(--sticky-tape-color), 0.8) 100%
-            );
+            100deg,
+            hsla(var(--sticky-tape-color), 0.8) 0,
+            hsla(var(--sticky-tape-color), 0.8) var(--progress),
+            hsla(var(--progress-bar-color), 0.8) var(--progress),
+            hsla(var(--progress-bar-color), 0.8) 100%
+          );
         }
       }
 
@@ -148,13 +152,18 @@ const props = defineProps<{
         }
         &.tail-end {
           .sticky-tape .in-front {
-            --progress: 50%;
+            transition: --progress 2s linear;
+            --progress: 100%;
           }
         }
       }
       &.reveal-outcome,
       &.refractory-phase,
       &.invisible-phase {
+        .sticky-tape .in-front {
+          transition: --progress 0s linear;
+          --progress: 100%;
+        }
         transition:
           background-color 0.1s ease-in-out,
           transform 0.1s ease-in-out,
@@ -172,8 +181,10 @@ const props = defineProps<{
         &.isCorrect:not(.isClicked) {
           --sticky-tape-color: 7, 71%, 57%;
           .sticky-tape {
-            transition: transform 1s ease-in;
-            transform: translateY(3px) rotate(-2deg);
+            .in-front {
+              transition: transform 0.5s ease-in-out;
+              transform: translateY(5px) rotate(-2deg);
+            }
           }
         }
         &.isClicked:not(.isCorrect) {
@@ -182,7 +193,7 @@ const props = defineProps<{
               opacity: 1;
             }
             .in-front {
-              transition: transform 1s ease-in;
+              transition: transform 0.5s cubic-bezier(0.79, 0.33, 0.14, 1.1);
               transform: translateX(-4px) translateY(50px) rotate(4deg);
             }
           }
