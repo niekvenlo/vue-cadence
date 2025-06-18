@@ -4,6 +4,7 @@ import { dbDelete, dbGet, dbPatch, dbPost, dbPut } from './json'
 const getCadsFileName = (req: Request) => {
   const fileNames = <{ [key: string]: string }>{
     us: 'src/server/data/database.json',
+    nb: 'src/server/data/database.json',
     gg: 'src/server/data/gg.json'
   }
   const userCode = req.user.code

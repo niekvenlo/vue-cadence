@@ -125,6 +125,39 @@ const handleColumnSelection = (idx: number) => {
         }
       }
     }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      th {
+        height: 6em;
+        p {
+          min-width: 20ch;
+        }
+      }
+      th,
+      td {
+        padding-inline: 2vw;
+        color: hsl(231, 23%, 22%);
+        &:nth-of-type(2n) {
+          color: hsl(0, 23%, 22%);
+          font-style: italic;
+        }
+      }
+      thead,
+      tr:nth-of-type(2n) {
+        text-align: left;
+        background-color: hsl(60, 86.2%, 82.9%);
+        button {
+          width: max-content;
+        }
+      }
+      &.dummy-data {
+        th {
+          height: unset;
+        }
+      }
+    }
   }
   h2 {
     text-align: right;
