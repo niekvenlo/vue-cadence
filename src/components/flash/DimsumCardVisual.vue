@@ -34,17 +34,33 @@ const props = defineProps<{
       --blue-line-color: hsla(222, 63%, 77%, 0.9);
       --red-line-color: hsla(10, 63%, 77%, 0.9);
       --neutral-card-color: hsl(60, 86.2%, 90%);
-      --ruled-background: repeating-linear-gradient(
-            0deg,
-            var(--blue-line-color),
-            var(--blue-line-color) 1px,
-            transparent 1px,
-            transparent
-          )
-          center / 20px 20px,
-        linear-gradient(90deg, transparent 20%, var(--red-line-color) 20.2%, transparent 20%),
-        linear-gradient(to left, hsla(var(--sticky-tape-color), 0.2), var(--neutral-card-color)),
-        linear-gradient(to left, var(--neutral-card-color));
+      --sticky-tape-color: 170, 100%, 95%;
+      --horizontal-rule-background: repeating-linear-gradient(
+          0deg,
+          var(--blue-line-color),
+          var(--blue-line-color) 1px,
+          transparent 1px,
+          transparent
+        )
+        center / 20px 20px;
+      --vertical-margin-rule-background: linear-gradient(
+        90deg,
+        transparent 20%,
+        var(--red-line-color) 20.2%,
+        transparent 20%
+      );
+      --neutral-background: linear-gradient(
+        to left,
+        var(--neutral-card-color),
+        var(--neutral-card-color)
+      );
+      --sticky-tape-color-background: linear-gradient(
+        to left,
+        hsla(var(--sticky-tape-color), 0.2),
+        hsla(var(--sticky-tape-color), 0.2)
+      );
+      --ruled-background: var(--horizontal-rule-background), var(--vertical-margin-rule-background),
+        var(--sticky-tape-color-background), var(--neutral-background);
 
       --high-shadow: 0 1px 1px hsl(0deg 0% 0% / 0.075), 0 2px 2px hsl(0deg 0% 0% / 0.075),
         0 4px 4px hsl(0deg 0% 0% / 0.075), 0 8px 8px hsl(0deg 0% 0% / 0.075),
@@ -108,7 +124,6 @@ const props = defineProps<{
           translateY 0.1s ease-in-out,
           opacity 1s ease-in-out;
         box-shadow: var(--low-shadow);
-        
 
         &::after {
           background-color: rgba(0, 204, 255, 0.2);

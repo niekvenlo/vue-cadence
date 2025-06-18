@@ -30,6 +30,7 @@ onUnmounted(() =>
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
+
   background-color: hsl(269, 100%, 25%);
   h1 {
     font-family: sans-serif;
@@ -159,32 +160,38 @@ onUnmounted(() =>
       <div class="cards">
         <DimsumCardVisual
           front="Example"
+          :correct="['w', 's']"
           :back="['Back example']"
           is-correct
           is-clicked
           phase="present-option"
         /><DimsumCardVisual
           front="Example"
+          :correct="['w', 's']"
           :back="['Back example']"
           is-correct
           is-clicked
           phase="present-option tail-end"
         /><DimsumCardVisual
           front="Example"
+          :correct="['w', 's']"
           :back="['Back example']"
           is-correct
           is-clicked
           phase="reveal-outcome"
         /><DimsumCardVisual
           front="Example"
+          :correct="['w', 's']"
           :back="['Back example']"
           is-clicked
           phase="reveal-outcome"
         /><DimsumCardVisual
           front="Example"
+          :correct="['w', 's']"
           :back="['Back example']"
           phase="reveal-outcome"
         /><DimsumCardVisual
+          :correct="['w', 's']"
           front="Example"
           :back="['Back example , Back example ,Back example Back example']"
           is-clicked
