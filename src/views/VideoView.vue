@@ -154,13 +154,18 @@ const play = () => {
 
   background-color: hsl(269, 100%, 25%);
   button.hero {
-    margin: auto;
-    font-size: 3em;
-    padding: 3em;
+    aspect-ratio: 1/1;
     background: #ede;
     border: none;
-    margin: 0.1em;
+    border-radius: 50%;
+    color: hsl(269, 100%, 25%);
+    font-family: sans-serif;
+    font-size: 3em;
+    margin: auto;
+    padding: 2em;
+    text-transform: uppercase;
     width: 100%;
+    max-width: 500px;
   }
   .players-wrapper {
     overflow: hidden;
@@ -214,7 +219,7 @@ const play = () => {
 
 <template>
   <div id="video-view">
-    <button class="hero" v-if="!isInitiated" @click="play">Start show</button>
+    <button class="hero" v-if="!isInitiated" @click="play">Launch</button>
     <div class="players-wrapper" ref="playersWrapper">
       <div class="players" :class="{ isFullscreen }" v-show="isInitiated">
         <div class="video-block">
