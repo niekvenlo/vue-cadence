@@ -2,6 +2,8 @@
 import { ref } from 'vue'
 
 const isInitiated = ref(false)
+const playersWrapper = ref<HTMLDivElement>()
+const isFullscreen = ref(false)
 
 const tracks = [
   `Alpha`,
@@ -38,7 +40,7 @@ const playerFocusIndex = ref(1)
 const vid1 = ref<HTMLVideoElement>()
 const vid2 = ref<HTMLVideoElement>()
 const vid3 = ref<HTMLVideoElement>()
-const names = ref(['', '', ''])
+const names = ref(['', '', 'Zulu'])
 
 const switchTrack = () => {
   if (!vid1.value || !vid2.value || !vid3.value) return
@@ -63,11 +65,17 @@ const switchTrack = () => {
 
 const play = () => {
   isInitiated.value = true
-  if (!vid1.value || !vid2.value || !vid3.value) return
+  if (!vid1.value || !vid2.value || !vid3.value || !playersWrapper.value) return
+
+  playersWrapper.value.addEventListener(
+    'fullscreenchange',
+    () => (isFullscreen.value = document.fullscreenElement !== null)
+  )
+  playersWrapper.value.requestFullscreen()
 
   setInterval(() => {
     switchTrack()
-  }, 3000)
+  }, 2500)
 }
 </script>
 
@@ -154,8 +162,19 @@ const play = () => {
     margin: 0.1em;
     width: 100%;
   }
+  .players-wrapper {
+    overflow: hidden;
+  }
   .players {
     display: flex;
+    align-items: center;
+    background-color: hsl(269, 100%, 25%);
+
+    &.isFullscreen {
+      width: 300vw;
+      height: 100dvh;
+      translate: -30%;
+    }
 
     .video-block {
       display: flex;
@@ -180,13 +199,13 @@ const play = () => {
         height: 90dvh;
       }
       &:nth-of-type(1) {
-        animation: 9s linear 0s infinite animate1;
+        animation: 7.5s linear 0s infinite animate1;
       }
       &:nth-of-type(2) {
-        animation: 9s linear 0s infinite animate2;
+        animation: 7.5s linear 0s infinite animate2;
       }
       &:nth-of-type(3) {
-        animation: 9s linear 0s infinite animate3;
+        animation: 7.5s linear 0s infinite animate3;
       }
     }
   }
@@ -196,18 +215,20 @@ const play = () => {
 <template>
   <div id="video-view">
     <button class="hero" v-if="!isInitiated" @click="play">Start show</button>
-    <div class="players" v-show="isInitiated">
-      <div class="video-block">
-        <h1>{{ names[0] }}</h1>
-        <video ref="vid1" src="/nato/Alpha.MP4?url" width="200" />
-      </div>
-      <div class="video-block">
-        <h1>{{ names[1] }}</h1>
-        <video ref="vid2" src="/nato/Bravo.MP4?url" width="200" />
-      </div>
-      <div class="video-block">
-        <h1>{{ names[2] }}</h1>
-        <video ref="vid3" src="/nato/Charlie.MP4?url" width="200" />
+    <div class="players-wrapper" ref="playersWrapper">
+      <div class="players" :class="{ isFullscreen }" v-show="isInitiated">
+        <div class="video-block">
+          <h1>{{ names[0] }}</h1>
+          <video ref="vid1" src="/nato/Xray.MP4?url" playsinline width="1700" />
+        </div>
+        <div class="video-block">
+          <h1>{{ names[1] }}</h1>
+          <video ref="vid2" src="/nato/Yankee.MP4?url" playsinline width="1700" />
+        </div>
+        <div class="video-block">
+          <h1>{{ names[2] }}</h1>
+          <video ref="vid3" src="/nato/Zulu.MP4?url" playsinline width="1700" />
+        </div>
       </div>
     </div>
   </div>
