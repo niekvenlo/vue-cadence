@@ -52,7 +52,7 @@ import DimsumCardVisual from '@/components/flash/DimsumCardVisual.vue'
   <div class="demo-view">
     <h1>Silly things</h1>
 
-    <div :style="{ width: '100%' }">
+    <div :style="{ width: '50%' }">
       <div :style="{ width: '100%', display: 'flex', flexFlow: 'row wrap' }">
         <FLogo />
         <FLogo />
