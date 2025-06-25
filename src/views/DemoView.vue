@@ -14,8 +14,14 @@ import DimsumCardVisual from '@/components/flash/DimsumCardVisual.vue'
 
   background-color: #4f42c6;
 
+  h1 {
+    color: white;
+    font-family: 'Montserrat', sans-serif;
+    text-transform: uppercase;
+  }
+
   & > div {
-    min-height: 50dvh;
+    min-height: 70dvh;
     &:nth-of-type(2n) {
       --background-color: #4f42c6;
       background-color: var(--background-color);
@@ -37,12 +43,15 @@ import DimsumCardVisual from '@/components/flash/DimsumCardVisual.vue'
 
   #dimsum-wrapper {
     width: 100%;
+    background: unset;
   }
 }
 </style>
 
 <template>
   <div class="demo-view">
+    <h1>Silly things</h1>
+
     <div :style="{ width: '100%' }">
       <div :style="{ width: '100%', display: 'flex', flexFlow: 'row wrap' }">
         <FLogo />
@@ -58,7 +67,9 @@ import DimsumCardVisual from '@/components/flash/DimsumCardVisual.vue'
       </div>
     </div>
 
-    <SepantaLisa />
+    <div>
+      <SepantaLisa />
+    </div>
 
     <div id="dimsum-wrapper">
       <div class="cards">

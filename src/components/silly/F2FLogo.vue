@@ -1,6 +1,6 @@
 <script setup lang="ts"></script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Dongle');
+@import url('https://fonts.googleapis.com/css?family=Montserrat:800');
 .f2flogo {
   --duration: 0.6s;
   flex: 1;
@@ -16,7 +16,7 @@
     span {
       color: white;
       font-size: 5em;
-      font-family: 'Dongle', sans-serif;
+      font-family: 'Montserrat', sans-serif;
       font-weight: 700;
       transition:
         translate var(--duration),
@@ -29,9 +29,9 @@
         rotate: 0turn;
       }
       &:nth-of-type(4) {
-        opacity: 1;
+        opacity: 0.8;
       }
-      @container (max-width: 310px) {
+      @container (max-width: 360px) {
         &:nth-of-type(2) {
           rotate: 0.01turn;
           translate: 0em 0.05em;
@@ -39,6 +39,7 @@
         }
         &:nth-of-type(4) {
           opacity: 0;
+          font-size: 0;
         }
       }
       @container (max-width: 150px) {
@@ -50,7 +51,7 @@
         }
         &:nth-of-type(3) {
           rotate: 0.5turn;
-          translate: -0.5em 0em;
+          translate: -0.8em 0.3em;
         }
       }
       @container (max-width: 100px) {

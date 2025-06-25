@@ -17,7 +17,7 @@ const resizeHandler = () => {
   clearTimeout(timer.value)
   timer.value = setTimeout(() => {
     box.value && box.value.style.setProperty('--duration', '0.6s')
-  }, 50)
+  }, 500)
 }
 
 onMounted(() => {
