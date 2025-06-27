@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import SepantaLisa from '@/components/silly/SepantaLisa.vue'
 import FLogo from '@/components/silly/F2FLogo.vue'
+import ScrollShadow from '@/components/silly/ScrollShadow.vue'
+import DynamicBlur from '@/components/silly/DynamicBlur.vue'
 import DimsumCardVisual from '@/components/flash/DimsumCardVisual.vue'
 </script>
 
 <style>
+@import url('https://fonts.googleapis.com/css?family=Montserrat:600,800');
 .demo-view {
-  height: 400vh;
+  min-height: 1000vh;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -69,6 +72,14 @@ import DimsumCardVisual from '@/components/flash/DimsumCardVisual.vue'
 
     <div>
       <SepantaLisa />
+    </div>
+
+    <div>
+      <DynamicBlur />
+    </div>
+
+    <div>
+      <ScrollShadow />
     </div>
 
     <div id="dimsum-wrapper">

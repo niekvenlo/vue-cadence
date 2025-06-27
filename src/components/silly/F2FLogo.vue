@@ -1,6 +1,6 @@
 <script setup lang="ts"></script>
 <style>
-@import url('https://fonts.googleapis.com/css?family=Montserrat:800');
+@import url('https://fonts.googleapis.com/css?family=Montserrat:600,800');
 .f2flogo {
   --duration: 0.6s;
   flex: 1;
@@ -69,8 +69,6 @@
       <span>2</span>
       <span>F</span>
       <span>.COM</span>
-      <!-- <img src="/large.jpg" class="large" />
-        <img src="/compact.jpg" class="compact" /> -->
     </div>
   </div>
 </template>
