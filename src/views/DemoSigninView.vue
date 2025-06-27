@@ -1,4 +1,12 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { onMounted } from 'vue'
+onMounted(() => {
+  const navBar = document.querySelector('.app-navigation')
+  if (navBar) {
+    navBar.style.setProperty('display', 'none')
+  }
+})
+</script>
 
 <style>
 @import url('https://fonts.googleapis.com/css?family=Montserrat:600,800');
@@ -9,7 +17,9 @@
 
   .wrapper {
     --timing-fhw: 0.4s ease-out;
-    transition: padding-top var(--timing-fhw), gap var(--timing-fhw);
+    transition:
+      padding-top var(--timing-fhw),
+      gap var(--timing-fhw);
     padding: 1em;
     padding-top: 5em;
     width: min(100vw, 400px);
@@ -92,7 +102,6 @@
     }
   }
 
-
   .wrapper:has(input:focus) {
     .fake-keyboard {
       position: absolute;
@@ -112,7 +121,9 @@
       <h1>Login</h1>
       <input name="username" value="" placeholder="Email" />
       <input name="password" type="password" value="" placeholder="Password" />
-      <a class="forgot" href="/reset-password/?from=%2Fsepanta%2F&amp;user_action=follow&amp;creator=sepanta"
+      <a
+        class="forgot"
+        href="/reset-password/?from=%2Fsepanta%2F&amp;user_action=follow&amp;creator=sepanta"
         >Forgot password?</a
       >
       <button class="btn primary">Login</button>

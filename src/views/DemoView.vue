@@ -2,6 +2,7 @@
 import SepantaLisa from '@/components/silly/SepantaLisa.vue'
 import FLogo from '@/components/silly/F2FLogo.vue'
 import ScrollShadow from '@/components/silly/ScrollShadow.vue'
+import HoverUnderline from '@/components/silly/HoverUnderline.vue'
 import DynamicBlur from '@/components/silly/DynamicBlur.vue'
 import DimsumCardVisual from '@/components/flash/DimsumCardVisual.vue'
 </script>
@@ -76,6 +77,10 @@ import DimsumCardVisual from '@/components/flash/DimsumCardVisual.vue'
 
     <div>
       <DynamicBlur />
+    </div>
+
+    <div>
+      <HoverUnderline />
     </div>
 
     <div>

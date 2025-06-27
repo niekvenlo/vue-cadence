@@ -37,6 +37,8 @@ const requestToken = () =>
 requestToken()
 
 const navHeight = computed(() => (isAuthorised.value ? '64px' : '0px'))
+
+const protectedRoutes = [['/tasks', '/connections']]
 </script>
 
 <style>
@@ -119,7 +121,7 @@ const navHeight = computed(() => (isAuthorised.value ? '64px' : '0px'))
 </style>
 
 <template>
-  <div class="unauthorised" v-if="!isAuthorised && $route.fullPath !== '/flash'">
+  <div class="unauthorised" v-if="!isAuthorised && protectedRoutes.includes($route.fullPath)">
     <div>
       <h1>Who are you?</h1>
       <input type="text" v-model="tokenName" />
