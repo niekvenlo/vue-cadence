@@ -9,7 +9,10 @@ div.demo-pme4x {
     text-transform: uppercase;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     &:hover {
-      font-style: italic;
+      /* font-style: italic; */
+      text-shadow:
+        0 0 2px black,
+        0 0 5px white;
     }
   }
 }
@@ -81,6 +84,18 @@ h3.hover-gradient-rainbow {
     --p: 100%;
   }
 }
+
+h3.hover-gradient-rainbow2 {
+  background: linear-gradient(in hsl longer hue, #f095c1, #f095c1) no-repeat var(--p, 0) 100% /
+    var(--p, 0) 100%;
+  transition:
+    0.4s,
+    background-position 0s;
+
+  &:hover {
+    --p: 100%;
+  }
+}
 </style>
 
 <template>
@@ -101,11 +116,15 @@ h3.hover-gradient-rainbow {
     <h3 class="hover-gradient2">Register</h3>
   </div>
   <div class="demo-pme4x">
-    <h3 class="hover-gradient-bisexual">Sign in</h3>
+    <h3 class="hover-gradient-bisexual">Bisexual</h3>
     <h3 class="hover-gradient-bisexual">Register</h3>
   </div>
   <div class="demo-pme4x">
     <h3 class="hover-gradient-rainbow">Sign in</h3>
     <h3 class="hover-gradient-rainbow">Register</h3>
+  </div>
+  <div class="demo-pme4x">
+    <h3 class="hover-gradient-rainbow2">Sign in</h3>
+    <h3 class="hover-gradient-rainbow2">Register</h3>
   </div>
 </template>

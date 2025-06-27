@@ -2,6 +2,10 @@
 div {
   margin: 2em;
 }
+.c {
+  overflow: hidden;
+  resize: horizontal;
+}
 .add-scroll-shadow {
   --plain-color: var(--background, rgb(255, 255, 255));
   --shadow-color: var(--shadow, rgba(0, 0, 0, 0.4));
@@ -19,8 +23,10 @@ div {
     var(--plain-color);
   background-repeat: no-repeat;
   background-size:
-    100% calc(3 * var(--thickness)),
-    100% calc(3 * var(--thickness)),
+  /* 100% calc(3 * var(--thickness)),
+    100% calc(3 * var(--thickness)), */
+    100% calc(max(6 * var(--thickness), 5em)),
+    100% calc(max(6 * var(--thickness), 5em)),
     100% var(--thickness),
     100% var(--thickness),
     100% var(--thickness),
@@ -34,7 +40,7 @@ div {
 </style>
 
 <template>
-  <div style="background: hsl(0, 20%, 90%); padding: 2em">
+  <div class="c" style="background: hsl(0, 20%, 90%); padding: 2em">
     <div class="add-scroll-shadow" style="max-height: 10em; --background: white">
       <ul class="example">
         <li v-for="i in 30" :key="i">{{ i }}</li>

@@ -2,6 +2,7 @@
 import SepantaLisa from '@/components/silly/SepantaLisa.vue'
 import FLogo from '@/components/silly/F2FLogo.vue'
 import ScrollShadow from '@/components/silly/ScrollShadow.vue'
+import ResponsiveFlexbox from '@/components/silly/ResponsiveFlexbox.vue'
 import HoverUnderline from '@/components/silly/HoverUnderline.vue'
 import DynamicBlur from '@/components/silly/DynamicBlur.vue'
 import DimsumCardVisual from '@/components/flash/DimsumCardVisual.vue'
@@ -48,6 +49,10 @@ import DimsumCardVisual from '@/components/flash/DimsumCardVisual.vue'
   #dimsum-wrapper {
     width: 100%;
     background: unset;
+    .cards {
+      overflow: hidden;
+      resize: horizontal;
+    }
   }
 }
 </style>
@@ -77,6 +82,10 @@ import DimsumCardVisual from '@/components/flash/DimsumCardVisual.vue'
 
     <div>
       <DynamicBlur />
+    </div>
+
+    <div>
+      <ResponsiveFlexbox />
     </div>
 
     <div>
