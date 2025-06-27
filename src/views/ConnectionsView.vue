@@ -145,7 +145,9 @@ const getTiles = () => {
       }
       data.value = json
     })
-    .catch((err) => console.log(err))
+    .catch(() => {
+      /* no-op */
+    })
 }
 
 const modifyDate = (callback: (d: Date) => void) => {
@@ -191,7 +193,9 @@ const updateWithServerData = (data: { [key: string]: string } | null) => {
       selectedTiles.value = sharedTiles.split(',').filter((f: string) => f)
       correctTiles.value = sharedCorrectTiles.split(',').filter((f: string) => f)
     })
-    .catch((err) => console.log(err))
+    .catch(() => {
+      /* no-op */
+    })
 }
 
 const resetTimer = () => {
@@ -501,7 +505,7 @@ watch(
       <button class="light" @click="getHint">Get a hint</button>
       <button class="light inner-hint" @click="hint = ''">{{ hint }}</button>
       <a
-        :href="`https://duckduckgo.com/?t=ffab&q=connections+hints+${data.id}&ia=web`"
+        :href="`https://duckduckgo.com/?t=ffab&q=connections+hints+${data?.id}&ia=web`"
         target="_blank"
         >DuckDuckGo</a
       >

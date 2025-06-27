@@ -27,7 +27,6 @@ const requestToken = () =>
   })
     .then((response) => response.json())
     .then((json) => {
-      console.log(json.error)
       isAuthorised.value = !json.error
     })
     .catch((err) => {
