@@ -19,6 +19,11 @@ const router = createRouter({
       component: () => import('@/views/FlashCardsView.vue')
     },
     {
+      path: '/ghost',
+      name: 'ghost',
+      component: () => import('@/views/GhostView.vue')
+    },
+    {
       path: '/laolun',
       name: 'laolun',
       // route level code-splitting

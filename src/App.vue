@@ -37,7 +37,7 @@ requestToken()
 
 const navHeight = computed(() => (isAuthorised.value ? '64px' : '0px'))
 
-const protectedRoutes = [['/tasks', '/connections']]
+const protectedRoutes = ['/tasks', '/connections']
 </script>
 
 <style>
