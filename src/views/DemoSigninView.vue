@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 onMounted(() => {
-  const navBar = document.querySelector('.app-navigation')
+  const navBar = document.querySelector('div.app-navigation') as HTMLDivElement
   if (navBar) {
     navBar.style.setProperty('display', 'none')
   }

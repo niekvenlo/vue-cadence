@@ -29,7 +29,7 @@ const updated = (task: Task) => {
 #tasksview {
   .task-list-card {
     --background-color: hsl(var(--light-color));
-    height: 4.5em;
+    height: 3.5em;
     background: var(--background-color);
     scroll-snap-align: start;
     display: grid;
@@ -38,28 +38,21 @@ const updated = (task: Task) => {
     padding-block: 0.5em;
     padding-inline: 1em;
     font-family: sans-serif;
-    &:nth-child(2n) {
-      --background-color: white;
-    }
 
     &.isDueToday {
-      /* color: hsl(113, 85%, 18%); */
-      background-image: linear-gradient(90deg, var(--background-color), hsl(161, 100%, 94%));
+      background-image: linear-gradient(1deg, var(--background-color), hsl(139, 100%, 94%) 6%);
     }
     &.isOverdue {
-      /* color: hsl(49, 100%, 22%); */
-      background-image: linear-gradient(90deg, var(--background-color), hsl(45, 100%, 94%));
+      background-image: linear-gradient(1deg, var(--background-color), hsl(41, 100%, 94%) 6%);
     }
     &.isSelected {
       --background-color: hsl(var(--light-accent-color));
-      &:nth-child(2n) {
-        --background-color: hsl(var(--lighter-accent-color));
-      }
     }
     .title {
       display: flex;
       align-items: center;
-      font-size: 1.2em;
+      font-size: 1.1em;
+      line-height: 80%;
       border: none;
       background: unset;
       color: currentColor;
@@ -67,11 +60,13 @@ const updated = (task: Task) => {
     }
     .complete-edit {
       display: flex;
+      font-size: 80%;
       flex-direction: row;
       justify-content: end;
       gap: 0.5em;
       margin-left: -3em;
-      backdrop-filter: blur(2px);
+      backdrop-filter: blur(5px);
+      background-color: #ffffff80;
     }
     .due-every {
       display: flex;
