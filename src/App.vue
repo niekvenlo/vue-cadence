@@ -37,42 +37,32 @@ requestToken()
 
 const navHeight = computed(() => (isAuthorised.value ? '64px' : '0px'))
 
-const protectedRoutes = ['/tasks', '/connections']
+const protectedRoutes = [['/tasks', '/connections']]
 </script>
 
 <style>
 .app-wrapper {
-  /* --nav-height: v-bind(navHeight); */
+  --nav-height: v-bind(navHeight);
   display: flex;
   flex-direction: column;
-  min-height: 100dvh;
-  height: 100dvh;
+  min-height: 100vh;
+  height: 100vh;
 }
 .app-navigation {
-  border-radius: 0 10px 0 0;
-  padding: 10px;
-  position: fixed;
-  left: 0;
-  background: rgb(42, 90, 29);
-  bottom: 0;
-  height: 3em;
+  min-height: 4em;
   display: flex;
   flex-direction: row;
   justify-content: space-around;
   align-items: center;
-  width: 3em;
-  overflow: hidden;
-  &:hover {
-    width: max-content;
-  }
+  border-bottom: 0.5px hsl(var(--shadow-color)) solid;
+  box-shadow: 0.5px 1px 1px hsl(var(--shadow-color));
   a {
-    color: rgb(238, 238, 233);
+    color: rgb(59, 59, 55);
     font-family: 'Wotfard', sans-serif;
     font-weight: 100;
     text-decoration: none;
     padding: 0.8em;
     text-transform: capitalize;
-    white-space: nowrap;
     &.router-link-active {
       transition: transform 0.1s;
       font-family: Georgia, sans-serif;
@@ -138,6 +128,15 @@ const protectedRoutes = ['/tasks', '/connections']
     </div>
   </div>
   <div class="app-wrapper" v-else>
+    <nav class="app-navigation" v-if="isAuthorised">
+      <RouterLink to="/tasks">任务</RouterLink>
+      <RouterLink to="/flash" @click="isAuthorised = true" class="hide-on-small-screens"
+        >卡</RouterLink
+      >
+      <RouterLink to="/laolun">劳伦</RouterLink>
+      <RouterLink to="/demo">示范</RouterLink>
+      <RouterLink to="/connections">连接</RouterLink>
+    </nav>
     <div class="app-page">
       <RouterView @error="handleError" />
     </div>
@@ -146,14 +145,5 @@ const protectedRoutes = ['/tasks', '/connections']
         {{ message }}
       </p>
     </div>
-    <nav class="app-navigation" v-if="isAuthorised">
-      NAV
-      <RouterLink to="/tasks">任务</RouterLink>
-      <RouterLink to="/flash" @click="isAuthorised = true">卡</RouterLink>
-      <RouterLink to="/laolun">劳伦</RouterLink>
-      <RouterLink to="/ghost">劳伦</RouterLink>
-      <RouterLink to="/demo">示范</RouterLink>
-      <RouterLink to="/connections">连接</RouterLink>
-    </nav>
   </div>
 </template>
