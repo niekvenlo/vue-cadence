@@ -198,7 +198,7 @@ const makeCards = (string: string) => string.split(/\n/).map((line) => line.spli
 <template>
   <h3>Or just click here, ghost, for pre-made sets</h3>
   <div id="ghost-button-wrapper">
-    <button class="black" v-for="set in sets" @click="emit('setCards', makeCards(set.string))">
+    <button class="black" v-for="set in sets" :key="set.string" @click="emit('setCards', makeCards(set.string))">
       {{ set.label }}
     </button>
   </div>
